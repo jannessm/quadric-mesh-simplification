@@ -5,11 +5,9 @@ DTYPE_DOUBLE = np.double
 
 ctypedef np.double_t DTYPE_DOUBLE_T
 
-from cython.parallel import prange
+from .utils import get_faces_for_node
 
-from utils import get_faces_for_node
-
-cdef compute_Q(np.ndarray positions, np.ndarray face):
+cpdef compute_Q(np.ndarray positions, np.ndarray face):
 	r"""computes for all nodes in :obj:`positions` a 4 x 4 matrix Q used as an error value of this node.
 
 	Args:
@@ -23,17 +21,17 @@ cdef compute_Q(np.ndarray positions, np.ndarray face):
 
 	cdef np.ndarray K, u, v, n, p
 
-	
-	cdef int i, j
+	cdef int i
 	for i in range(positions.shape[0]):
 		K = np.zeros((4, 4), dtype=DTYPE_DOUBLE)
 		
 		for face in get_faces_for_node(i, face):
 			u = positions[face[0]]
 			v = positions[face[1]]
+			w = positions[face[2]]
 
 			# calculate normal
-			n = np.cross(u, v)
+			n = np.cross(v - u, w - u)
 			n = n / np.norm(n)
 
 			d = -(n * u).sum()
@@ -42,6 +40,6 @@ cdef compute_Q(np.ndarray positions, np.ndarray face):
 
 			K += p * p.T
 
-		Q[j] = positions[i].T * K * positions[i]
+		Q[i] = K
 
 	return Q

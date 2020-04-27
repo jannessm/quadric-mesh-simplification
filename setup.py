@@ -7,10 +7,10 @@ __version__ = '0.0.1'
 url = 'https://github.com/jannessm/quadric-mesh-simplification'
 
 files = [
-	('pair', 'quad_mesh_simplify/pair.pyx'),
-	('q', 'quad_mesh_simplify/q.pyx'),
-	('simplify', 'quad_mesh_simplify/simplify.pyx'),
-	('utils', 'quad_mesh_simplify/utils.pyx'),
+	('quad_mesh_simplify.pair', 'quad_mesh_simplify/pair.pyx'),
+	('quad_mesh_simplify.q', 'quad_mesh_simplify/q.pyx'),
+	('quad_mesh_simplify.simplify', 'quad_mesh_simplify/simplify.pyx'),
+	('quad_mesh_simplify.utils', 'quad_mesh_simplify/utils.pyx'),
 ]
 
 ext_modules = [
