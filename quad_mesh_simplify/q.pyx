@@ -5,7 +5,7 @@ DTYPE_DOUBLE = np.double
 
 ctypedef np.double_t DTYPE_DOUBLE_T
 
-from .utils import get_faces_for_node
+from utils cimport get_faces_for_node
 
 cpdef compute_Q(np.ndarray positions, np.ndarray face):
 	r"""computes for all nodes in :obj:`positions` a 4 x 4 matrix Q used as an error value of this node.
@@ -25,20 +25,20 @@ cpdef compute_Q(np.ndarray positions, np.ndarray face):
 	for i in range(positions.shape[0]):
 		K = np.zeros((4, 4), dtype=DTYPE_DOUBLE)
 		
-		for face in get_faces_for_node(i, face):
-			u = positions[face[0]]
-			v = positions[face[1]]
-			w = positions[face[2]]
+		for f in get_faces_for_node(i, face):
+			u = positions[f[0]]
+			v = positions[f[1]]
+			w = positions[f[2]]
 
 			# calculate normal
 			n = np.cross(v - u, w - u)
-			n = n / np.norm(n)
+			n /= np.linalg.norm(n)
 
 			d = -(n * u).sum()
 
 			p = np.hstack([n, d])
 
-			K += p * p.T
+			K += p.dot(p.T)
 
 		Q[i] = K
 

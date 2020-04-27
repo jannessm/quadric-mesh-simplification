@@ -3,8 +3,6 @@ import numpy as np
 
 from q import compute_Q
 
-tolerance = 10e-3
-
 class TestComputeQ(unittest.TestCase):
 	
 	def test_compute_Q(self):
@@ -21,25 +19,25 @@ class TestComputeQ(unittest.TestCase):
 		])
 
 		res = np.array([
-			[[2., 2., 2., 2.]
-			 [2., 2., 2., 2.]
-			 [2., 2., 2., 2.]
+			[[2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
 			 [2., 2., 2., 2.]],
-			[[1., 1., 1., 1.]
-			 [1., 1., 1., 1.]
-			 [1., 1., 1., 1.]
+			[[1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
 			 [1., 1., 1., 1.]],
-			[[2., 2., 2., 2.]
-			 [2., 2., 2., 2.]
-			 [2., 2., 2., 2.]
+			[[2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
 			 [2., 2., 2., 2.]],
-			[[1., 1., 1., 1.]
-			 [1., 1., 1., 1.]
-			 [1., 1., 1., 1.]
-			 [1., 1., 1., 1.]]
+			[[1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
+			 [1., 1., 1., 1.]],
 		])
-
-		self.assertLess(compute_Q - res, tolerance)
+		Q = compute_Q(positions, face)
+		np.testing.assert_almost_equal(Q, res)
 
 if __name__ == '__main__':
 	unittest.main()
