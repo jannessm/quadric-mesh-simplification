@@ -5,13 +5,12 @@ DTYPE_DOUBLE = np.double
 
 ctypedef np.double_t DTYPE_DOUBLE_T
 
-from pair import Pair
+from pair cimport Pair
 from q cimport compute_Q
 from targets cimport compute_targets
 from valid_pairs cimport compute_valid_pairs
-from contract_pair cimport contract_first_pair
 
-cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
+def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
     <http://mgarland.org/files/papers/quadrics.pdf>`_.
 
@@ -41,11 +40,13 @@ cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
 
     # 5. contract vertices until num_nodes reached
     cdef double error
-    cdef long v1 = p.v1
-    cdef long v2 = p.v2
+    cdef long v1
+    cdef long v2
     cdef Pair p
     while positions.shape[0] > num_nodes and pairs.length > 0:
         p = pairs[0]
+        v1 = p.v1
+        v2 = p.v2
 
         # update positions
         positions[v1] = np.copy(p.target)
@@ -63,12 +64,23 @@ cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
         # remove p
         pairs.remove(p)
 
+        # update all other valid pairs
+        for p in pairs:
+            if p.v1 == v1:
+                p.calculate_error(v1, p.v2, positions, Q, features)
+            elif p.v1 == v2:
+                p.calculate_error(v2, p.v2, positions, Q, features)
+            elif p.v2 == v1:
+                p.calculate_error(p.v1, v1, positions, Q, features)
+            elif p.v2 == v2:
+                p.calculate_error(p.v1, v2, positions, Q, features)
+
         # sort by errors
         pairs = sort_pairs(pairs)
 
     return positions, face
 
-cdef sort_pairs(list pairs):
+cdef list sort_pairs(list pairs):
     return pairs.sort(key=compare_by)
 
 cdef double compare_by(p):

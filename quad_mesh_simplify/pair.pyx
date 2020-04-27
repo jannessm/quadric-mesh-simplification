@@ -8,12 +8,7 @@ ctypedef np.double_t DTYPE_DOUBLE_T
 cdef class Pair:
 	r"""managing a valid pair by containing the ids of the nodes and the new contracted node position"""
 
-	cdef public double error
-	cdef public long v1, v2
-
-	cdef public np.ndarray target, new_features
-
-	cpdef Pair calculate_error(self, v1, v2, positions, Q, features=None):
+	cpdef Pair calculate_error(self, long v1, long v2, np.ndarray positions, np.ndarray Q, np.ndarray features):
 		cdef np.ndarray new_Q, errors, p1, p2, p12, ranges
 		cdef double error, i
 		cdef int min_id
