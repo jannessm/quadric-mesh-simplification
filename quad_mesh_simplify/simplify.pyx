@@ -30,8 +30,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     cdef np.ndarray valid_pairs = compute_valid_pairs(positions, face, threshold)
 
     # 3. compute optimal contration targets
-    cdef np.ndarray errors
-    cdef list pairs
+    cdef np.ndarray pairs
     
     pairs = compute_targets(positions, Q, valid_pairs, features)
 
