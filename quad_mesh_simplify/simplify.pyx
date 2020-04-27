@@ -9,6 +9,7 @@ from pair import Pair
 from q cimport compute_Q
 from targets cimport compute_targets
 from valid_pairs cimport compute_valid_pairs
+from contract_pair cimport contract_first_pair
 
 cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
@@ -39,19 +40,31 @@ cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
     pairs = sort_pairs(pairs)
 
     # 5. contract vertices until num_nodes reached
-    # cdef double error
-    # while Q.shape[0] > num_nodes and errors.shape[0] != 0:
-      #   p = pairs[errors[0]]
+    cdef double error
+    cdef long v1 = p.v1
+    cdef long v2 = p.v2
+    cdef Pair p
+    while positions.shape[0] > num_nodes and pairs.length > 0:
+        p = pairs[0]
 
-        # remove first row from 'heap'
-      #   errors = np.delete(errors, (0), axis=0)
+        # update positions
+        positions[v1] = np.copy(p.target)
+        positions = np.delete(positions, v2, 0)
 
-        # contract
+        # update Q
+        Q[v1] = Q[v1] + Q[v2]
+        Q = np.delete(Q, v2, 0)
 
-        # update errors
+        # update features
+        if features is not None and p:
+            features[v1] = p.new_features
+            features = np.delete(features, v2, 0)
 
-        # sort errors
-      #   errors = sort_errors(errors)
+        # remove p
+        pairs.remove(p)
+
+        # sort by errors
+        pairs = sort_pairs(pairs)
 
     return positions, face
 
