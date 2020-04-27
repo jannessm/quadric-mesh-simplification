@@ -55,7 +55,9 @@ cdef class Pair:
 	def __eq__(self, other):
 		return (
 			self.v1 == other.v1 and
-			self.v2 == other.v2
+			self.v2 == other.v2 and
+			self.error == other.error and
+			self.target == other.target
 		)
 
 	cdef np.ndarray make_homogeneous(self, np.ndarray arr):
