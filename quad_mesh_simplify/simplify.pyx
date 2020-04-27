@@ -27,7 +27,7 @@ cpdef simplify_mesh(positions, face, num_nodes, threshold=None):
     cdef np.ndarray Q = compute_Q(positions, face)
 
     # 2. Select valid pairs
-    cdef np.ndarray valid_pairs = compute_valid_pairs(positions, face)
+    cdef np.ndarray valid_pairs = compute_valid_pairs(positions, face, threshold)
 
     # 3. compute optimal contration targets
     cdef np.ndarray errors

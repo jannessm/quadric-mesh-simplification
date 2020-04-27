@@ -19,7 +19,8 @@ cpdef compute_Q(np.ndarray positions, np.ndarray face):
 	cdef long num_nodes = positions.shape[0]
 	cdef np.ndarray Q = np.zeros((num_nodes, 4, 4), dtype=DTYPE_DOUBLE)
 
-	cdef np.ndarray K, u, v, n, p
+	cdef np.ndarray K, u, v, w, n, p, f
+	cdef double d
 
 	cdef int i
 	for i in range(positions.shape[0]):
