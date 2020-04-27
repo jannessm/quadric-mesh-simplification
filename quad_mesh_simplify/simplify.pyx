@@ -36,7 +36,7 @@ cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
     pairs = compute_targets(positions, Q, valid_pairs, features)
 
     # 4. create head sorted by costs
-    # errors = sort_errors(errors)
+    pairs = sort_pairs(pairs)
 
     # 5. contract vertices until num_nodes reached
     # cdef double error
@@ -55,9 +55,8 @@ cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
 
     return positions, face
 
-cpdef sort_errors(np.ndarray arr):
-    return np.sort(
-            arr.view('float,float'),
-            order=['f0'],
-            axis=0
-        ).view(DTYPE_DOUBLE)
+cdef sort_pairs(list pairs):
+    return pairs.sort(key=compare_by)
+
+cdef double compare_by(p):
+    return p.error

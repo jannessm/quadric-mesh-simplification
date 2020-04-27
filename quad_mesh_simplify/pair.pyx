@@ -13,15 +13,13 @@ cdef class Pair:
 
 	cdef public np.ndarray target, new_features
 
-	cpdef self calculate_error(self, v1, v2, positions, Q, features=None):
+	cpdef Pair calculate_error(self, v1, v2, positions, Q, features=None):
 		cdef np.ndarray new_Q, errors, p1, p2, p12, ranges
 		cdef double error, i
 		cdef int min_id
 
 		self.v1 = v1
 		self.v2 = v2
-		
-		ranges = np.arange(0, 1.1, 0.1)
 
 		new_Q = Q[v1] + Q[v2]
 		
@@ -30,10 +28,11 @@ cdef class Pair:
 		p1 = self.make_homogeneous(positions[v1])
 		p2 = self.make_homogeneous(positions[v2])
 
-		for i in ranges:
-			p12 = (i * p1 + (1. - i) * p2)
-			error = p12.dot(new_Q).dot(p12)
-			errors = np.hstack([errors, error])
+		# calculate errors for a 10 different targets on p1 -> p2
+		r = np.arange(0, 1.1, 0.1)[:, None]
+		p12 = r.dot(p1[:, None].T) + (1 - r).dot(p2[:, None].T)
+		errors = p12.dot(new_Q).dot(p12.T) * np.eye(11)
+		errors = np.max(errors, axis=1)
 
 		# get minimal error
 		min_id = np.argmin(errors)
@@ -58,8 +57,7 @@ cdef class Pair:
 		return (
 			self.v1 == other.v1 and
 			self.v2 == other.v2 and
-			self.error == other.error and
-			self.target == other.target
+			self.error == other.error
 		)
 
 	cdef np.ndarray make_homogeneous(self, np.ndarray arr):

@@ -20,8 +20,7 @@ cpdef list compute_targets(
 	ranges = np.arange(0, 1.1, 0.1)
 
 	for pair in valid_pairs:
-		p = Pair()
-		p.calculate_error(
+		p = Pair().calculate_error(
 			pair[0], pair[1], positions, Q, features
 		)
 		pairs.append(p)

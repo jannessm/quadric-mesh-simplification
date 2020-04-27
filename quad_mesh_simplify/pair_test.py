@@ -1,11 +1,10 @@
-from targets import compute_targets
 from pair import Pair
 import unittest
 import numpy as np
 
-class TargetsTests(unittest.TestCase):
+class PairTests(unittest.TestCase):
 
-	def test_compute_targets(self):
+	def test_calculate_error(self):
 		positions = np.array([
 			[0., 0., 0.],
 			[1., 0., 0.],
@@ -33,20 +32,11 @@ class TargetsTests(unittest.TestCase):
 			 [1., 1., 1., 1.]],
 		])
 
-		valid_pairs = np.array([
-			[0, 1],
-			[1, 2],
-		])
-
-		solution = [
-			Pair().calculate_error(0, 1, positions, Q, None),
-			Pair().calculate_error(1, 2, positions, Q, None)
-		]
-
-		res = compute_targets(positions, Q, valid_pairs, None)
-		
-		for i, r in enumerate(res):
-			self.assertEqual(r, solution[i])
+		solution_err = 3.
+		solution_target = [0., 0., 0.]
+		p = Pair().calculate_error(0, 1, positions, Q, None)
+		self.assertEqual(p.error, solution_err)
+		np.testing.assert_equal(p.target, solution_target)
 
 if __name__ == '__main__':
 	unittest.main()
