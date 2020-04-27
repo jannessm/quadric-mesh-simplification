@@ -14,8 +14,6 @@ cpdef np.ndarray compute_targets(
 ):
 	if features is None:
 		features = np.zeros((0,0))
-
-	assert(len(features.shape) == 2)
 	
 	# a pair consists of error, v1, v2, target, feature
 	cdef int pair_shape = 3 + 3 + features.shape[1]
@@ -28,11 +26,14 @@ cpdef np.ndarray compute_targets(
 
 	for pair in valid_pairs:
 		p = calculate_pair_attributes(pair[0], pair[1], positions, Q, features)
-		pairs = pairs.vstack([pairs, p])
+		pairs = np.vstack([pairs, p])
 
 	return pairs
 
-cpdef np.ndarry calculate_pair_attributes(long v1, long v2, np.ndarray positions, np.ndarray Q, np.ndarray features):
+cpdef np.ndarray calculate_pair_attributes(long v1, long v2, np.ndarray positions, np.ndarray Q, np.ndarray features):
+	if features is None:
+		features = np.zeros((0,0))
+
 	cdef int pair_shape = 3 + 3 + features.shape[1]
 	cdef int target_offset = 3
 	cdef int feature_offset = 3 + 3
@@ -42,8 +43,8 @@ cpdef np.ndarry calculate_pair_attributes(long v1, long v2, np.ndarray positions
 	cdef double error, i
 	cdef int min_id
 
-	p[1] = v1
-	p[2] = v2
+	pair[1] = v1
+	pair[2] = v2
 
 	new_Q = Q[v1] + Q[v2]
 	
@@ -60,12 +61,12 @@ cpdef np.ndarry calculate_pair_attributes(long v1, long v2, np.ndarray positions
 
 	# get minimal error
 	min_id = np.argmin(errors)
-	p[0] = errors[min_id]
+	pair[0] = errors[min_id]
 	i = min_id * 0.1
-	p[target_offset: feature_offset] = (i * p1 + (1 - i) * p2)[:3]
+	pair[target_offset: feature_offset] = (i * p1 + (1 - i) * p2)[:3]
 
-	if features is not None:
-		p[feature_offset:] = i * features[v1] + (1 - i) * features[v2]
+	if features.shape[0] != 0:
+		pair[feature_offset:] = i * features[v1] + (1 - i) * features[v2]
 
 	return pair
 

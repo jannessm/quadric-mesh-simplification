@@ -8,7 +8,7 @@ url = 'https://github.com/jannessm/quadric-mesh-simplification'
 
 files = [
 	#('quad_mesh_simplify.contract_pair', 'quad_mesh_simplify/contract_pair.pyx'),
-	('quad_mesh_simplify.pair', 'quad_mesh_simplify/pair.pyx'),
+	#('quad_mesh_simplify.pair', 'quad_mesh_simplify/pair.pyx'),
 	('quad_mesh_simplify.q', 'quad_mesh_simplify/q.pyx'),
 	('quad_mesh_simplify.simplify', 'quad_mesh_simplify/simplify.pyx'),
 	('quad_mesh_simplify.targets', 'quad_mesh_simplify/targets.pyx'),

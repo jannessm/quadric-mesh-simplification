@@ -74,15 +74,60 @@ class TargetsTests(unittest.TestCase):
 			[1, 2],
 		])
 
-		solution = [
-			Pair().calculate_error(0, 1, positions, Q, None),
-			Pair().calculate_error(1, 2, positions, Q, None)
-		]
+		solution = np.array([
+			# err, v1, v2, target
+			[3., 0., 1., 0., 0., 0.],
+			[12., 1., 2., 1., 0., 0.],
+		])
 
 		res = compute_targets(positions, Q, valid_pairs, None)
 		
-		for i, r in enumerate(res):
-			self.assertEqual(r, solution[i])
+		np.testing.assert_equal(res, solution)
+
+	def test_compute_targets_with_features(self):
+		positions = np.array([
+			[0., 0., 0.],
+			[1., 0., 0.],
+			[1., 1., 0.],
+			[1., 1., 1.],
+			[1., 0., 1.],
+		])
+
+		Q = np.array([
+			[[2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
+			 [2., 2., 2., 2.]],
+			[[1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
+			 [1., 1., 1., 1.]],
+			[[2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
+			 [2., 2., 2., 2.],
+			 [2., 2., 2., 2.]],
+			[[1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
+			 [1., 1., 1., 1.],
+			 [1., 1., 1., 1.]],
+		])
+
+		valid_pairs = np.array([
+			[0, 1],
+			[1, 2],
+		])
+
+		features = np.ones((5,1))
+
+		solution = np.array([
+			# err, v1, v2, target, features
+			[3., 0., 1., 0., 0., 0., 1.],
+			[12., 1., 2., 1., 0., 0., 1.],
+		])
+
+		res = compute_targets(positions, Q, valid_pairs, features)
+		
+		np.testing.assert_equal(res, solution)
 
 if __name__ == '__main__':
 	unittest.main()
