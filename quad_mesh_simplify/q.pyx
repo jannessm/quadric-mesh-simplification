@@ -7,7 +7,7 @@ ctypedef np.double_t DTYPE_DOUBLE_T
 
 from utils cimport get_faces_for_node
 
-cpdef compute_Q(np.ndarray positions, np.ndarray face):
+cpdef np.ndarray compute_Q(np.ndarray positions, np.ndarray face):
 	r"""computes for all nodes in :obj:`positions` a 4 x 4 matrix Q used as an error value of this node.
 
 	Args:
@@ -22,7 +22,7 @@ cpdef compute_Q(np.ndarray positions, np.ndarray face):
 	cdef np.ndarray K, u, v, w, n, p, f
 	cdef double d
 
-	cdef int i
+	cdef long i
 	for i in range(positions.shape[0]):
 		K = np.zeros((4, 4), dtype=DTYPE_DOUBLE)
 		

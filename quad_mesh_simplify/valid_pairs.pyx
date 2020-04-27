@@ -25,7 +25,7 @@ cpdef np.ndarray compute_valid_pairs(np.ndarray positions, np.ndarray face, doub
 		valid_pairs = remove_duplicates(valid_pairs)
 
 	# option 2: distance below threshold
-	cdef int i
+	cdef long i
 	cdef np.ndarray distance, pairs
 	if threshold is not None:
 

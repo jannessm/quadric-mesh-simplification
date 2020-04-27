@@ -6,11 +6,11 @@ DTYPE_DOUBLE = np.double
 ctypedef np.double_t DTYPE_DOUBLE_T
 
 from pair import Pair
-from q import compute_Q
-from targets import compute_targets
-from valid_pairs import compute_valid_pairs
+from q cimport compute_Q
+from targets cimport compute_targets
+from valid_pairs cimport compute_valid_pairs
 
-cpdef simplify_mesh(positions, face, num_nodes, threshold=None):
+cpdef simplify_mesh(positions, face, num_nodes, features=None, threshold=None):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
     <http://mgarland.org/files/papers/quadrics.pdf>`_.
 
@@ -31,27 +31,27 @@ cpdef simplify_mesh(positions, face, num_nodes, threshold=None):
 
     # 3. compute optimal contration targets
     cdef np.ndarray errors
-    pairs = []
+    cdef list pairs
     
-    errors, pairs = compute_targets(positions, Q)
+    pairs = compute_targets(positions, Q, valid_pairs, features)
 
     # 4. create head sorted by costs
-    errors = sort_errors(errors)
+    # errors = sort_errors(errors)
 
     # 5. contract vertices until num_nodes reached
-    cdef double error
-    while Q.shape[0] > num_nodes and errors.shape[0] != 0:
-        p = pairs[errors[0]]
+    # cdef double error
+    # while Q.shape[0] > num_nodes and errors.shape[0] != 0:
+      #   p = pairs[errors[0]]
 
         # remove first row from 'heap'
-        errors = np.delete(errors, (0), axis=0)
+      #   errors = np.delete(errors, (0), axis=0)
 
         # contract
 
         # update errors
 
         # sort errors
-        errors = sort_errors(errors)
+      #   errors = sort_errors(errors)
 
     return positions, face
 
