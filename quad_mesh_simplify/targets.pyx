@@ -12,6 +12,18 @@ cpdef np.ndarray compute_targets(
 	np.ndarray valid_pairs,
 	np.ndarray features
 ):
+	"""Computes the optimal position and the resulting feature vector (if provided) of the contracted node for nodes in valid_pairs.
+	Since the feature vector should be aggregated, the exact mixture of v1 and v2 are needed and sampled from 10 different positions
+	on the edge v1, v2.
+
+	Args:
+	    positions (:class:`ndarray`): array of shape (num_nodes, 3) containing the x, y, z position for each node
+	    Q (:class:`ndarray`): Q matrixes for each node (shape (num_nodes, 4, 4))
+	    valid_pairs (:class:`ndarray`): list of valid_pairs. A pair consists of the error, v1, v2, target position(, feature vector).
+	    features (:class:`ndarray`, optional): feature matrix of shape (num_nodes, num_features)
+
+	:rtype: :class:`ndarray`
+	"""
 	if features is None:
 		features = np.zeros((0,0))
 	
@@ -31,6 +43,17 @@ cpdef np.ndarray compute_targets(
 	return pairs
 
 cpdef np.ndarray calculate_pair_attributes(long v1, long v2, np.ndarray positions, np.ndarray Q, np.ndarray features):
+	"""Computes the optimal position of the contracted node of the edge (v1, v2).
+
+	Args:
+		v1 (:class:`long`): id for first node
+		v2 (:class:`long`): id for second node
+	    positions (:class:`ndarray`): array of shape (num_nodes, 3) containing the x, y, z position for each node
+	    Q (:class:`ndarray`): Q matrixes for each node (shape (num_nodes, 4, 4))
+	    features (:class:`ndarray`, optional): feature matrix of shape (num_nodes, num_features)
+
+	:rtype: :class:`ndarray`
+	"""
 	if features is None:
 		features = np.zeros((0,0))
 
@@ -71,4 +94,10 @@ cpdef np.ndarray calculate_pair_attributes(long v1, long v2, np.ndarray position
 	return pair
 
 cdef np.ndarray make_homogeneous(np.ndarray arr):
-		return np.hstack([arr, 1])
+	"""appends an array with [1] to make it homogeneous.
+
+	Args:
+		arr (:class:`ndarray`): 1d vector
+
+	:rtype: :class:`ndarray`"""
+	return np.hstack([arr, 1])

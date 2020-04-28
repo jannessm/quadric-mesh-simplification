@@ -7,7 +7,16 @@ DTYPE_LONG = np.long
 ctypedef np.double_t DTYPE_DOUBLE_T
 ctypedef np.long_t DTYPE_LONG_T
 
-cpdef np.ndarray preserve_bounds(np.ndarray positions, np.ndarray face, np.ndarray Q):
+cpdef void preserve_bounds(np.ndarray positions, np.ndarray face, np.ndarray Q):
+	"""This method adds a large penality to the current Q matrix for each node of edge that is only part of one face and therefore forms a boundary.
+
+	Note that it manipulates the matrix Q in place.
+
+	Args:
+		positions (:class:`ndarray`): array of shape num_nodes x 3 containing the x, y, z position for each node
+        face (:class:`ndarray`): array of shape num_faces x 3 containing the indices for each triangular face
+        Q (:class:`ndarray`): array of shape num_faces x 3 containing the indices for each triangular face
+	"""
 	cdef np.ndarray edges = np.zeros((0,2 + 3), dtype=DTYPE_DOUBLE)
 	cdef np.ndarray e, counts, K, u, v, w, n, p
 	cdef long i, v1, v2
@@ -63,6 +72,3 @@ cpdef np.ndarray preserve_bounds(np.ndarray positions, np.ndarray face, np.ndarr
 			Q[v1] += K
 			Q[v2] += K
 			i += 1
-
-
-	return Q

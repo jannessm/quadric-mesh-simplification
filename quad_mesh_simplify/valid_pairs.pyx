@@ -9,6 +9,16 @@ from utils cimport get_faces_for_node
 from utils cimport get_rows
 
 cpdef np.ndarray compute_valid_pairs(np.ndarray positions, np.ndarray face, double threshold):
+	"""computes all valid pairs. A valid pair of nodes is either nodes that are connected by an edge, or their distance are below the given threshold.
+	The returned array is of shape (num_pairs, 2) containing the ids of all nodes.
+
+	Args:
+		positions (:class:`ndarray`): positions of nodes with shape (num_nodes, 3)
+		face (:class:`ndarray`): face of mesh containing node ids with shape (num_faces, 3)
+		threshold (:class:`double`, optional): if provided, includes pairs that have a smaller distance than this threshold. (default: :obj:`0`)
+
+	:rtype: :class:`ndarray`
+	"""
 	cdef np.ndarray valid_pairs = np.zeros((0,2), dtype=DTYPE_LONG)
 
 	# option 1 to be valid
@@ -42,4 +52,10 @@ cpdef np.ndarray compute_valid_pairs(np.ndarray positions, np.ndarray face, doub
 	return valid_pairs
 
 cdef np.ndarray remove_duplicates(np.ndarray arr):
+	"""removes duplicates in an array of edges.
+	
+	Args:
+		arr (:class:`ndarray`): array
+
+	:rtype: :class:`ndarray`"""
 	return np.unique(np.sort(arr, axis=1), axis=0)

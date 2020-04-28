@@ -91,8 +91,8 @@ class SimplifyTests(unittest.TestCase):
 		        [2., 2., 2., 2.]]
 		    ])
 
-
-		new_Q = preserve_bounds(pos, face, np.copy(Q))
+		new_Q = np.copy(Q)
+		preserve_bounds(pos, face, new_Q)
 
 		# inner nodes were not be affected by penalty
 		assert_equal(Q[3:5], new_Q[3:5])
