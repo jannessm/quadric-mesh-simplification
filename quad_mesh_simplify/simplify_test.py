@@ -53,6 +53,8 @@ class SimplifyTests(unittest.TestCase):
 
 		for i in range(1, 8):
 			res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 10 - i)
+			self.assertEqual(res_pos.shape, (10 - i, 3))
+			print(res_face)
 			plot_test_mesh(res_pos, res_face)
 
 		#np.testing.assert_equal(res_pos, new_pos)

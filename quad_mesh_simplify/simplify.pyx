@@ -2,8 +2,10 @@ import numpy as np
 cimport numpy as np
 
 DTYPE_DOUBLE = np.double
+DTYPE_LONG = np.long
 
 ctypedef np.double_t DTYPE_DOUBLE_T
+ctypedef np.long_t DTYPE_LONG_T
 
 from preserve_bounds cimport preserve_bounds
 from q cimport compute_Q
@@ -51,7 +53,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
     cdef int target_offset = 3
     cdef int feature_offset = 3 + 3
-    cdef long i
+    cdef long i, non_inf
     while (
             get_rows(positions != -np.inf).shape[0] > num_nodes and
             pairs.shape[0] > 0
@@ -61,21 +63,22 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         v1 = p[1]
         v2 = p[2]
 
+        if v1 == v2:
+            pairs = np.delete(pairs, 0, 0)
+            continue
+
         # update positions
         positions[v1] = np.copy(p[target_offset:feature_offset])
-        #positions = np.delete(positions, v2, 0)
-        mark_row_for_del(positions, v2)
+        positions = np.delete(positions, v2, 0)
 
         # update Q
         Q[v1] = Q[v1] + Q[v2]
-        #positions = np.delete(Q, v2, 0)
-        mark_row_for_del(Q, v2)
+        Q = np.delete(Q, v2, 0)
 
         # update features
         if features is not None and p:
             features[v1] = p[feature_offset:]
-            #features = np.delete(features, v2, 0)
-            mark_row_for_del(features, v2)
+            features = np.delete(features, v2, 0)
 
         # remove p
         pairs = np.delete(pairs, 0, 0)
@@ -87,6 +90,8 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         # new target
         rows, cols = np.where(pairs[:, 1:3] == v2)
         pairs[rows, cols + 1] = v1
+        rows, cols = np.where(pairs[:, 1:3] > v2)
+        pairs[rows, cols + 1] -= 1
 
         # update all rows with indexes of v1
         rows = get_rows(pairs[:, 1:3] == v1)
@@ -103,22 +108,24 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         # update face from new pairs
         rows_v1 = get_rows(face == v1)
         rows_v2 = get_rows(face == v2)
+        rows = np.zeros((0), dtype=DTYPE_LONG)
+
         for i in rows_v1:
             # option 1: remove faces with both nodes of pair
-            if (rows_v2 == i).any():
-                mark_row_for_del(face, i)
+            if i in rows_v2:
+                print(face[i], v1, v2)
+                rows = np.append(rows, i)
+        print(face)
+        face = np.delete(face, rows, 0)
+        print(face)
 
         # option 2: point faces to new merged node
         face[face == v2] = v1
 
         # update indexes for all vertices
-        face[face > v2] -= - 1
-
-    positions = delete_marked_rows(positions)
-    face = delete_marked_rows(face)
+        face[face > v2] -= 1
 
     if features is not None:
-        features = delete_marked_rows(features)
         return positions, face, features
     else:
         return positions, face
@@ -131,16 +138,5 @@ cdef np.ndarray sort_by_error(np.ndarray pairs):
         return np.unique(pairs, axis=0)
     else:
         return pairs
-
-cdef void mark_row_for_del(np.ndarray arr, long row):
-    arr[row] = np.ones((arr.shape[1])) * (np.NINF)
-
-cdef np.ndarray delete_marked_rows(np.ndarray arr):
-    cdef np.ndarray rows
-    if arr.dtype == 'int64':
-        rows = get_rows(arr < 0)
-    else:
-        rows = get_rows(arr == np.NINF)
-    return np.delete(arr, rows, axis=0)
 
 
