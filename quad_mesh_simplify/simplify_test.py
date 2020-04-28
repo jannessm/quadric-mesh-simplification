@@ -49,13 +49,12 @@ class SimplifyTests(unittest.TestCase):
 		    [3, 5, 6],
 		    [3, 4, 5]
 		])
-		plot_test_mesh(pos, face)
+		#plot_test_mesh(pos, face)
 
 		for i in range(1, 8):
 			res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 10 - i)
 			self.assertEqual(res_pos.shape, (10 - i, 3))
-			print(res_face)
-			plot_test_mesh(res_pos, res_face)
+			#plot_test_mesh(res_pos, res_face)
 
 		#np.testing.assert_equal(res_pos, new_pos)
 		#np.testing.assert_equal(res_face, new_face)
