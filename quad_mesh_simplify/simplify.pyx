@@ -25,51 +25,55 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
     # 1. compute Q for all vertices
     cdef np.ndarray Q = compute_Q(positions, face)
-    print(Q)
 
     # 2. Select valid pairs
     cdef np.ndarray valid_pairs = compute_valid_pairs(positions, face, threshold)
-    print(valid_pairs)
 
     # 3. compute optimal contration targets
     # of shape err, v1, v2, target, (features)
     cdef np.ndarray pairs
     
     pairs = compute_targets(positions, Q, valid_pairs, features)
-    print(pairs)
 
     # 4. create head sorted by costs
     pairs = sort_by_error(pairs)
+    print(pairs)
 
     # 5. contract vertices until num_nodes reached
     cdef double error
     cdef long v1
     cdef long v2
-    cdef np.ndarray p, rows, cols, row
+    cdef np.ndarray p, rows, cols, row, rows_v1, rows_v2
 
     cdef int target_offset = 3
     cdef int feature_offset = 3 + 3
     cdef long i
-    while positions.shape[0] > num_nodes and pairs.shape[0] > 0:
+    while (
+            get_rows(positions != -np.inf).shape[0] > num_nodes and
+            pairs.shape[0] > 0
+        ):
+        
         p = pairs[0]
         v1 = p[1]
         v2 = p[2]
 
         # update positions
         positions[v1] = np.copy(p[target_offset:feature_offset])
-        positions = np.delete(positions, v2, 0)
+        #positions = np.delete(positions, v2, 0)
+        mark_row_for_del(positions, v2)
 
         # update Q
         Q[v1] = Q[v1] + Q[v2]
-        Q = np.delete(Q, v2, 0)
+        #positions = np.delete(Q, v2, 0)
+        mark_row_for_del(Q, v2)
 
         # update features
         if features is not None and p:
             features[v1] = p[feature_offset:]
-            features = np.delete(features, v2, 0)
+            #features = np.delete(features, v2, 0)
+            mark_row_for_del(features, v2)
 
         # remove p
-        print(pairs)
         pairs = np.delete(pairs, 0, 0)
 
         
@@ -92,11 +96,47 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         # sort by errors
         pairs = sort_by_error(pairs)
 
-    # TODO: update face from new pairs
+        # update face from new pairs
+        rows_v1 = get_rows(face == v1)
+        rows_v2 = get_rows(face == v2)
+        for i in rows_v1:
+            # option 1: remove faces with both nodes of pair
+            if (rows_v2 == i).any():
+                mark_row_for_del(face, i)
 
-    return positions, face
+        # option 2: point faces to new merged node
+        face[face == v2] = v1
+
+        # update indexes for all vertices
+        face[face > v2] = face[face > v2] - 1
+
+    positions = delete_marked_rows(positions)
+    face = delete_marked_rows(face)
+
+    if features is not None:
+        features = delete_marked_rows(features)
+        return positions, face, features
+    else:
+        return positions, face
 
 cdef np.ndarray sort_by_error(np.ndarray pairs):
     cdef view = ', '.join(['double' for _ in range(pairs.shape[1])])
-    pairs.view(view).sort(order=['f0'], axis=0)
-    return np.unique(pairs, axis=0)
+    
+    if pairs.shape[0] > 0:
+        pairs.view(view).sort(order=['f0'], axis=0)
+        return np.unique(pairs, axis=0)
+    else:
+        return pairs
+
+cdef void mark_row_for_del(np.ndarray arr, long row):
+    arr[row] = np.ones((arr.shape[1])) * (np.NINF)
+
+cdef np.ndarray delete_marked_rows(np.ndarray arr):
+    cdef np.ndarray rows
+    if arr.dtype == 'int64':
+        rows = get_rows(arr < 0)
+    else:
+        rows = get_rows(arr == np.NINF)
+    return np.delete(arr, rows, axis=0)
+
+
