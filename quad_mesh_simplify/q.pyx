@@ -37,7 +37,7 @@ cpdef np.ndarray compute_Q(np.ndarray positions, np.ndarray face):
 
 			d = -(n * u).sum()
 
-			p = np.hstack([n, d])
+			p = np.hstack([n, d])[:, None]
 
 			K += p.dot(p.T)
 

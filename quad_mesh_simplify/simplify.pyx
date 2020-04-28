@@ -5,6 +5,7 @@ DTYPE_DOUBLE = np.double
 
 ctypedef np.double_t DTYPE_DOUBLE_T
 
+from preserve_bounds cimport preserve_bounds
 from q cimport compute_Q
 from targets cimport compute_targets, calculate_pair_attributes
 from valid_pairs cimport compute_valid_pairs
@@ -26,6 +27,9 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     # 1. compute Q for all vertices
     cdef np.ndarray Q = compute_Q(positions, face)
 
+    # add penalty for boundaries
+    preserve_bounds(positions, face, Q)
+
     # 2. Select valid pairs
     cdef np.ndarray valid_pairs = compute_valid_pairs(positions, face, threshold)
 
@@ -37,7 +41,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
     # 4. create head sorted by costs
     pairs = sort_by_error(pairs)
-    print(pairs)
+    print(pairs[:, 1:3])
 
     # 5. contract vertices until num_nodes reached
     cdef double error
@@ -52,7 +56,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
             get_rows(positions != -np.inf).shape[0] > num_nodes and
             pairs.shape[0] > 0
         ):
-        
+
         p = pairs[0]
         v1 = p[1]
         v2 = p[2]
@@ -108,7 +112,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         face[face == v2] = v1
 
         # update indexes for all vertices
-        face[face > v2] = face[face > v2] - 1
+        face[face > v2] -= - 1
 
     positions = delete_marked_rows(positions)
     face = delete_marked_rows(face)
