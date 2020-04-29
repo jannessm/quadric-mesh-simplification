@@ -1,5 +1,4 @@
 from targets import compute_targets, calculate_pair_attributes
-from pair import Pair
 import unittest
 import numpy as np
 

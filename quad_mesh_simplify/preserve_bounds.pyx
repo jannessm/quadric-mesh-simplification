@@ -36,10 +36,8 @@ cpdef void preserve_bounds(
         face[:, [0,2]]
     ]).astype(DTYPE_LONG)
 
-    print('created edges')
     edges = np.sort(edges, axis=1)
     edges, counts = np.unique(edges, return_counts=True, axis=0)
-    print('sorted edges')
 
     for i, e in enumerate(edges):
         if counts[i] > 1:
@@ -62,5 +60,5 @@ cpdef void preserve_bounds(
 
         p = np.hstack([n2, d])[:, None]
 
-        K = p.dot(p.T) * 10e3
+        K = p.dot(p.T) * 10e6
         Q[e] += K

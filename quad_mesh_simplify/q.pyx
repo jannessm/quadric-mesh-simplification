@@ -3,8 +3,6 @@ cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 
-from .utils cimport get_faces_for_node, face_normal
-
 cimport cython
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
@@ -26,29 +24,29 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] compute_Q(
     assert(positions.shape[1] == 3)
 
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] p, pos
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] u, v, w, n
     cdef np.ndarray[DTYPE_LONG_T, ndim=1] f
-    cdef double d
-    #cdef long num_nodes, i
-    cdef long num_nodes, i
+    cdef double d, norm
+    cdef long num_nodes, i, j
+
 
     num_nodes = positions.shape[0]
     Q = np.zeros((num_nodes, 4, 4), dtype=DTYPE_DOUBLE)
 
-    for f in face:
-        Q[f] += get_K(positions[f])
+    for i, f in enumerate(face):
+        pos = positions[f]
+        
+        # calculate all normals for face
+        # these are needed for the mesh inversion step
+        n = np.cross(pos[1] - pos[0], pos[2] - pos[0])
+        norm = np.linalg.norm(n)
+        if norm > 0:
+            n /= norm
+
+        d = - n.dot(pos[0])
+        
+        p = np.hstack([n,d])[:, None]
+        Q[f] += p.dot(p.T)
 
     return Q
-
-cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] get_K(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions):
-    
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] u, n
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] p
-    cdef double d
-    
-    u = positions[0]
-    n = face_normal(positions, True, -1)
-    d = - n.dot(u)
-    p = np.hstack([n,d])[:, None]
-    
-    return p.dot(p.T)

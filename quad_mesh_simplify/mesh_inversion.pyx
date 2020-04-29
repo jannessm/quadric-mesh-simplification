@@ -31,13 +31,15 @@ cpdef int has_mesh_inversion(
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] normals, new_normals, angles
     cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows, rows1, rows2
     cdef np.ndarray[DTYPE_UINT8_T, ndim=2] v2s
-    
+
+    v2s = face == v2
+
     # calculate face normals for each face with node v1
     rows1 = get_rows(face == v1)
     normals = calculate_face_normals(positions, face, rows1, v1)
     
     # calculate face normals for each face with ONLY node v2
-    rows2 = get_rows(face == v2)
+    rows2 = get_rows(v2s)
     rows2 = rows2[rows2 != v1]
     normals = np.vstack([
         normals,
@@ -48,7 +50,6 @@ cpdef int has_mesh_inversion(
     rows = np.append(rows1, rows2)
     
     # update face
-    v2s = face == v2
     face[v2s] = v1
     face[face > v2] -= 1
     
@@ -61,10 +62,9 @@ cpdef int has_mesh_inversion(
 
     # calculate angles between old and new normals
     angles = normals.dot(new_normals.T) * np.eye(rows.shape[0]) 
-    
+
     # return True if at least one angle is greater than 90°
     return (angles < 0).sum() > 0
-
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function

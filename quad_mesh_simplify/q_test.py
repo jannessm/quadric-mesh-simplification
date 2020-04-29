@@ -39,7 +39,9 @@ class TestComputeQ(unittest.TestCase):
 			 [ 0.,  0.,  0.,  0. ],
 			 [ 0.,  0.,  0.,  0. ]],
 			])
+		
 		Q = compute_Q(positions, face)
+
 
 		np.testing.assert_almost_equal(Q, res)
 

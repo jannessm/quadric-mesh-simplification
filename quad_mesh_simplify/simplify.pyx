@@ -33,75 +33,70 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q
     cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs, new_positions
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1, pos2
-    cdef long i
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1, pos2, p
+    cdef long i, v1, v2
     cdef int update_failed
+
 
     print('start computation')
 
     assert(positions.shape[1] == 3)
     assert(face.shape[1] == 3)
-
+    
     # 1. compute Q for all vertices
     Q = compute_Q(positions, face)
-    print('computed Q')
-
     # add penalty for boundaries
     preserve_bounds(positions, face, Q)
-    print('preserved_bounds')
-    return
 
+    print(Q)
     # 2. Select valid pairs
     valid_pairs = compute_valid_pairs(positions, face, threshold)
-    print('computed pairs')
 
     # 3. compute optimal contration targets
     # of shape err, v1, v2, target, (features)    
     pairs = compute_targets(positions, Q, valid_pairs, features)
-    print('computed targets')
 
     # 4. create head sorted by costs
     pairs = sort_by_error(pairs)
-    print('sorted pairs')
 
     # 5. contract vertices until num_nodes reached
-    while ( positions.shape[0] > num_nodes and
-            pairs.shape[0] > 0):
+    i = 0
+    while 0 < pairs.shape[0] and positions.shape[0] > num_nodes:
+        print(pairs[:, :3])
+        p = pairs[0]
+        v1 = <long>p[1]
+        v2 = <long>p[2]
 
         # skip self-loops
-        if pairs[0, 1] == pairs[0, 2]:
+        if v1 == v2:
             pairs = np.delete(pairs, 0, 0)
             continue
 
-        #if positions.shape[0] % 1000:
-        print(positions.shape[0])
-
-
         # store values for possible invalid contraction (inverted faces)
-        pos1 = positions[<long>pairs[0, 1]]
-        pos2 = positions[<long>pairs[0, 2]]
+        pos1, pos2 = positions[[v1, v2]]
 
         # update positions if no mesh inversion is created
-        new_positions = update_positions(pairs[0], positions)
+        new_positions = update_positions(p, positions)
 
         reverse_update = has_mesh_inversion(
-            <long>pairs[0, 1],
-            <long>pairs[0, 2],
+            v1,
+            v2,
             positions,
             new_positions,
             face)
 
         if reverse_update:
-            positions[pairs[0, 1]] = pos1
-            positions = np.insert(positions, pairs[0, 2], pos2, axis=0)
+            positions[v1] = pos1
+            positions = np.insert(positions, v2, pos2, axis=0)
+            pairs = np.delete(pairs, 0, 0)
             continue
         else:
             positions = new_positions
 
         # if contraction is valid do updates
-        Q = update_Q(pairs[0], Q)
-        face = update_face(pairs[0], face)
-        features = update_features(pairs[0], features)
+        Q = update_Q(p, Q)
+        face = update_face(p, face)
+        features = update_features(p, features)
         pairs = update_pairs(pairs, positions, Q, features)
 
     if features is not None:

@@ -23,38 +23,38 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_valid_pairs(
 
     :rtype: :class:`ndarray`
     """
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] distance
-    cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs, edges, pairs
-    cdef np.ndarray[DTYPE_LONG_T, ndim=1] f
-    cdef long i
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] distances
+    cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs
+    cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows, cols
+    cdef int i, j, num_nodes
+
+    num_nodes = positions.shape[0]
 
     valid_pairs = np.zeros((0,2), dtype=DTYPE_LONG)
 
-    # option 1 to be valid
-    for f in face:
-        edges = np.array([
-            [f[0], f[1]],
-            [f[1], f[2]],
-            [f[2], f[0]]
-        ], dtype=DTYPE_LONG)
-
-        valid_pairs = np.vstack([valid_pairs, edges])
-        valid_pairs = remove_duplicates(valid_pairs)
+    # option 1: connected by an edge
+    valid_pairs = np.vstack([
+        face[:, :2],
+        face[:, 1:],
+        face[:, [0,2]]
+    ]).astype(DTYPE_LONG)
+    valid_pairs = remove_duplicates(valid_pairs)
 
     # option 2: distance below threshold
-    
-    if threshold is not None:
-        for i in range(positions.shape[0]):
-            distance = np.linalg.norm(positions - positions[i], axis=1)
-            
-            pairs = get_rows(distance < threshold)[:, None]
-            # remove self-loops
-            pairs = pairs[get_rows(pairs != i)]
-            pairs = np.insert(pairs, 1, i, axis=1)
+    if threshold > 0.:
+        distances = np.zeros((num_nodes, num_nodes)) + np.eye(num_nodes) * threshold
+        
+        for i in range(num_nodes):
+            distances[:, i] += np.linalg.norm(positions - positions[i], axis=1)
+        
+        rows, cols = np.where(distances < threshold)
+        
+        valid_pairs = np.vstack([
+            valid_pairs,
+            np.vstack([rows, cols]).T
+        ])
 
-            valid_pairs = np.vstack([valid_pairs, pairs])
-            valid_pairs = remove_duplicates(valid_pairs)
-
+    valid_pairs = remove_duplicates(valid_pairs)
     return valid_pairs
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
