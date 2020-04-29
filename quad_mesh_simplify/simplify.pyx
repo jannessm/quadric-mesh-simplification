@@ -13,6 +13,7 @@ from targets cimport compute_targets
 from valid_pairs cimport compute_valid_pairs
 from utils cimport get_rows
 from contract_pair cimport update_positions, update_Q, update_pairs, update_face, update_features, sort_by_error
+from mesh_inversion cimport has_mesh_inversion
 
 def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
@@ -46,12 +47,10 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     pairs = sort_by_error(pairs)#
 
     # 5. contract vertices until num_nodes reached
-    cdef double error
-    cdef long v1
-    cdef long v2
-    cdef np.ndarray p, rows, cols, row, rows_v1, rows_v2
+    cdef long i
+    cdef np.ndarray pos1, pos2, new_positions
+    cdef int update_failed
 
-    cdef long i, non_inf
     while (
             get_rows(positions != -np.inf).shape[0] > num_nodes and
             pairs.shape[0] > 0
@@ -62,8 +61,24 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
             pairs = np.delete(pairs, 0, 0)
             continue
 
-        # update each entity
-        positions = update_positions(pairs[0], positions)
+
+        # store values for possible invalid contraction (inverted faces)
+        pos1 = positions[pairs[0, 1].astype('int')]
+        pos2 = positions[pairs[0, 2].astype('int')]
+
+        # update positions if no mesh inversion is created
+        new_positions = update_positions(pairs[0], positions)
+
+        reverse_update = has_mesh_inversion(pairs[0, 1], pairs[0, 2], positions, new_positions, face)
+
+        if reverse_update:
+            positions[pairs[0, 1]] = pos1
+            positions = np.insert(positions, pairs[0, 2], pos2, axis=0)
+            continue
+        else:
+            positions = new_positions
+
+        # if contraction is valid do updates
         Q = update_Q(pairs[0], Q)
         face = update_face(pairs[0], face)
         features = update_features(pairs[0], features)

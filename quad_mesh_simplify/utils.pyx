@@ -21,3 +21,26 @@ cpdef np.ndarray get_rows(np.ndarray condition):
 
 	:rtype: :class:`ndarray`"""
 	return np.unique(np.where(condition)[0])
+
+cpdef np.ndarray face_normal(np.ndarray pos, int normalized, int reference_id):
+	"""returns a face normal
+
+	Args:
+		pos (:class:`ndarray):` position of face nodes (shape (3, 3)). Each row is represents a node.
+
+	:rtype: :class:`ndarray`"""
+
+	cdef np.ndarray n
+
+	if reference_id > -1:
+		n = np.cross(
+			pos[(1 + reference_id) % 3] - pos[reference_id],
+			pos[(2 + reference_id) % 3] - pos[reference_id]
+		)
+	else:
+		n = np.cross(pos[1] - pos[0], pos[2] - pos[0])
+	
+	if normalized and np.linalg.norm(n) != 0:
+		n /= np.linalg.norm(n)
+	
+	return n

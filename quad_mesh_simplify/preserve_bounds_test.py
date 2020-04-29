@@ -10,9 +10,9 @@ sys.path.append(osp.join(osp.dirname(osp.abspath(__file__)),'..'))
 
 from testing_utils import plot_test_mesh
 
-class SimplifyTests(unittest.TestCase):
+class PreserveBoundsTests(unittest.TestCase):
 
-	def test_simplify_mesh_without_threshold(self):
+	def test_preserve_bounds_penalty(self):
 		pos = np.array([
 		    [-1., -1., -1.],
 		    [-1., 0., 0.],
