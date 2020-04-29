@@ -3,11 +3,16 @@ cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 
-ctypedef np.double_t DTYPE_DOUBLE_T
+ctypedef np.uint8_t DTYPE_UINT8_T
 
 from utils cimport get_rows, face_normal
 
-cpdef int has_mesh_inversion(long v1, long v2, np.ndarray positions, np.ndarray new_positions, np.ndarray face):
+cpdef int has_mesh_inversion(
+    long v1,
+    long v2,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] new_positions,
+    np.ndarray[DTYPE_LONG_T, ndim=2] face):
     """tests if a contraction of two nodes led to an inverted face by comparing all neighboring faces of v1 and v2.
 
     Args:
@@ -19,8 +24,9 @@ cpdef int has_mesh_inversion(long v1, long v2, np.ndarray positions, np.ndarray 
 
     :rtype: :class:`int` whether or not a mesh was inverted
     """
-    cdef np.ndarray normals, new_normals
-    cdef np.ndarray rows, rows1, rows2, v2s, angles
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] normals, new_normals, angles
+    cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows, rows1, rows2
+    cdef np.ndarray[DTYPE_UINT8_T, ndim=2] v2s
     
     # calculate face normals for each face with node v1
     rows1 = get_rows(face == v1)
@@ -56,7 +62,11 @@ cpdef int has_mesh_inversion(long v1, long v2, np.ndarray positions, np.ndarray 
     return (angles < 0).sum() > 0
 
 
-cdef np.ndarray calculate_face_normals(np.ndarray positions, np.ndarray face, np.ndarray rows, long reference_id):
+cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] calculate_face_normals(
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
+    np.ndarray[DTYPE_LONG_T, ndim=2] face,
+    np.ndarray[DTYPE_LONG_T, ndim=1] rows,
+    long reference_id):
     """calculates all normals for each face indexed by rows. The reference node prevents inverted normals.
 
     Args:
@@ -67,7 +77,7 @@ cdef np.ndarray calculate_face_normals(np.ndarray positions, np.ndarray face, np
 
     :rtype: :class:`ndarray` normals
     """
-    cdef np.ndarray normals = np.zeros((face.shape[0], 3), dtype=DTYPE_DOUBLE)
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] normals = np.zeros((face.shape[0], 3), dtype=DTYPE_DOUBLE)
     cdef long i, ref
 
     for i in rows:

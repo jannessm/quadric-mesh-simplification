@@ -130,7 +130,7 @@ class ContractPairTests(unittest.TestCase):
                 [5, 1, 3],
                 [1, 3, 4],
                 [5, 3, 4]
-            ])
+            ], dtype=np.double)
 
         solution = np.array([
                 [0, 1, 2],

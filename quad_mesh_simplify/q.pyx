@@ -3,11 +3,11 @@ cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 
-ctypedef np.double_t DTYPE_DOUBLE_T
-
 from utils cimport get_faces_for_node, face_normal
 
-cpdef np.ndarray compute_Q(np.ndarray positions, np.ndarray face):
+cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] compute_Q(
+	np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
+	np.ndarray[DTYPE_LONG_T, ndim=2] face):
 	r"""computes for all nodes in :obj:`positions` a 4 x 4 matrix Q used for calculating error values.
 
 	The error is later calculated by (v.T Q v) and forms the quadric error metric.
@@ -18,13 +18,16 @@ cpdef np.ndarray compute_Q(np.ndarray positions, np.ndarray face):
 
 	:rtype: :class:`ndarray`"""
 
-	cdef long num_nodes = positions.shape[0]
-	cdef np.ndarray Q = np.zeros((num_nodes, 4, 4), dtype=DTYPE_DOUBLE)
-
-	cdef np.ndarray K, u, v, w, n, p, f
+	cdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q
+	cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] K, p
+	cdef np.ndarray[DTYPE_LONG_T, ndim=1] f
+	cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] u, v, w, n
 	cdef double d
+	cdef long num_nodes, i
 
-	cdef long i
+	num_nodes = positions.shape[0]
+	Q = np.zeros((num_nodes, 4, 4), dtype=DTYPE_DOUBLE)
+
 	for i in range(positions.shape[0]):
 		K = np.zeros((4, 4), dtype=DTYPE_DOUBLE)
 		

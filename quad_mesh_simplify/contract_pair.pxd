@@ -3,14 +3,30 @@ cimport numpy as np
 cdef int target_offset 
 cdef int feature_offset
 
-cpdef np.ndarray update_positions(np.ndarray, np.ndarray)
+ctypedef np.long_t DTYPE_LONG_T
+ctypedef np.double_t DTYPE_DOUBLE_T
 
-cpdef np.ndarray update_Q(np.ndarray, np.ndarray)
+cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_positions(
+    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions)
 
-cpdef np.ndarray update_pairs(np.ndarray pairs, np.ndarray, np.ndarray, np.ndarray)
+cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] update_Q(
+    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q)
 
-cpdef np.ndarray update_face(np.ndarray, np.ndarray)
+cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] features)
 
-cpdef np.ndarray update_features(np.ndarray, np.ndarray)
+cpdef np.ndarray[DTYPE_LONG_T, ndim=2] update_face(
+    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
+    np.ndarray[DTYPE_LONG_T, ndim=2] face)
 
-cpdef np.ndarray sort_by_error(np.ndarray)
+cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_features(
+    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] features)
+
+cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] sort_by_error(
+    np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs)
