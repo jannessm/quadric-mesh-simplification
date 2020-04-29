@@ -43,7 +43,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     pairs = compute_targets(positions, Q, valid_pairs, features)
 
     # 4. create head sorted by costs
-    pairs = sort_by_error(pairs)
+    pairs = sort_by_error(pairs)#
 
     # 5. contract vertices until num_nodes reached
     cdef double error

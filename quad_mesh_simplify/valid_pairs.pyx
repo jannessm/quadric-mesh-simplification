@@ -36,16 +36,17 @@ cpdef np.ndarray compute_valid_pairs(np.ndarray positions, np.ndarray face, doub
 
 	# option 2: distance below threshold
 	cdef long i
-	cdef np.ndarray distance, pairs
+	cdef np.ndarray distance, pairs, rows
+	
 	if threshold is not None:
-
 		for i in range(positions.shape[0]):
 			distance = np.linalg.norm(positions - positions[i], axis=1)
+			
 			pairs = get_rows(distance < threshold)
 			# remove self-loops
-			pairs = get_rows(pairs != i)
-			pairs = np.insert(pairs[:, np.newaxis], 1, i, axis=1)
-			
+			pairs = pairs[get_rows(pairs != i)]
+			pairs = np.insert(pairs[:, None], 1, i, axis=1)
+
 			valid_pairs = np.vstack([valid_pairs, pairs])
 			valid_pairs = remove_duplicates(valid_pairs)
 
