@@ -48,6 +48,8 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
     # add penalty for boundaries
     preserve_bounds(positions, face, Q)
+    print('preserved_bounds')
+    return
 
     # 2. Select valid pairs
     valid_pairs = compute_valid_pairs(positions, face, threshold)
