@@ -8,7 +8,7 @@ import numpy as np
 
 from testing_utils import plot_test_mesh
 
-DEBUG = False
+DEBUG = True
 
 class SimplifyTests(unittest.TestCase):
 

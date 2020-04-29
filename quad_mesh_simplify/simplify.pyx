@@ -7,13 +7,17 @@ DTYPE_LONG = np.long
 ctypedef np.double_t DTYPE_DOUBLE_T
 ctypedef np.long_t DTYPE_LONG_T
 
-from preserve_bounds cimport preserve_bounds
-from q cimport compute_Q
-from targets cimport compute_targets
-from valid_pairs cimport compute_valid_pairs
-from contract_pair cimport update_positions, update_Q, update_pairs, update_face, update_features, sort_by_error
-from mesh_inversion cimport has_mesh_inversion
+from .preserve_bounds cimport preserve_bounds
+from .q cimport compute_Q
+from .targets cimport compute_targets
+from .valid_pairs cimport compute_valid_pairs
+from .contract_pair cimport update_positions, update_Q, update_pairs, update_face, update_features, sort_by_error
+from .mesh_inversion cimport has_mesh_inversion
 
+cimport cython
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
     <http://mgarland.org/files/papers/quadrics.pdf>`_.

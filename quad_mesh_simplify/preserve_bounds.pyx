@@ -3,8 +3,10 @@ cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 DTYPE_LONG = np.long
+cimport cython
 
-
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef void preserve_bounds(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
     np.ndarray[DTYPE_LONG_T, ndim=2] face,

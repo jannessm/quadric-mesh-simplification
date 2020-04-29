@@ -4,6 +4,10 @@ cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 
+cimport cython
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_targets(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
     np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q,
@@ -39,6 +43,9 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_targets(
 
     return pairs
 
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] calculate_pair_attributes(
     long v1,
     long v2,
@@ -97,6 +104,9 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] calculate_pair_attributes(
 
     return pair
 
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] make_homogeneous(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] arr):
     """appends an array with [1] to make it homogeneous.

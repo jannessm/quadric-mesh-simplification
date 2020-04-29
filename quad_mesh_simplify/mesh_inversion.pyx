@@ -5,8 +5,12 @@ DTYPE_DOUBLE = np.double
 
 ctypedef np.uint8_t DTYPE_UINT8_T
 
-from utils cimport get_rows, face_normal
+cimport cython
 
+from .utils cimport get_rows, face_normal
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef int has_mesh_inversion(
     long v1,
     long v2,
@@ -62,6 +66,8 @@ cpdef int has_mesh_inversion(
     return (angles < 0).sum() > 0
 
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] calculate_face_normals(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
     np.ndarray[DTYPE_LONG_T, ndim=2] face,

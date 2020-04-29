@@ -3,8 +3,12 @@ cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 
-from utils cimport get_faces_for_node, face_normal
+from .utils cimport get_faces_for_node, face_normal
 
+cimport cython
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] compute_Q(
 	np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
 	np.ndarray[DTYPE_LONG_T, ndim=2] face):

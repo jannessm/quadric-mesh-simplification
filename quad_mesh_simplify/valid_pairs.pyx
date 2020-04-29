@@ -2,9 +2,13 @@ import numpy as np
 
 DTYPE_LONG = np.int64
 
-from utils cimport get_faces_for_node
-from utils cimport get_rows
+from .utils cimport get_faces_for_node
+from .utils cimport get_rows
 
+cimport cython
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_valid_pairs(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
     np.ndarray[DTYPE_LONG_T, ndim=2] face,
@@ -53,6 +57,8 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_valid_pairs(
 
     return valid_pairs
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cdef np.ndarray[DTYPE_LONG_T, ndim=2] remove_duplicates(#
     np.ndarray[DTYPE_LONG_T, ndim=2] arr):
     """removes duplicates in an array of edges.

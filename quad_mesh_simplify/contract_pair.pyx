@@ -4,12 +4,15 @@ cimport numpy as np
 DTYPE_DOUBLE = np.double
 DTYPE_LONG = np.long
 
-from targets cimport calculate_pair_attributes
-from utils cimport get_rows
+cimport cython
+from .targets cimport calculate_pair_attributes
+from .utils cimport get_rows
 
 cdef int target_offset = 3
 cdef int feature_offset = 3 + 3
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_positions(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions):
@@ -29,6 +32,8 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_positions(
     positions[v1] = np.copy(pair[target_offset:feature_offset])
     return np.delete(positions, v2, 0)
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] update_Q(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
     np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q):
@@ -49,6 +54,8 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] update_Q(
     Q[v1] = Q[v1] + Q[v2]
     return np.delete(Q, v2, 0)
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs,
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
@@ -91,6 +98,8 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
     pairs = np.delete(pairs, 0, 0)
     return sort_by_error(pairs)
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_LONG_T, ndim=2] update_face(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
     np.ndarray[DTYPE_LONG_T, ndim=2] face):
@@ -127,6 +136,8 @@ cpdef np.ndarray[DTYPE_LONG_T, ndim=2] update_face(
 
     return face
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_features(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] features):
@@ -149,6 +160,8 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_features(
 
     return features
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] sort_by_error(np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs):
     """sort a pairs array by the first column
 

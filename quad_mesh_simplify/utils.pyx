@@ -1,6 +1,9 @@
 import numpy as np
 cimport numpy as np
+cimport cython
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_LONG_T, ndim=2] get_faces_for_node(
     long node_id,
     np.ndarray[DTYPE_LONG_T, ndim=2] face):
@@ -15,6 +18,8 @@ cpdef np.ndarray[DTYPE_LONG_T, ndim=2] get_faces_for_node(
     cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows = get_rows(face == node_id)
     return face[rows]
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_LONG_T, ndim=1] get_rows(np.ndarray condition):
     """returns all unique rows where a given condition is at least one time true.
 
@@ -24,6 +29,8 @@ cpdef np.ndarray[DTYPE_LONG_T, ndim=1] get_rows(np.ndarray condition):
     :rtype: :class:`ndarray`"""
     return np.unique(np.where(condition)[0])
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] face_normal(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] pos,
     DTYPE_BOOL_T normalized,
