@@ -78,7 +78,7 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
     v1 = <long>pairs[0, 1]
     v2 = <long>pairs[0, 2]
 
-    # set all v2 to v1 since it doesnt exists anymore and was replaced by the 
+    # set all v2 to v1 since it doesnt exists anymore and was replaced by the
     # new target
     rows, cols = np.where(pairs[:, 1:3] == v2)
     pairs[rows, cols + 1] = v1

@@ -1,4 +1,3 @@
-from pair import Pair
 import numpy as np
 cimport numpy as np
 

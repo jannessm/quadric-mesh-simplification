@@ -37,21 +37,30 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     cdef long i
     cdef int update_failed
 
+    print('start computation')
+
+    assert(positions.shape[1] == 3)
+    assert(face.shape[1] == 3)
+
     # 1. compute Q for all vertices
     Q = compute_Q(positions, face)
+    print('computed Q')
 
     # add penalty for boundaries
     preserve_bounds(positions, face, Q)
 
     # 2. Select valid pairs
     valid_pairs = compute_valid_pairs(positions, face, threshold)
+    print('computed pairs')
 
     # 3. compute optimal contration targets
     # of shape err, v1, v2, target, (features)    
     pairs = compute_targets(positions, Q, valid_pairs, features)
+    print('computed targets')
 
     # 4. create head sorted by costs
     pairs = sort_by_error(pairs)
+    print('sorted pairs')
 
     # 5. contract vertices until num_nodes reached
     while ( positions.shape[0] > num_nodes and
@@ -61,6 +70,9 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         if pairs[0, 1] == pairs[0, 2]:
             pairs = np.delete(pairs, 0, 0)
             continue
+
+        #if positions.shape[0] % 1000:
+        print(positions.shape[0])
 
 
         # store values for possible invalid contraction (inverted faces)

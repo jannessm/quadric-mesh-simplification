@@ -36,7 +36,7 @@ ext_modules = [
 ]
 
 if FROM_SOURCE:
-    ext_modules = cythonize(ext_modules)
+    ext_modules = cythonize(ext_modules, annotate=True)
 
 setup(
   name='quad_mesh_simplify',
