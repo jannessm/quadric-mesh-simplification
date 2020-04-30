@@ -3,11 +3,17 @@ from cpython cimport array
 cdef class PairHeap:
 
     cdef array.array nodes_
-    cdef unsigned int [:] nodes
-    cdef long length
+    cdef public unsigned int [:] nodes
+    cdef long length_
     cdef double[:, :] pairs
 
+    cpdef long length(self)
+
+    cdef double _get_value(self, long i)
+
     cdef double get_value(self, long i)
+    
+    cpdef double[:] get_pair(self, long i)
 
     cdef void insert(self, long i)
 

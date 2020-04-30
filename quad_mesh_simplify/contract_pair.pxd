@@ -6,19 +6,15 @@ cdef int feature_offset
 ctypedef np.long_t DTYPE_LONG_T
 ctypedef np.double_t DTYPE_DOUBLE_T
 
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_positions(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions)
+from .heap cimport PairHeap
 
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] update_Q(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q)
-
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] features)
+cpdef void update_pairs(
+    long v1,
+    long v2,
+    PairHeap heap,
+    double [:, :] positions,
+    double [:, :, :] Q,
+    double [:, :] features)
 
 cpdef void update_face(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
@@ -28,6 +24,3 @@ cpdef void update_face(
 cpdef void update_features(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] features)
-
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] sort_by_error(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs)

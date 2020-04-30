@@ -13,54 +13,13 @@ cdef int feature_offset = 3 + 3
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_positions(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions):
-    """updates all positions by contracting the given pair. In detail, it sets the position for the first node to
-    the optimal position of the contracted pair and removes the position of the second node.
-
-    Args:
-        pair (:class:`ndarray`): pair that should be contracted
-        positions (:class:`ndarray`): positions array that will be updated
-
-    :rtype: :class:`ndarray`
-    """
-    cdef long v1, v2
-    v1 = <long>pair[1]
-    v2 = <long>pair[2]
-
-    positions[v1] = np.copy(pair[target_offset:feature_offset])
-    return np.delete(positions, v2, 0)
-
-@cython.boundscheck(False) # turn off bounds-checking for entire function
-@cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] update_Q(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q):
-    """updates all Q matrixes by contracting the given pair. In detail, it sets the matrix for the first node to
-    the sum of both Qs from the pair and removes the matrix of the second node.
-
-    Args:
-        pair (:class:`ndarray`): pair that should be contracted
-        Q (:class:`ndarray`): Q array that will be updated
-
-    :rtype: :class:`ndarray`
-    """
-    cdef long v1, v2
-    v1 = <long>pair[1]
-    v2 = <long>pair[2]
-    
-    # update Q
-    Q[v1] = Q[v1] + Q[v2]
-    return np.delete(Q, v2, 0)
-
-@cython.boundscheck(False) # turn off bounds-checking for entire function
-@cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] features):
+cpdef void update_pairs(
+    long v1,
+    long v2,
+    PairHeap heap,
+    double [:, :] positions,
+    double [:, :, :] Q,
+    double [:, :] features):
     """updates all pairs by calculating all errors according to the contracted edge and removes the contracted
     pair from the pairs array.
 
@@ -72,31 +31,36 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
 
     :rtype: :class:`ndarray`
     """
-    cdef long v1, v2, i
-    cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows, cols
+    cdef long i
+    cdef double[:] pair
+
+    # iterate over all pairs and recalculate error if needed
+    for i in range(heap.length()):
+        pair = heap.get_pair(i)
+        if (pair[1] == v1 or pair[2] == v1) and \
+            (pair[1] == v2 or pair[2] == v2):
+            pair[0] = -1 # low value so pair will appear first and gets unvalid in simplify.pyx
+            continue
+
+        if pair[1] == v1 or pair[1] == v2:
+            calculate_pair_attributes(
+                v1,
+                <long>pair[2],
+                positions,
+                Q,
+                features,
+                pair)
+        
+        elif pair[2] == v1 or pair[2] == v2:
+            calculate_pair_attributes(
+                <long>pair[1],
+                v1,
+                positions,
+                Q,
+                features,
+                pair)
     
-    v1 = <long>pairs[0, 1]
-    v2 = <long>pairs[0, 2]
-
-    # set all v2 to v1 since it doesnt exists anymore and was replaced by the
-    # new target
-    rows, cols = np.where(pairs[:, 1:3] == v2)
-    pairs[rows, cols + 1] = v1
-    #rows, cols = np.where(pairs[:, 1:3] > v2)
-    #pairs[rows, cols + 1] -= 1
-
-    # update all rows with indexes of v1
-    rows = get_rows(pairs[:, 1:3] == v1)
-    for i in rows:
-        p = pairs[i]
-        if p[1] == v1:
-            calculate_pair_attributes(v1, p[2], positions, Q, features, pairs[i])
-        elif p[2] == v1:
-            calculate_pair_attributes(p[1], v1, positions, Q, features, pairs[i])
-
-
-    #pairs = np.delete(pairs, 0, 0)
-    return sort_by_error(pairs)
+    heap.build()
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
@@ -161,20 +125,3 @@ cpdef void update_features(
         features[v1] = pair[feature_offset:]
         #features = np.delete(features, v2, 0)
 
-@cython.boundscheck(False) # turn off bounds-checking for entire function
-@cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] sort_by_error(np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs):
-    """sort a pairs array by the first column
-
-    Args:
-        pairs (:class:`ndarray`): array that will be sorted
-    
-    :rtype: :class:`ndarray`
-    """
-    cdef view = ', '.join(['double' for _ in range(pairs.shape[1])])
-    
-    if pairs.shape[0] > 0:
-        pairs.view(view).sort(order=['f0'], axis=0)
-        return np.unique(pairs, axis=0)
-    else:
-        return pairs

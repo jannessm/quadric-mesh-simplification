@@ -11,8 +11,10 @@ from .preserve_bounds cimport preserve_bounds
 from .q cimport compute_Q
 from .targets cimport compute_targets
 from .valid_pairs cimport compute_valid_pairs
-from .contract_pair cimport update_positions, update_Q, update_pairs, update_face, update_features, sort_by_error
+from .contract_pair cimport update_pairs, update_face, update_features
 from .mesh_inversion cimport has_mesh_inversion
+
+from .heap cimport PairHeap
 
 cimport cython
 
@@ -56,22 +58,19 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     # of shape err, v1, v2, target, (features)    
     pairs = compute_targets(positions, Q, valid_pairs, features)
 
-    # 4. create head sorted by costs
-    pairs = sort_by_error(pairs)
+    # 4. create heap sorted by costs
+    cdef PairHeap heap = PairHeap(pairs)
 
     new_positions = np.copy(positions)
 
     # 5. contract vertices until num_nodes reached
-    i = 0
-    while 0 < pairs.shape[0] and positions.shape[0] - deleted_pos.length > num_nodes:
-        p = pairs[i]
-        p[0] = -1   # set error negative, so it will stay at the top when sorting
+    while heap.length() > 0 and positions.shape[0] - deleted_pos.length > num_nodes:
+        p = heap.pop()
         v1 = <long>p[1]
         v2 = <long>p[2]
 
         # skip self-loops
         if v1 == v2:
-            i += 1
             continue
 
         # store values for possible invalid contraction (inverted faces)
@@ -89,7 +88,6 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
         if reverse_update:
             positions[v1] = pos1
-            i += 1
             continue
         else:
             positions[v1] = pos1
@@ -99,9 +97,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         Q[v1] = Q[v1] + Q[v2]
         update_face(p, face, deleted_faces)
         update_features(p, features)
-        pairs = update_pairs(pairs, positions, Q, features)
-
-        i += 1
+        update_pairs(v1, v2, heap, positions, Q, features)
 
     if features is not None:
         return positions, face, features
