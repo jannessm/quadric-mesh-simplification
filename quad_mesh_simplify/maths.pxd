@@ -8,3 +8,5 @@ cdef double dot1d(double[:] v1, double[:] v2)
 cdef void calculate_K(double[:] p, double[:, :] K)
 
 cdef void add_inplace(double[:, :] A, double[:, :] B)
+
+cdef void mul_scalar_2D(double[:, :] A, double scalar)

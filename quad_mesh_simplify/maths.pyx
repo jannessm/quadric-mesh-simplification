@@ -59,3 +59,11 @@ cdef void add_inplace(double[:, :] A, double[:, :] B):
     for i in prange(A.shape[0], nogil=True):
         for j in range(A.shape[1]):
             A[i, j] += B[i,j]
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
+cdef void mul_scalar_2D(double[:, :] A, double scalar):
+    cdef int i, j
+    for i in prange(A.shape[0], nogil=True):
+        for j in range(A.shape[1]):
+            A[i, j] *= scalar
