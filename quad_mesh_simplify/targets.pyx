@@ -50,8 +50,7 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_targets(
             positions,
             Q,
             features,
-            pairs_view[i, :])
-        print(pairs_view[i])
+            pairs_view[i])
 
     return pairs
 
@@ -114,6 +113,7 @@ cpdef void calculate_pair_attributes(
     # calculate errors for a 10 different targets on p1 -> p2
     min_id = 0
     min_error = 10e10
+
     for i in range(11):
         p1_view[:] = positions[v1]
         p2_view[:] = positions[v2]

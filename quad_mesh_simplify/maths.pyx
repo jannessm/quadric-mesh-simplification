@@ -100,4 +100,4 @@ cdef double error(double[:] p, double[:, :] Q):
             s_view[i] += p[j] * Q[j, i]
         s_view[i] += Q[3, i]
     
-    return p[j] * (s[0] + s[1] + s[2]) + s[3]
+    return p[0] * s[0] + p[1] * s[1] + p[2] * s[2] + s[3]

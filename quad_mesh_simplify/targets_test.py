@@ -34,7 +34,10 @@ class TargetsTests(unittest.TestCase):
 
 		solution_err = 3.
 		solution_target = [0., 0., 0.]
-		p = calculate_pair_attributes(0, 1, positions, Q, None)
+
+		p = np.zeros((6), dtype=np.double)
+		calculate_pair_attributes(0, 1, positions, Q, None, p)
+
 		self.assertEqual(p[0], solution_err)
 		self.assertEqual(p[1], 0) #v1
 		self.assertEqual(p[2], 1) #v2
@@ -80,7 +83,7 @@ class TargetsTests(unittest.TestCase):
 		])
 
 		res = compute_targets(positions, Q, valid_pairs, None)
-		
+
 		np.testing.assert_equal(res, solution)
 
 	def test_compute_targets_with_features(self):
@@ -125,7 +128,7 @@ class TargetsTests(unittest.TestCase):
 		])
 
 		res = compute_targets(positions, Q, valid_pairs, features)
-		
+
 		np.testing.assert_equal(res, solution)
 
 if __name__ == '__main__':
