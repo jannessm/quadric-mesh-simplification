@@ -36,9 +36,7 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] compute_Q(
 
     for i, f in enumerate(face):
         pos = positions[f]
-        
-        # calculate all normals for face
-        # these are needed for the mesh inversion step
+
         n = np.cross(pos[1] - pos[0], pos[2] - pos[0])
         norm = np.linalg.norm(n)
         if norm > 0:

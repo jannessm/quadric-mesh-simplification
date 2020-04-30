@@ -37,9 +37,6 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     cdef long i, v1, v2
     cdef int update_failed
 
-
-    print('start computation')
-
     assert(positions.shape[1] == 3)
     assert(face.shape[1] == 3)
     
@@ -48,7 +45,6 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     # add penalty for boundaries
     preserve_bounds(positions, face, Q)
 
-    print(Q)
     # 2. Select valid pairs
     valid_pairs = compute_valid_pairs(positions, face, threshold)
 
@@ -62,7 +58,6 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     # 5. contract vertices until num_nodes reached
     i = 0
     while 0 < pairs.shape[0] and positions.shape[0] > num_nodes:
-        print(pairs[:, :3])
         p = pairs[0]
         v1 = <long>p[1]
         v2 = <long>p[2]
