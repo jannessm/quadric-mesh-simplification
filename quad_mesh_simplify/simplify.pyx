@@ -13,7 +13,7 @@ from .targets cimport compute_targets
 from .valid_pairs cimport compute_valid_pairs
 from .contract_pair cimport update_pairs, update_face, update_features
 from .mesh_inversion cimport has_mesh_inversion
-
+from .maths cimport add_2D
 from .heap cimport PairHeap
 
 cimport cython
@@ -22,7 +22,7 @@ import array
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
+def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
     <http://mgarland.org/files/papers/quadrics.pdf>`_.
 
@@ -34,45 +34,60 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
     :rtype: (:class:`ndarray`, :class:`ndarray`)
     """
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q
-    cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs, new_positions
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1, pos2, p
-    cdef array.array deleted_pos_, deleted_faces_
+    cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs, face_
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs, new_positions_, pos_
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1_, pos2_
+    cdef double [:, :, :] Q
+    cdef double [:, :] pos, new_positions
+    cdef long [:, :] face
+    cdef double [:] pos1, pos2, p
     cdef unsigned char [:] deleted_pos, deleted_faces
+    cdef array.array deleted_pos_, deleted_faces_
     cdef long i, v1, v2
     cdef int update_failed
 
+    assert(positions.shape[1] == 3)
+    assert(face_in.shape[1] == 3)
+    
+    # copy positions, face for manipulation
+    pos_ = np.copy(positions)
+    new_positions_ = np.copy(positions)
+    face_ = np.copy(face_in)
+    pos = pos_
+    new_positions = new_positions_
+    face = face_
+
     deleted_pos_ = array.array('B', [])
-    array.clone(deleted_pos_, positions.shape[0], True)
+    array.clone(deleted_pos_, pos_.shape[0], True)
     deleted_pos = deleted_pos_
 
     deleted_face_ = array.array('B', [])
     array.clone(deleted_face_, face.shape[0], True)
-    deleted_face = deleted_face_
+    deleted_faces = deleted_face_
 
-    assert(positions.shape[1] == 3)
-    assert(face.shape[1] == 3)
+    pos1_ = np.zeros((3), dtype=DTYPE_DOUBLE)
+    pos2_ = np.zeros((3), dtype=DTYPE_DOUBLE)
+    pos1 = pos1_
+    pos2 = pos2_
     
     # 1. compute Q for all vertices
-    Q = compute_Q(positions, face)
+    Q = compute_Q(pos, face)
     # add penalty for boundaries
-    preserve_bounds(positions, face, Q)
+    preserve_bounds(pos, face, Q)
 
     # 2. Select valid pairs
-    valid_pairs = compute_valid_pairs(positions, face, threshold)
+    valid_pairs = compute_valid_pairs(pos, face, threshold)
 
     # 3. compute optimal contration targets
     # of shape err, v1, v2, target, (features)    
-    pairs = compute_targets(positions, Q, valid_pairs, features)
+    pairs = compute_targets(pos, Q, valid_pairs, features)
 
     # 4. create heap sorted by costs
     cdef PairHeap heap = PairHeap(pairs)
 
-    new_positions = np.copy(positions)
 
     # 5. contract vertices until num_nodes reached
-    while heap.length() > 0 and positions.shape[0] - deleted_pos.shape[0] > num_nodes:
+    while heap.length() > 0 and pos.shape[0] - deleted_pos.shape[0] > num_nodes:
         p = heap.pop()
         v1 = <long>p[1]
         v2 = <long>p[2]
@@ -82,7 +97,8 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
             continue
 
         # store values for possible invalid contraction (inverted faces)
-        pos1, pos2 = np.copy(positions[[v1, v2]])
+        pos1[...] = pos[v1]
+        pos2[...] = pos[v2]
 
         # update positions if no mesh inversion is created
         new_positions[v1] = p[3:6]
@@ -92,22 +108,23 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
             v2,
             positions,
             new_positions,
-            face)
+            face,
+            deleted_faces)
 
         if reverse_update:
-            positions[v1] = pos1
+            pos[v1] = pos1
             continue
         else:
-            positions[v1] = pos1
+            pos[v1] = pos1
             deleted_pos[v2] = True
 
         # if contraction is valid do updates
-        Q[v1] = Q[v1] + Q[v2]
+        add_2D(Q[v1], Q[v2], Q[v1])
         update_face(v1, v2, face, deleted_faces)
         update_features(p, features)
-        update_pairs(v1, v2, heap, positions, Q, features)
+        update_pairs(v1, v2, heap, pos, Q, features)
 
     if features is not None:
-        return positions, face, features
+        return pos, face, features
     else:
-        return positions, face
+        return pos, face

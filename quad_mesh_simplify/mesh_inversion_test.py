@@ -10,6 +10,8 @@ sys.path.append(osp.join(osp.dirname(osp.abspath(__file__)),'..'))
 
 from testing_utils import plot_test_mesh
 
+import array
+
 DEBUG = False
 
 class MeshInversionTests(unittest.TestCase):
@@ -41,11 +43,13 @@ class MeshInversionTests(unittest.TestCase):
             [0,3,1],
         ])
 
+        deleted_faces = array.array('B', [False, False, False])
+
         if DEBUG:
             plot_test_mesh(positions, face)
             plot_test_mesh(new_pos, new_face)
 
-        self.assertFalse(has_mesh_inversion(0, 1, positions, new_pos, face))
+        self.assertFalse(has_mesh_inversion(0, 1, positions, new_pos, face, deleted_faces))
 
     def test_inverted_mesh(self):
         positions = np.array([
@@ -79,7 +83,9 @@ class MeshInversionTests(unittest.TestCase):
             plot_test_mesh(positions, face)
             plot_test_mesh(new_pos, new_face)
 
-        self.assertTrue(has_mesh_inversion(1, 4, positions, new_pos, face))
+        deleted_faces = array.array('B', [False, False, False])
+
+        self.assertTrue(has_mesh_inversion(1, 4, positions, new_pos, face, deleted_faces))
 
 if __name__ == '__main__':
     unittest.main()

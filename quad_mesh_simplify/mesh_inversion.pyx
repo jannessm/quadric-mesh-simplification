@@ -6,7 +6,9 @@ DTYPE_DOUBLE = np.double
 ctypedef np.uint8_t DTYPE_UINT8_T
 
 cimport cython
-
+from cpython cimport array
+import array
+from .maths cimport normal, dot1d
 from .utils cimport get_rows, face_normal
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
@@ -14,9 +16,10 @@ from .utils cimport get_rows, face_normal
 cpdef int has_mesh_inversion(
     long v1,
     long v2,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] new_positions,
-    np.ndarray[DTYPE_LONG_T, ndim=2] face):
+    double [:, :] positions,
+    double [:, :] new_positions,
+    long [:, :] face,
+    unsigned char [:] deleted_faces):
     """tests if a contraction of two nodes led to an inverted face by comparing all neighboring faces of v1 and v2.
 
     Args:
@@ -28,51 +31,57 @@ cpdef int has_mesh_inversion(
 
     :rtype: :class:`int` whether or not a mesh was inverted
     """
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] normals, new_normals, angles
-    cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows, rows1, rows2
-    cdef np.ndarray[DTYPE_UINT8_T, ndim=2] v2s
+    cdef int i, j
 
-    v2s = face == v2
+    cdef array.array new_norm_, old_norm_
+    cdef new_norm, old_norm
 
-    # calculate face normals for each face with node v1
-    rows1 = get_rows(face == v1)
-    normals = calculate_face_normals(positions, face, rows1, v1)
-    
-    # calculate face normals for each face with ONLY node v2
-    rows2 = get_rows(v2s)
-    rows2 = rows2[rows2 != v1]
-    normals = np.vstack([
-        normals,
-        calculate_face_normals(positions, face, rows2, v2)
-    ])
-    
-    # merge rows
-    rows = np.append(rows1, rows2)
-    
-    # update face
-    face[v2s] = v1
-    #face[face > v2] -= 1
-    
-    # calculate normals with updated positions
-    new_normals = calculate_face_normals(new_positions, face, rows, v1)
-    
-    # revert face update
-    #face[face >= v2] += 1
-    face[v2s] = v2
+    new_norm_ = array.array('d', [0,0,0,0])
+    old_norm_ = array.array('d', [0,0,0,0])
+    new_norm = new_norm_
+    old_norm = old_norm_
 
-    # calculate angles between old and new normals
-    angles = normals.dot(new_normals.T) * np.eye(rows.shape[0]) 
-
-    # return True if at least one angle is greater than 90°
-    return (angles < 0).sum() > 0
+    for i in range(face.shape[0]):
+        if deleted_faces[i]:
+            continue
+        
+        for j in range(3):
+            if v1 == face[i, j] and flipped(
+                    v1,
+                    v2,
+                    positions,
+                    new_positions,
+                    face[i],
+                    j,
+                    old_norm,
+                    new_norm):
+                return True
+            elif v2 == face[i, j]:
+                if flipped(
+                        v1,
+                        v2,
+                        positions,
+                        new_positions,
+                        face[i],
+                        j,
+                        old_norm,
+                        new_norm):
+                    return True
+                face[i, j] = v2
+                
+    return False
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] calculate_face_normals(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
-    np.ndarray[DTYPE_LONG_T, ndim=2] face,
-    np.ndarray[DTYPE_LONG_T, ndim=1] rows,
-    long reference_id):
+cdef int flipped(
+    int v1_id,
+    int v2_id,
+    double [:, :] positions,
+    double [:, :] new_positions,
+    long [:] face,
+    int reference_id,
+    double [:] old_norm,
+    double [:] new_norm):
     """calculates all normals for each face indexed by rows. The reference node prevents inverted normals.
 
     Args:
@@ -83,11 +92,31 @@ cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] calculate_face_normals(
 
     :rtype: :class:`ndarray` normals
     """
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] normals = np.zeros((face.shape[0], 3), dtype=DTYPE_DOUBLE)
-    cdef long i, ref
+    cdef double[:] v1, v2, v3
+    cdef int old_pos, reset
+    v2 = positions[face[reference_id]]
+    v1 = positions[face[(reference_id + 1) % 3]]
+    v3 = positions[face[(reference_id + 2) % 3]]
 
-    for i in rows:
-        ref = np.where(face[i] != reference_id)[0][0]
-        normals[i] = face_normal(positions[face[i]], True, ref)
+    normal(v1, v2, v3, old_norm)
 
-    return normals[rows]
+    reset = False
+    for old_pos in range(3):
+        if face[old_pos] == v2_id:
+            face[old_pos] = v1_id
+            reset = True
+            break
+
+    v2 = new_positions[face[reference_id]]
+    v1 = new_positions[face[(reference_id + 1) % 3]]
+    v3 = new_positions[face[(reference_id + 2) % 3]]
+    normal(v1, v2, v3, new_norm)
+
+    if reset:
+        face[old_pos] = v2_id
+
+    old_norm[3] = 0
+    new_norm[3] = 0
+
+    return dot1d(old_norm, new_norm) < 0
+    
