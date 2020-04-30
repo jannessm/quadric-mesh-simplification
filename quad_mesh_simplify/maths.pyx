@@ -3,6 +3,9 @@ cimport cython
 
 from cython.parallel cimport prange
 
+from cpython cimport array
+import array
+
 cdef extern from "math.h" nogil:
   double sqrt(double x)
 
@@ -62,8 +65,39 @@ cdef void add_inplace(double[:, :] A, double[:, :] B):
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
+cdef void add_2D(double[:, :] A, double[:, :] B, double [:, :] R):
+    cdef int i, j
+    for i in prange(A.shape[0], nogil=True):
+        for j in range(A.shape[1]):
+            R[i, j] = A[i,j] + B[i,j]
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
+cdef void mul_scalar_1D(double[:] a, double scalar):
+    cdef int i
+    for i in prange(a.shape[0], nogil=True):
+        a[i] *= scalar
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cdef void mul_scalar_2D(double[:, :] A, double scalar):
     cdef int i, j
     for i in prange(A.shape[0], nogil=True):
         for j in range(A.shape[1]):
             A[i, j] *= scalar
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
+cdef double error(double[:] p, double[:, :] Q):
+    """p (shape (3))
+    Q (shape (4,4))"""
+    cdef int i, j, k
+    cdef array.array s = array.array('d', [0, 0, 0, 0])
+    cdef double [:] s_view = s
+    
+    for i in prange(Q.shape[1], nogil=True):
+        for j in range(p.shape[0]):
+            s_view[i] += p[j] * Q[j, i]
+        s_view[i] += Q[3, i]
+    
+    return p[j] * (s[0] + s[1] + s[2]) + s[3]

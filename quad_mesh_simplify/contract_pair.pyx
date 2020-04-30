@@ -90,9 +90,9 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
     for i in rows:
         p = pairs[i]
         if p[1] == v1:
-            pairs[i] = calculate_pair_attributes(v1, p[2], positions, Q, features)
+            calculate_pair_attributes(v1, p[2], positions, Q, features, pairs[i])
         elif p[2] == v1:
-            pairs[i] = calculate_pair_attributes(p[1], v1, positions, Q, features)
+            calculate_pair_attributes(p[1], v1, positions, Q, features, pairs[i])
 
 
     #pairs = np.delete(pairs, 0, 0)

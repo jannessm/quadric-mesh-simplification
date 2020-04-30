@@ -38,7 +38,6 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_valid_pairs(
         face[:, 1:],
         face[:, [0,2]]
     ]).astype(DTYPE_LONG)
-    valid_pairs = remove_duplicates(valid_pairs)
 
     # option 2: distance below threshold
     if threshold > 0.:

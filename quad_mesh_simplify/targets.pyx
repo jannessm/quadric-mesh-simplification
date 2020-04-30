@@ -1,17 +1,20 @@
 import numpy as np
-cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 
+from . cimport maths
+
+from cpython cimport array
+import array
 cimport cython
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_targets(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q,
-    np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] features):
+    double [:, :] positions,
+    double [:, :, :] Q,
+    long [:, :] valid_pairs,
+    double [:, :] features):
     """Computes the optimal position and the resulting feature vector (if provided) of the contracted node for nodes in valid_pairs.
     Since the feature vector should be aggregated, the exact mixture of v1 and v2 are needed and sampled from 10 different positions
     on the edge v1, v2.
@@ -28,29 +31,40 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_targets(
         features = np.zeros((0,0))
     
     # a pair consists of error, v1, v2, target, feature
-    cdef int pair_shape = 3 + 3 + features.shape[1]
-    cdef int target_offset = 3
-
+    
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] p
+    cdef double [:, :] pairs_view
+    cdef double [:] p
+    cdef int pair_shape, target_offset, i, j
 
-    pairs = np.zeros((0, pair_shape), dtype=DTYPE_DOUBLE)
+    pair_shape = 3 + 3 + features.shape[1]
+    target_offset = 3
 
-    for pair in valid_pairs:
-        p = calculate_pair_attributes(pair[0], pair[1], positions, Q, features)
-        pairs = np.vstack([pairs, p])
+    pairs = np.zeros((valid_pairs.shape[0], pair_shape), dtype=DTYPE_DOUBLE)
+    pairs_view = pairs
+
+    for i in range(valid_pairs.shape[0]):
+        calculate_pair_attributes(
+            valid_pairs[i, 0],
+            valid_pairs[i, 1],
+            positions,
+            Q,
+            features,
+            pairs_view[i, :])
+        print(pairs_view[i])
 
     return pairs
 
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] calculate_pair_attributes(
+cpdef void calculate_pair_attributes(
     long v1,
     long v2,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] positions,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] features):
+    double [:, :] positions,
+    double [:, :, :] Q,
+    double [:, :] features,
+    double [:] pair):
     """Computes the optimal position of the contracted node of the edge (v1, v2).
 
     Args:
@@ -62,56 +76,61 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] calculate_pair_attributes(
 
     :rtype: :class:`ndarray`
     """
-    if features is None:
-        features = np.zeros((0,0))
+    cdef int min_id, i, features_len
 
-    cdef int pair_shape = 3 + 3 + features.shape[1]
+    if features is None:
+        features_len = 0
+    else:
+        features_len = features.shape[1]
+
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] new_Q
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] p1, p2, p12
+
+    cdef double [:, :] new_Q_view
+    cdef double [:] p1_view, p2_view, p12_view
+
+    cdef int pair_shape = 3 + 3 + features_len
     cdef int target_offset = 3
     cdef int feature_offset = 3 + 3
-    cdef int min_id
-    cdef double error, i
+    cdef double min_error, error
 
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] new_Q, rang, p1, p2, p12
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] errors
+    new_Q = np.zeros((4, 4), dtype=DTYPE_DOUBLE)
+    new_Q_view = new_Q
 
-    pair = np.zeros((pair_shape), dtype=DTYPE_DOUBLE)
+    p1 = np.zeros((3), dtype=DTYPE_DOUBLE)
+    p2 = np.zeros((3), dtype=DTYPE_DOUBLE)
+    p12 = np.zeros((3), dtype=DTYPE_DOUBLE)
+    p1_view = p1
+    p2_view = p2
+    p12_view = p12
 
     pair[1] = v1
     pair[2] = v2
 
-    new_Q = Q[v1] + Q[v2]
+    maths.add_2D(Q[v1], Q[v2], new_Q)
     
     # do not use explicit solution because of feature trade-off
-    errors = np.zeros((0), dtype=DTYPE_DOUBLE)
-    p1 = make_homogeneous(positions[v1])[:, None]
-    p2 = make_homogeneous(positions[v2])[:, None]
 
     # calculate errors for a 10 different targets on p1 -> p2
-    rang = np.arange(0, 1.1, 0.1)[:, None]
-    p12 = rang.dot(p1.T) + (1 - rang).dot(p2.T)
-    errors = np.max(p12.dot(new_Q).dot(p12.T) * np.eye(11), axis=1)
+    min_id = 0
+    min_error = 10e10
+    for i in range(11):
+        p1_view[:] = positions[v1]
+        p2_view[:] = positions[v2]
+        maths.mul_scalar_1D(p1_view, i * 0.1)
+        maths.mul_scalar_1D(p2_view, 1 - i * 0.1)
+        for j in range(3):
+            p12_view[j] = p1_view[j] + p2_view[j]
+    
+        error = maths.error(p12_view, new_Q_view)
 
-    # get minimal error
-    min_id = np.argmin(errors)
-    pair[0] = errors[min_id]
-    i = min_id / 10.
-    pair[target_offset: feature_offset] = (i * p1 + (1 - i) * p2)[:3].flatten()
+        if error < min_error:
+            min_error = error
+            min_id = i
+            pair[target_offset: feature_offset] = p12_view
+            pair[0] = error
 
-    if features.shape[0] != 0:
-        pair[feature_offset:] = i * features[v1] + (1 - i) * features[v2]
-
-    return pair
-
-
-@cython.boundscheck(False) # turn off bounds-checking for entire function
-@cython.wraparound(False)  # turn off negative index wrapping for entire function
-cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] make_homogeneous(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=1] arr):
-    """appends an array with [1] to make it homogeneous.
-
-    Args:
-        arr (:class:`ndarray`): 1d vector
-
-    :rtype: :class:`ndarray`"""
-    return np.hstack([arr, 1])
+    if features_len != 0:
+        for i in range(features_len):
+            pair[feature_offset + i] =  min_id * 0.1 * features[v1, i] +  \
+                                        (1 - min_id * 0.1) * features[v2, i]
