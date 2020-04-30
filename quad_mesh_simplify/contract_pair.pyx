@@ -8,6 +8,8 @@ cimport cython
 from .targets cimport calculate_pair_attributes
 from .utils cimport get_rows
 
+import array
+
 cdef int target_offset = 3
 cdef int feature_offset = 3 + 3
 
@@ -64,9 +66,10 @@ cpdef void update_pairs(
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef void update_face(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_LONG_T, ndim=2] face,
+cpdef array.array update_face(
+    long v1,
+    long v2,
+    long [:, :] face,
     list deleted_faces):
     """updates a face for a contracted pair by removing all faces accordingly.
 
@@ -76,38 +79,32 @@ cpdef void update_face(
 
     :rtype: :class:`ndarray`
     """
-    cdef long v1, v2, i
-    cdef list rows
-    cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows_v1, rows_v2
-    
-    rows = []
-    v1 = <long>pair[1]
-    v2 = <long>pair[2]
+    cdef int i, j
+    cdef array.array rows, new
+    rows = array.array('I', [])
 
-    # update face from new pairs
-    rows_v1 = get_rows(face == v1)
-    rows_v2 = get_rows(face == v2)
+    for i in range(face.shape[0]):
+        if i in deleted_faces:
+            continue
+        
+        # 1. remove faces with both nodes of pair
+        if v1 in face[i] and v2 in face[i]:
+            new = array.array('I', [i])
+            array.extend(rows, new)
 
-    # 1. remove faces with both nodes of pair
-    for i in rows_v1:
-        if i in rows_v2:
-            rows.append(i)
-    #face = np.delete(face, rows, 0)
-    deleted_faces = face + rows
+        # 2. point faces to new merged node
+        if v2 in face[i]:
+            for j in range(3):
+                if v2 == face[i, j]:
+                    face[i, j] = v1
 
-    # 2. point faces to new merged node
-    face[face == v2] = v1
-
-    # update indexes for all vertices that where shifted in array
-    #face[face > v2] -= 1
-
-    #return face
+    return rows
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 cpdef void update_features(
-    np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_DOUBLE_T, ndim=2] features):
+    double [:] pair,
+    double [:, :] features):
     """updates all features by contracting the given pair. In detail, it sets the features for the first node to
     the feature vector of the contracted pair and removes the features of the second node.
 
@@ -117,11 +114,9 @@ cpdef void update_features(
 
     :rtype: :class:`ndarray`
     """
-    cdef long v1, v2
+    cdef long v1
     v1 = <long>pair[1]
-    #v2 = <long>pair[2]
 
-    if features is not None:
+    if features.shape[0] > 0:
         features[v1] = pair[feature_offset:]
-        #features = np.delete(features, v2, 0)
 

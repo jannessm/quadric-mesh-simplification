@@ -95,7 +95,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
         # if contraction is valid do updates
         Q[v1] = Q[v1] + Q[v2]
-        update_face(p, face, deleted_faces)
+        deleted_faces = update_face(v1, v2, face, deleted_faces)
         update_features(p, features)
         update_pairs(v1, v2, heap, positions, Q, features)
 
