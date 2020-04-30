@@ -66,11 +66,11 @@ cpdef void update_pairs(
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef array.array update_face(
+cpdef void update_face(
     long v1,
     long v2,
     long [:, :] face,
-    list deleted_faces):
+    unsigned char [:] deleted_faces):
     """updates a face for a contracted pair by removing all faces accordingly.
 
     Args:
@@ -79,26 +79,28 @@ cpdef array.array update_face(
 
     :rtype: :class:`ndarray`
     """
-    cdef int i, j
-    cdef array.array rows, new
-    rows = array.array('I', [])
+    cdef int i, j, v1_in_face, v2_in_face
 
     for i in range(face.shape[0]):
-        if i in deleted_faces:
+        if deleted_faces[i]:
             continue
+
+        v1_in_face = False
+        v2_in_face = False
         
+        for j in range(3):
+            if v1 == face[i, j]:
+                v1_in_face = True
+            if v2 == face[i, j]:
+                v2_in_face = True
+                
+                # 2. point faces to new merged node
+                face[i, j] = v1
+
         # 1. remove faces with both nodes of pair
-        if v1 in face[i] and v2 in face[i]:
-            new = array.array('I', [i])
-            array.extend(rows, new)
+        if v1_in_face and v2_in_face:
+            deleted_faces[i] = True
 
-        # 2. point faces to new merged node
-        if v2 in face[i]:
-            for j in range(3):
-                if v2 == face[i, j]:
-                    face[i, j] = v1
-
-    return rows
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function

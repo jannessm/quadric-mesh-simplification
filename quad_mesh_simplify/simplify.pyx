@@ -17,6 +17,8 @@ from .mesh_inversion cimport has_mesh_inversion
 from .heap cimport PairHeap
 
 cimport cython
+from cpython cimport array
+import array
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
@@ -36,12 +38,18 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs, new_positions
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1, pos2, p
-    cdef list deleted_pos, deleted_faces
+    cdef array.array deleted_pos_, deleted_faces_
+    cdef unsigned char [:] deleted_pos, deleted_faces
     cdef long i, v1, v2
     cdef int update_failed
 
-    deleted_pos = []
-    deleted_faces = []
+    deleted_pos_ = array.array('B', [])
+    array.clone(deleted_pos_, positions.shape[0], True)
+    deleted_pos = deleted_pos_
+
+    deleted_face_ = array.array('B', [])
+    array.clone(deleted_face_, face.shape[0], True)
+    deleted_face = deleted_face_
 
     assert(positions.shape[1] == 3)
     assert(face.shape[1] == 3)
@@ -64,7 +72,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     new_positions = np.copy(positions)
 
     # 5. contract vertices until num_nodes reached
-    while heap.length() > 0 and positions.shape[0] - deleted_pos.length > num_nodes:
+    while heap.length() > 0 and positions.shape[0] - deleted_pos.shape[0] > num_nodes:
         p = heap.pop()
         v1 = <long>p[1]
         v2 = <long>p[2]
@@ -91,11 +99,11 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
             continue
         else:
             positions[v1] = pos1
-            deleted_pos.append(v2)
+            deleted_pos[v2] = True
 
         # if contraction is valid do updates
         Q[v1] = Q[v1] + Q[v2]
-        deleted_faces = update_face(v1, v2, face, deleted_faces)
+        update_face(v1, v2, face, deleted_faces)
         update_features(p, features)
         update_pairs(v1, v2, heap, positions, Q, features)
 

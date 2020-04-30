@@ -17,11 +17,11 @@ cpdef void update_pairs(
     double [:, :, :] Q,
     double [:, :] features)
 
-cpdef array.array update_face(
+cpdef void update_face(
     long v1,
     long v2,
     long [:, :] face,
-    list deleted_faces)
+    unsigned char [:] deleted_faces)
 
 cpdef void update_features(
     double [:] pair,
