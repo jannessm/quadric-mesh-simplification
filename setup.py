@@ -12,6 +12,7 @@ ext = '.pyx' if FROM_SOURCE else '.c'
 
 files = [
 	'quad_mesh_simplify.contract_pair',
+	'quad_mesh_simplify.maths',
 	'quad_mesh_simplify.mesh_inversion',
 	'quad_mesh_simplify.preserve_bounds',
     'quad_mesh_simplify.q',
