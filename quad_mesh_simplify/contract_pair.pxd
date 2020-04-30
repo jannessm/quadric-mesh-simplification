@@ -20,11 +20,12 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
     np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q,
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] features)
 
-cpdef np.ndarray[DTYPE_LONG_T, ndim=2] update_face(
+cpdef void update_face(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_LONG_T, ndim=2] face)
+    np.ndarray[DTYPE_LONG_T, ndim=2] face,
+    list deleted_faces)
 
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_features(
+cpdef void update_features(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] features)
 

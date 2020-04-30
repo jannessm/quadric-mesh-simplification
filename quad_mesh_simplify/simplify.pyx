@@ -34,8 +34,12 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs, new_positions
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1, pos2, p
+    cdef list deleted_pos, deleted_faces
     cdef long i, v1, v2
     cdef int update_failed
+
+    deleted_pos = []
+    deleted_faces = []
 
     assert(positions.shape[1] == 3)
     assert(face.shape[1] == 3)
@@ -55,23 +59,26 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     # 4. create head sorted by costs
     pairs = sort_by_error(pairs)
 
+    new_positions = np.copy(positions)
+
     # 5. contract vertices until num_nodes reached
     i = 0
-    while 0 < pairs.shape[0] and positions.shape[0] > num_nodes:
-        p = pairs[0]
+    while 0 < pairs.shape[0] and positions.shape[0] - deleted_pos.length > num_nodes:
+        p = pairs[i]
+        p[0] = -1   # set error negative, so it will stay at the top when sorting
         v1 = <long>p[1]
         v2 = <long>p[2]
 
         # skip self-loops
         if v1 == v2:
-            pairs = np.delete(pairs, 0, 0)
+            i += 1
             continue
 
         # store values for possible invalid contraction (inverted faces)
-        pos1, pos2 = positions[[v1, v2]]
+        pos1, pos2 = np.copy(positions[[v1, v2]])
 
         # update positions if no mesh inversion is created
-        new_positions = update_positions(p, positions)
+        new_positions[v1] = p[3:6]
 
         reverse_update = has_mesh_inversion(
             v1,
@@ -82,17 +89,19 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
 
         if reverse_update:
             positions[v1] = pos1
-            positions = np.insert(positions, v2, pos2, axis=0)
-            pairs = np.delete(pairs, 0, 0)
+            i += 1
             continue
         else:
-            positions = new_positions
+            positions[v1] = pos1
+            deleted_pos.append(v2)
 
         # if contraction is valid do updates
-        Q = update_Q(p, Q)
-        face = update_face(p, face)
-        features = update_features(p, features)
+        Q[v1] = Q[v1] + Q[v2]
+        update_face(p, face, deleted_faces)
+        update_features(p, features)
         pairs = update_pairs(pairs, positions, Q, features)
+
+        i += 1
 
     if features is not None:
         return positions, face, features

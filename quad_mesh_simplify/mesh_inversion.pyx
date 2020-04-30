@@ -51,13 +51,13 @@ cpdef int has_mesh_inversion(
     
     # update face
     face[v2s] = v1
-    face[face > v2] -= 1
+    #face[face > v2] -= 1
     
     # calculate normals with updated positions
     new_normals = calculate_face_normals(new_positions, face, rows, v1)
     
     # revert face update
-    face[face >= v2] += 1
+    #face[face >= v2] += 1
     face[v2s] = v2
 
     # calculate angles between old and new normals

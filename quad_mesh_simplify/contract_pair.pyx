@@ -82,8 +82,8 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
     # new target
     rows, cols = np.where(pairs[:, 1:3] == v2)
     pairs[rows, cols + 1] = v1
-    rows, cols = np.where(pairs[:, 1:3] > v2)
-    pairs[rows, cols + 1] -= 1
+    #rows, cols = np.where(pairs[:, 1:3] > v2)
+    #pairs[rows, cols + 1] -= 1
 
     # update all rows with indexes of v1
     rows = get_rows(pairs[:, 1:3] == v1)
@@ -95,14 +95,15 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_pairs(
             pairs[i] = calculate_pair_attributes(p[1], v1, positions, Q, features)
 
 
-    pairs = np.delete(pairs, 0, 0)
+    #pairs = np.delete(pairs, 0, 0)
     return sort_by_error(pairs)
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef np.ndarray[DTYPE_LONG_T, ndim=2] update_face(
+cpdef void update_face(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
-    np.ndarray[DTYPE_LONG_T, ndim=2] face):
+    np.ndarray[DTYPE_LONG_T, ndim=2] face,
+    list deleted_faces):
     """updates a face for a contracted pair by removing all faces accordingly.
 
     Args:
@@ -112,33 +113,35 @@ cpdef np.ndarray[DTYPE_LONG_T, ndim=2] update_face(
     :rtype: :class:`ndarray`
     """
     cdef long v1, v2, i
-    cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows, rows_v1, rows_v2
+    cdef list rows
+    cdef np.ndarray[DTYPE_LONG_T, ndim=1] rows_v1, rows_v2
     
+    rows = []
     v1 = <long>pair[1]
     v2 = <long>pair[2]
 
     # update face from new pairs
     rows_v1 = get_rows(face == v1)
     rows_v2 = get_rows(face == v2)
-    rows = np.zeros((0), dtype=DTYPE_LONG)
 
     # 1. remove faces with both nodes of pair
     for i in rows_v1:
         if i in rows_v2:
-            rows = np.append(rows, i)
-    face = np.delete(face, rows, 0)
+            rows.append(i)
+    #face = np.delete(face, rows, 0)
+    deleted_faces = face + rows
 
     # 2. point faces to new merged node
     face[face == v2] = v1
 
     # update indexes for all vertices that where shifted in array
-    face[face > v2] -= 1
+    #face[face > v2] -= 1
 
-    return face
+    #return face
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_features(
+cpdef void update_features(
     np.ndarray[DTYPE_DOUBLE_T, ndim=1] pair,
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] features):
     """updates all features by contracting the given pair. In detail, it sets the features for the first node to
@@ -152,13 +155,11 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] update_features(
     """
     cdef long v1, v2
     v1 = <long>pair[1]
-    v2 = <long>pair[2]
+    #v2 = <long>pair[2]
 
     if features is not None:
         features[v1] = pair[feature_offset:]
-        features = np.delete(features, v2, 0)
-
-    return features
+        #features = np.delete(features, v2, 0)
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
