@@ -34,13 +34,25 @@ class ContractPairTests(unittest.TestCase):
                 [1., 1., 1., 1.],
                 [1., 1., 1., 1.],
                 [1., 1., 1., 1.]],
+               [[1., 1., 1., 1.],
+                [1., 1., 1., 1.],
+                [1., 1., 1., 1.],
+                [1., 1., 1., 1.]],
+               [[1., 1., 1., 1.],
+                [1., 1., 1., 1.],
+                [1., 1., 1., 1.],
+                [1., 1., 1., 1.]],
+               [[1., 1., 1., 1.],
+                [1., 1., 1., 1.],
+                [1., 1., 1., 1.],
+                [1., 1., 1., 1.]]
            ])
 
         solution = np.array([
-            [-4., 2., 3., 9., 9., 8.],
-            [-1., 0., 1., 9., 9., 9.], # invalid pairs are removed in simplify.pyx
-            [5., 0., 2., 9., 8., 9.], # is not completly sorted because its a heap
-            [-1., 0., 1., 8., 9., 9.],
+            [-10e6, 0., 1., 9., 9., 9.], # invalid pairs are removed in simplify.pyx
+            [-10e6, 0., 1., 8., 9., 9.],
+            [2., 0., 2., -1., 0., 1.],
+            [-4., 2., 3., 9., 9., 8.], # is not completly sorted because its a heap
             [3., 2., 3., 9., 9., 8.],
            ])
 
@@ -51,7 +63,7 @@ class ContractPairTests(unittest.TestCase):
         self.assertEqual(heap.length(), solution.shape[0])
 
         for i in range(solution.shape[0]):
-            np.testing.assert_equal(heap.get_pair(i), solution[i])
+            np.testing.assert_almost_equal(heap.get_pair(i), solution[i])
 
     def test_update_face(self):
         pair = np.array([1., 1., 3., 9., 9., 9.])
