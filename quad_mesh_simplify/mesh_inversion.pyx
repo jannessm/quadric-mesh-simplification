@@ -52,7 +52,6 @@ cpdef int has_mesh_inversion(
                     positions,
                     new_positions,
                     face[i],
-                    j,
                     old_norm,
                     new_norm):
                 return True
@@ -63,7 +62,6 @@ cpdef int has_mesh_inversion(
                         positions,
                         new_positions,
                         face[i],
-                        j,
                         old_norm,
                         new_norm):
                     return True
@@ -79,7 +77,6 @@ cdef int flipped(
     double [:, :] positions,
     double [:, :] new_positions,
     long [:] face,
-    int reference_id,
     double [:] old_norm,
     double [:] new_norm):
     """calculates all normals for each face indexed by rows. The reference node prevents inverted normals.
@@ -94,9 +91,9 @@ cdef int flipped(
     """
     cdef double[:] v1, v2, v3
     cdef int old_pos, reset
-    v2 = positions[face[reference_id]]
-    v1 = positions[face[(reference_id + 1) % 3]]
-    v3 = positions[face[(reference_id + 2) % 3]]
+    v1 = positions[face[0]]
+    v2 = positions[face[1]]
+    v3 = positions[face[2]]
 
     normal(v1, v2, v3, old_norm)
 
@@ -107,9 +104,9 @@ cdef int flipped(
             reset = True
             break
 
-    v2 = new_positions[face[reference_id]]
-    v1 = new_positions[face[(reference_id + 1) % 3]]
-    v3 = new_positions[face[(reference_id + 2) % 3]]
+    v1 = positions[face[0]]
+    v2 = positions[face[1]]
+    v3 = positions[face[2]]
     normal(v1, v2, v3, new_norm)
 
     if reset:

@@ -61,8 +61,6 @@ class SimplifyTests(unittest.TestCase):
 
         for i in range(1, 8):
             res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 10 - i)
-            print('face')
-            print(res_face)
             
             self.assertEqual(res_pos.shape, (10 - i, 3))
             if DEBUG:

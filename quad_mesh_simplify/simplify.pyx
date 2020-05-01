@@ -34,22 +34,24 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
 
     :rtype: (:class:`ndarray`, :class:`ndarray`)
     """
-    cdef np.ndarray[DTYPE_LONG_T, ndim=2] valid_pairs, face_
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs, new_positions_, pos_
+    cdef np.ndarray[DTYPE_LONG_T, ndim=2] face_
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pairs, new_positions_, pos_, features_
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1_, pos2_
     cdef double [:, :, :] Q
     cdef double [:, :] pos, new_positions
-    cdef long [:, :] face
+    cdef long [:, :] face, valid_pairs
     cdef double [:] pos1, pos2, p
+    cdef int [:] sum_diminish
     cdef unsigned char [:] deleted_pos, deleted_faces
-    cdef array.array deleted_pos_, deleted_faces_
+    cdef array.array deleted_pos_, deleted_faces_, sum_diminish_
     cdef long i, v1, v2
-    cdef int update_failed
+    cdef int update_failed, num_deleted_nodes
+    num_deleted_nodes = 0
 
     assert(positions.shape[1] == 3)
     assert(face_in.shape[1] == 3)
     
-    # copy positions, face for manipulation
+    # copy positions, face and features for manipulation
     pos_ = np.copy(positions)
     new_positions_ = np.copy(positions)
     face_ = np.copy(face_in)
@@ -58,11 +60,11 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     face = face_
 
     deleted_pos_ = array.array('B', [])
-    array.clone(deleted_pos_, pos_.shape[0], True)
+    deleted_pos_ = array.clone(deleted_pos_, pos_.shape[0], True)
     deleted_pos = deleted_pos_
 
     deleted_face_ = array.array('B', [])
-    array.clone(deleted_face_, face.shape[0], True)
+    deleted_face_ = array.clone(deleted_face_, face.shape[0], True)
     deleted_faces = deleted_face_
 
     pos1_ = np.zeros((3), dtype=DTYPE_DOUBLE)
@@ -76,7 +78,7 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     preserve_bounds(pos, face, Q)
 
     # 2. Select valid pairs
-    valid_pairs = compute_valid_pairs(pos, face, threshold)
+    valid_pairs = compute_valid_pairs(pos_, face_, threshold)
 
     # 3. compute optimal contration targets
     # of shape err, v1, v2, target, (features)    
@@ -87,7 +89,7 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
 
 
     # 5. contract vertices until num_nodes reached
-    while heap.length() > 0 and pos.shape[0] - deleted_pos.shape[0] > num_nodes:
+    while heap.length() > 0 and pos.shape[0] - num_deleted_nodes > num_nodes:
         p = heap.pop()
         v1 = <long>p[1]
         v2 = <long>p[2]
@@ -99,20 +101,19 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
         # store values for possible invalid contraction (inverted faces)
         pos1[...] = pos[v1]
         pos2[...] = pos[v2]
-
         # update positions if no mesh inversion is created
         new_positions[v1] = p[3:6]
 
         reverse_update = has_mesh_inversion(
             v1,
             v2,
-            positions,
+            pos,
             new_positions,
             face,
             deleted_faces)
 
         if reverse_update:
-            pos[v1] = pos1
+            pos[v1, ...] = pos1
             continue
         else:
             pos[v1] = pos1
@@ -124,7 +125,32 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
         update_features(p, features)
         update_pairs(v1, v2, heap, pos, Q, features)
 
+        num_deleted_nodes += 1
+
+    # delete positions, faces and features
+    pos_ = pos_[[ not deleted for deleted in deleted_pos_.tolist()]]
+    face_ = face_[[not deleted for deleted in deleted_face_.tolist()]]
+    face = face_
+    sum_diminish_ = array.array('i', [])
+    sum_diminish_ = array.clone(sum_diminish_, deleted_pos.shape[0], True)
+    sum_diminish = sum_diminish_
+    cdef int diminish_by = 0
+    
+    for i in range(deleted_pos.shape[0]):
+        sum_diminish[i] += diminish_by
+        
+        # if node was deleted diminish next nodes by 1
+        if deleted_pos[i]:
+            diminish_by += 1
+
+    for i in range(face.shape[0]):
+        for j in range(face.shape[1]):
+            face[i, j] -= sum_diminish[face[i, j]]
+
+    print(face_)
     if features is not None:
-        return pos, face, features
+        features_ = np.copy(features)
+        features_ = features_[[ not deleted for deleted in deleted_pos_.tolist()]]
+        return pos_, face_, features_
     else:
-        return pos, face
+        return pos_, face_
