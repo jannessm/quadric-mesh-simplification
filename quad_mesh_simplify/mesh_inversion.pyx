@@ -5,6 +5,9 @@ DTYPE_DOUBLE = np.double
 
 ctypedef np.uint8_t DTYPE_UINT8_T
 
+cdef extern from "math.h" nogil:
+  double fabs(double x)
+
 cimport cython
 from cpython cimport array
 import array
@@ -31,7 +34,7 @@ cpdef int has_mesh_inversion(
 
     :rtype: :class:`int` whether or not a mesh was inverted
     """
-    cdef int i, j
+    cdef int i, j, check_face
 
     cdef array.array new_norm_, old_norm_
     cdef new_norm, old_norm
@@ -45,27 +48,21 @@ cpdef int has_mesh_inversion(
         if deleted_faces[i]:
             continue
         
+        check_face = False
         for j in range(3):
-            if v1 == face[i, j] and flipped(
-                    v1,
-                    v2,
-                    positions,
-                    new_positions,
-                    face[i],
-                    old_norm,
-                    new_norm):
-                return True
-            elif v2 == face[i, j]:
-                if flipped(
-                        v1,
-                        v2,
-                        positions,
-                        new_positions,
-                        face[i],
-                        old_norm,
-                        new_norm):
-                    return True
-                face[i, j] = v2
+            if v1 == face[i, j] or v2 == face[i, j]:
+                check_face = True
+        
+        if check_face and flipped(
+            v1,
+            v2,
+            positions,
+            new_positions,
+            face[i],
+            old_norm,
+            new_norm):
+            
+            return True
                 
     return False
 
@@ -90,30 +87,40 @@ cdef int flipped(
     :rtype: :class:`ndarray` normals
     """
     cdef double[:] v1, v2, v3
-    cdef int old_pos, reset
-    v1 = positions[face[0]]
-    v2 = positions[face[1]]
-    v3 = positions[face[2]]
+    cdef double angle
+    cdef int old_pos, reset, i, i1, i2, i3, j
 
-    normal(v1, v2, v3, old_norm)
+    # check for each vertex if normal flipps
+    for i in range(3):
+        i1 = face[(0 + i) % 3]
+        i2 = face[(1 + i) % 3]
+        i3 = face[(2 + i) % 3]
+        v1 = positions[i1]
+        v2 = positions[i2]
+        v3 = positions[i3]
 
-    reset = False
-    for old_pos in range(3):
-        if face[old_pos] == v2_id:
-            face[old_pos] = v1_id
-            reset = True
-            break
+        normal(v1, v2, v3, old_norm)
 
-    v1 = positions[face[0]]
-    v2 = positions[face[1]]
-    v3 = positions[face[2]]
-    normal(v1, v2, v3, new_norm)
+        if i1 == v2_id and i2 != v2_id and i3 != v2_id:
+            i1 = v1_id
+        elif i1 != v2_id and i2 == v2_id and i3 != v2_id:
+            i2 = v1_id
+        elif i1 != v2_id and i2 == v2_id and i3 == v2_id:
+            i3 = v1_id
+        elif i1 == v2_id or i2 == v2_id or i3 == v2_id:
+            return False # face will be deleted anyways
+        
+        v1 = new_positions[i1]
+        v2 = new_positions[i2]
+        v3 = new_positions[i3]
+        
+        normal(v1, v2, v3, new_norm)
 
-    if reset:
-        face[old_pos] = v2_id
+        old_norm[3] = 0 #normal includes d
+        new_norm[3] = 0
+        angle = dot1d(old_norm, new_norm)
+        if angle < 0:
+            return True
 
-    old_norm[3] = 0
-    new_norm[3] = 0
-
-    return dot1d(old_norm, new_norm) < 0
+    return False
     
