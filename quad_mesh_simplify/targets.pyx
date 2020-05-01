@@ -36,6 +36,7 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_targets(
     cdef double [:, :] pairs_view
     cdef double [:] p
     cdef int pair_shape, target_offset, i, j
+    cdef long tmp
 
     pair_shape = 3 + 3 + features.shape[1]
     target_offset = 3
@@ -44,6 +45,11 @@ cpdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] compute_targets(
     pairs_view = pairs
 
     for i in range(valid_pairs.shape[0]):
+        if valid_pairs[i, 0] > valid_pairs[i, 1]:
+            tmp = valid_pairs[i, 0]
+            valid_pairs[i, 0] = valid_pairs[i, 1]
+            valid_pairs[i, 1] = tmp
+
         calculate_pair_attributes(
             valid_pairs[i, 0],
             valid_pairs[i, 1],
@@ -106,29 +112,37 @@ cpdef void calculate_pair_attributes(
     pair[1] = v1
     pair[2] = v2
 
-    maths.add_2D(Q[v1], Q[v2], new_Q)
+    maths.add_2D(Q[v1], Q[v2], new_Q_view)
     
     # do not use explicit solution because of feature trade-off
 
     # calculate errors for a 10 different targets on p1 -> p2
-    min_id = 0
-    min_error = 10e10
 
-    for i in range(11):
-        p1_view[:] = positions[v1]
-        p2_view[:] = positions[v2]
-        maths.mul_scalar_1D(p1_view, i * 0.1)
-        maths.mul_scalar_1D(p2_view, 1 - i * 0.1)
+    p1_view[:] = positions[v1]
+    p2_view[:] = positions[v2]
+
+    for i in range(3):
+        p12_view[i] = p2_view[i] - p1_view[i]
+    
+    maths.mul_scalar_1D(p1_view, 0.1)
+
+    min_id = 0
+    min_error = maths.error(p1_view, new_Q_view)
+
+    for i in range(1, 11):
+        maths.mul_scalar_1D(p12_view, i)
         for j in range(3):
             p12_view[j] = p1_view[j] + p2_view[j]
     
-        error = maths.error(p12_view, new_Q_view)
+        error =  maths.error(p12_view, new_Q_view)
 
-        if error < min_error:
+        if error <= min_error:
             min_error = error
             min_id = i
-            pair[target_offset: feature_offset] = p12_view
-            pair[0] = error
+    
+    pair[0] = min_error
+    for j in range(3):
+        pair[target_offset + j] = p12_view[j] + p1_view[i]
 
     if features_len != 0:
         for i in range(features_len):

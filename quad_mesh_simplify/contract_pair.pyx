@@ -41,7 +41,7 @@ cpdef void update_pairs(
         pair = heap.get_pair(i)
         if (pair[1] == v1 or pair[2] == v1) and \
             (pair[1] == v2 or pair[2] == v2):
-            pair[0] = -1 # low value so pair will appear first and gets unvalid in simplify.pyx
+            pair[0] = -10e6 # low value so pair will appear first and gets unvalid in simplify.pyx
             continue
 
         if pair[1] == v1 or pair[1] == v2:

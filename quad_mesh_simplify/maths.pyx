@@ -19,12 +19,12 @@ cdef void normal(double[:] v1, double[:] v2, double[:] v3, double[:] out):
         b = (i + 2) % 3
         out[i] = (v1[a] - v2[a]) * (v3[b] - v2[b]) - \
                  (v1[b] - v2[b]) * (v3[a] - v2[a])
+    out[3] = 0
     n = norm(out)
     if n > 0:
         for i in range(3):
             out[i] /= n
     
-    out[3] = 0
     # set d
     out[3] = - dot1d(out, v1)
 
@@ -100,4 +100,4 @@ cdef double error(double[:] p, double[:, :] Q):
             s_view[i] += p[j] * Q[j, i]
         s_view[i] += Q[3, i]
     
-    return p[0] * s[0] + p[1] * s[1] + p[2] * s[2] + s[3]
+    return p[0] * s_view[0] + p[1] * s_view[1] + p[2] * s_view[2] + s_view[3]
