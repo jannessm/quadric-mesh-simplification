@@ -65,7 +65,6 @@ cpdef void preserve_bounds(
 
     n = np.zeros((4), dtype=DTYPE_DOUBLE)
     n_view = p
-    print(edges_)
 
     # add penalities
     for i in range(face.shape[0]):
@@ -73,8 +72,8 @@ cpdef void preserve_bounds(
             a = (j + 1) % 3
             v1 = face[i, j]
             v2 = face[i, a]
+            
             if edges[v1, v2] > -1:
-                print(v1, v2, edges[v1, v2])
 
                 # calculate face normal
                 pos1 = positions[v1]
