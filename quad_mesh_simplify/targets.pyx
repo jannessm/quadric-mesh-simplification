@@ -105,44 +105,47 @@ cpdef void calculate_pair_attributes(
     p1 = np.zeros((3), dtype=DTYPE_DOUBLE)
     p2 = np.zeros((3), dtype=DTYPE_DOUBLE)
     p12 = np.zeros((3), dtype=DTYPE_DOUBLE)
+    p112 = np.zeros((3), dtype=DTYPE_DOUBLE)
     p1_view = p1
     p2_view = p2
-    p12_view = p12
+    p12_view = p12 #from 1 to 2
+    p112_view = p112 # p1 + p12 (mixture between 1 and 2)
 
     pair[1] = v1
     pair[2] = v2
 
     maths.add_2D(Q[v1], Q[v2], new_Q_view)
-    
     # do not use explicit solution because of feature trade-off
 
     # calculate errors for a 10 different targets on p1 -> p2
 
-    p1_view[:] = positions[v1]
-    p2_view[:] = positions[v2]
+    p1_view = positions[v1]
+    p2_view = positions[v2]
 
     for i in range(3):
         p12_view[i] = p2_view[i] - p1_view[i]
     
-    maths.mul_scalar_1D(p1_view, 0.1)
+    maths.mul_scalar_1D(p12_view, 0.1)
+
+    for j in range(3):
+        p112_view[j] = p1_view[j]
 
     min_id = 0
     min_error = maths.error(p1_view, new_Q_view)
 
-    for i in range(1, 11):
-        maths.mul_scalar_1D(p12_view, i)
+    for i in range(11):
         for j in range(3):
-            p12_view[j] = p1_view[j] + p2_view[j]
+            p112_view[j] = p1_view[j] + p12_view[j] * i
     
-        error =  maths.error(p12_view, new_Q_view)
+        error =  maths.error(p112_view, new_Q_view)
 
         if error <= min_error:
             min_error = error
             min_id = i
+            for j in range(3):
+                pair[target_offset + j] = p112_view[j]
     
     pair[0] = min_error
-    for j in range(3):
-        pair[target_offset + j] = p12_view[j] + p1_view[i]
 
     if features_len != 0:
         for i in range(features_len):

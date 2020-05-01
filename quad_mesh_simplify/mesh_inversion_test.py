@@ -28,6 +28,7 @@ class MeshInversionTests(unittest.TestCase):
         new_pos = np.array([
             [0.25, 0, 0.],
             [0.5, .5, 1.],
+            [0.5, .5, 1.],
             [-.5, 0.5, 1.],
             [0.75, 0., 0.],
         ])
@@ -39,8 +40,8 @@ class MeshInversionTests(unittest.TestCase):
         ])
 
         new_face = np.array([
-            [0,1,2],
-            [0,3,1],
+            [0,2,3],
+            [0,4,2],
         ])
 
         deleted_faces = array.array('B', [False, False, False])

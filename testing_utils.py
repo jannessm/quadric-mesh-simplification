@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def plot_test_mesh(positions, face):
+def plot_test_mesh(positions, face, block=True):
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
 	for i in range(positions.shape[0]):
@@ -13,4 +13,4 @@ def plot_test_mesh(positions, face):
 	    f_ = np.hstack([f, f[0]])
 	    ax.plot(positions[f_, 0], positions[f_, 1], positions[f_, 2])
 
-	plt.show()
+	plt.show(block=block)
