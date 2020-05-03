@@ -6,7 +6,6 @@ DTYPE_LONG = np.long
 
 cimport cython
 from .targets cimport calculate_pair_attributes
-from .utils cimport get_rows
 
 import array
 

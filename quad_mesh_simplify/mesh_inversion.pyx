@@ -12,7 +12,6 @@ cimport cython
 from cpython cimport array
 import array
 from .maths cimport normal, dot1d
-from .utils cimport get_rows, face_normal
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function

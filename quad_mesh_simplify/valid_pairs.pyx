@@ -5,8 +5,6 @@ DTYPE_LONG = np.long
 DTYPE_DOUBLE = np.double
 
 from .maths cimport norm
-from .utils cimport get_faces_for_node
-from .utils cimport get_rows
 
 cimport cython
 

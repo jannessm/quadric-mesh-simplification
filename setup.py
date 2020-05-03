@@ -20,7 +20,6 @@ files = [
 	'quad_mesh_simplify.q',
 	'quad_mesh_simplify.simplify',
 	'quad_mesh_simplify.targets',
-	'quad_mesh_simplify.utils',
 	'quad_mesh_simplify.valid_pairs',
 ]
 

@@ -1,18 +1,26 @@
 import array
 import numpy as np
 
+cimport cython
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] clean_positions(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] pos,
     array.array deleted_pos):
 
     return pos[[ not deleted for deleted in deleted_pos.tolist()]]
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] clean_features(
     np.ndarray[DTYPE_DOUBLE_T, ndim=2] features,
     array.array deleted_pos):
 
     return features[[ not deleted for deleted in deleted_pos.tolist()]]
 
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
 cdef np.ndarray[DTYPE_LONG_T, ndim=2] clean_face(
     np.ndarray[DTYPE_LONG_T, ndim=2] face,
     array.array deleted_faces,
