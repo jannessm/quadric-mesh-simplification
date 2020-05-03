@@ -21,7 +21,7 @@ cpdef void update_face(
     long v1,
     long v2,
     long [:, :] face,
-    unsigned char [:] deleted_faces)
+    char [:] deleted_faces)
 
 cpdef void update_features(
     double [:] pair,

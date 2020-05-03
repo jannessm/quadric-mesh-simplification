@@ -11,6 +11,7 @@ url = 'https://github.com/jannessm/quadric-mesh-simplification'
 ext = '.pyx' if FROM_SOURCE else '.c'
 
 files = [
+	'quad_mesh_simplify.clean_mesh',
 	'quad_mesh_simplify.contract_pair',
 	'quad_mesh_simplify.maths',
 	'quad_mesh_simplify.heap',

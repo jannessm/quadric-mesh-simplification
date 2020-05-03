@@ -9,4 +9,4 @@ cpdef int has_mesh_inversion(
     double [:, :] positions,
     double [:, :] new_positions,
     long [:, :] face,
-    unsigned char [:] deleted_faces)
+    char [:] deleted_faces)

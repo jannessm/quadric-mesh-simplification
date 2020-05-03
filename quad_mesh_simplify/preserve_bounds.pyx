@@ -86,6 +86,6 @@ cpdef void preserve_bounds(
                 # calculate normal
                 normal(pos1, pos2, n_view, p_view)
                 calculate_K(p_view, K_view)
-                mul_scalar_2D(K_view, 10e6)
+                mul_scalar_2D(K_view, 10e3)
                 add_inplace(Q[v1], K_view)
                 add_inplace(Q[v2], K_view)

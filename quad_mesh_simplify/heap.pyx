@@ -78,8 +78,10 @@ cdef class PairHeap:
             return i * 2 + 1
 
     def __str__(self):
-        return '+- {}\n|   +- {}\n|   +- {}\n'.format(
+        return '+- {} {}, {}\n|   +- {}\n|   +- {}\n'.format(
             self._get_value(1),
+            self.get_pair(0)[1],
+            self.get_pair(0)[2],
             self.__node_repr(2, 1),
             self.__node_repr(3, 1))
 
@@ -87,8 +89,10 @@ cdef class PairHeap:
         if self.length_ - 1 < i:
             return None
         
-        return '{}\n{}+- {}\n{}+- {}'.format(
+        return '{} {}, {}\n{}+- {}\n{}+- {}'.format(
             self._get_value(i),
+            self.get_pair(i - 1)[1],
+            self.get_pair(i - 1)[2],
             '|   '*(level + 1),
             self.__node_repr(i * 2, level + 1),
             '|   '*(level + 1),

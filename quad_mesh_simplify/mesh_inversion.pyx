@@ -22,7 +22,7 @@ cpdef int has_mesh_inversion(
     double [:, :] positions,
     double [:, :] new_positions,
     long [:, :] face,
-    unsigned char [:] deleted_faces):
+    char [:] deleted_faces):
     """tests if a contraction of two nodes led to an inverted face by comparing all neighboring faces of v1 and v2.
 
     Args:
@@ -100,7 +100,6 @@ cdef int flipped(
         v3 = positions[i3]
 
         normal(v1, v2, v3, old_norm)
-
         if i1 == v2_id and i2 != v2_id and i3 != v2_id:
             i1 = v1_id
         elif i1 != v2_id and i2 == v2_id and i3 != v2_id:
