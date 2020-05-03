@@ -1,13 +1,6 @@
-import numpy as np
-cimport numpy as np
-
-DTYPE_DOUBLE = np.double
-DTYPE_LONG = np.long
-
 cimport cython
-from .targets cimport calculate_pair_attributes
 
-import array
+from .targets cimport calculate_pair_attributes
 
 cdef int target_offset = 3
 cdef int feature_offset = 3 + 3

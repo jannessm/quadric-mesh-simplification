@@ -1,9 +1,9 @@
 
-cdef void normal(double[:] v1, double[:] v2, double[:] v3, double[:] out)
+cdef void normal(double[:] v1, double[:] v2, double[:] v3, double[:] out) nogil
 
-cdef double norm(double[:] n)
+cdef double norm(double[:] n) nogil
 
-cdef double dot1d(double[:] v1, double[:] v2)
+cdef double dot1d(double[:] v1, double[:] v2) nogil
 
 cdef void calculate_K(double[:] p, double[:, :] K)
 

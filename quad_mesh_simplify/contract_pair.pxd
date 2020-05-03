@@ -1,11 +1,3 @@
-cimport numpy as np
-
-cdef int target_offset 
-cdef int feature_offset
-
-ctypedef np.long_t DTYPE_LONG_T
-ctypedef np.double_t DTYPE_DOUBLE_T
-
 from cpython cimport array
 from .heap cimport PairHeap
 

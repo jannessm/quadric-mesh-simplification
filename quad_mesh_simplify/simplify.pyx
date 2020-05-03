@@ -25,9 +25,6 @@ from .q cimport compute_Q
 from .targets cimport compute_targets
 from .valid_pairs cimport compute_valid_pairs
 
-
-@cython.boundscheck(False) # turn off bounds-checking for entire function
-@cython.wraparound(False)  # turn off negative index wrapping for entire function
 def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
     <http://mgarland.org/files/papers/quadrics.pdf>`_.
@@ -47,7 +44,6 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     cdef np.ndarray[DTYPE_LONG_T, ndim=2] face_copy
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q_
     cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pos_copy, features_copy, new_positions_, pairs
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1_, pos2_
     
     cdef array.array deleted_pos_, deleted_faces_
 
@@ -55,22 +51,17 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     
     cdef double [:, :, :] Q
     cdef double [:, :] pos, new_positions, feats
-    cdef double [:] pos1, pos2, p
     
     cdef long [:, :] face, valid_pairs, face_view
-    cdef long i, v1, v2
     
     cdef char [:] deleted_pos, deleted_faces
     cdef char reverse_update
     
-    cdef int update_failed, num_deleted_nodes, diminish_by
+    cdef int update_failed, diminish_by
 
     assert(positions.shape[1] == 3)
     assert(face_in.shape[1] == 3)
     assert(num_nodes < positions.shape[0])
-    
-    num_deleted_nodes = 0
-    tmp = 0
 
     # copy positions, face and features for manipulation
     pos_copy = np.copy(positions)
@@ -96,11 +87,6 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     else:
         feats = None
 
-    pos1_ = np.zeros((3), dtype=DTYPE_DOUBLE)
-    pos2_ = np.zeros((3), dtype=DTYPE_DOUBLE)
-    pos1 = pos1_
-    pos2 = pos2_
-    
     # 1. compute Q for all vertices
     Q_ = compute_Q(pos, face)
     Q = Q_
@@ -123,6 +109,48 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
         start = time()
 
     # 5. contract vertices until num_nodes reached
+    contract(heap, Q, pos, new_positions, feats, face, deleted_pos, deleted_faces, num_nodes)
+
+    # delete positions, faces and features
+    pos_copy = clean_positions(pos_copy, deleted_pos_)
+    face_copy = clean_face(face_copy, deleted_face_, deleted_pos)
+
+    if DEBUG:
+        print('reduction in {} sec'.format(time() - start))
+
+    if features is not None:
+        features_copy = clean_features(features_copy, deleted_pos_)
+        return pos_copy, face_copy, features_copy
+    else:
+        return pos_copy, face_copy
+
+@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.wraparound(False)  # turn off negative index wrapping for entire function
+cdef void contract(
+    PairHeap heap,
+    double [:, :, :] Q,
+    double[:, :] pos,
+    double[:, :] new_positions,
+    double[:, :] features,
+    long [:, :] face,
+    char [:] deleted_pos,
+    char [:] deleted_faces,
+    int num_nodes):
+
+    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=1] pos1_, pos2_
+
+    cdef double [:] pos1, pos2, p
+
+    cdef long i, v1, v2, num_deleted_nodes
+    cdef char reverse_update
+
+    num_deleted_nodes = 0
+
+    pos1_ = np.zeros((3), dtype=DTYPE_DOUBLE)
+    pos2_ = np.zeros((3), dtype=DTYPE_DOUBLE)
+    pos1 = pos1_
+    pos2 = pos2_
+
     while heap.length() > 0 and pos.shape[0] - num_deleted_nodes > num_nodes:
         p = heap.pop()
         v1 = <long>p[1]
@@ -158,20 +186,7 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
         # if contraction is valid do updates
         add_2D(Q[v1], Q[v2], Q[v1])
         update_face(v1, v2, face, deleted_faces)
-        update_features(p, feats)
+        update_features(p, features)
         update_pairs(v1, v2, heap, pos, Q, features)
 
         num_deleted_nodes += 1
-
-    # delete positions, faces and features
-    pos_copy = clean_positions(pos_copy, deleted_pos_)
-    face_copy = clean_face(face_copy, deleted_face_, deleted_pos)
-
-    if DEBUG:
-        print('reduction in {} sec'.format(time() - start))
-
-    if features is not None:
-        features_copy = clean_features(features_copy, deleted_pos_)
-        return pos_copy, face_copy, features_copy
-    else:
-        return pos_copy, face_copy

@@ -1,16 +1,11 @@
-import numpy as np
-cimport numpy as np
+from cpython cimport array
+cimport cython
 
-DTYPE_DOUBLE = np.double
-
-ctypedef np.uint8_t DTYPE_UINT8_T
+import array
 
 cdef extern from "math.h" nogil:
   double fabs(double x)
 
-cimport cython
-from cpython cimport array
-import array
 from .maths cimport normal, dot1d
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
@@ -36,7 +31,7 @@ cpdef int has_mesh_inversion(
     cdef int i, j, check_face
 
     cdef array.array new_norm_, old_norm_
-    cdef new_norm, old_norm
+    cdef double [:] new_norm, old_norm
 
     new_norm_ = array.array('d', [0,0,0,0])
     old_norm_ = array.array('d', [0,0,0,0])

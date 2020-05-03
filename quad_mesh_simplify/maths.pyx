@@ -6,7 +6,7 @@ cdef extern from "math.h" nogil:
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cdef void normal(double[:] v1, double[:] v2, double[:] v3, double[:] out):
+cdef void normal(double[:] v1, double[:] v2, double[:] v3, double[:] out) nogil:
     cdef int i, a, b
     cdef double n
     for i in range(3):
@@ -25,7 +25,7 @@ cdef void normal(double[:] v1, double[:] v2, double[:] v3, double[:] out):
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cdef double norm(double[:] n):
+cdef double norm(double[:] n) nogil:
     cdef double s = 0.
     cdef int i
     for i in range(n.shape[0]):
@@ -34,7 +34,7 @@ cdef double norm(double[:] n):
 
 @cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
-cdef double dot1d(double[:] v1, double[:] v2):
+cdef double dot1d(double[:] v1, double[:] v2) nogil:
     cdef double s = 0.
     cdef int i
     for i in range(v1.shape[0]):
