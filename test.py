@@ -3,7 +3,7 @@ from quad_mesh_simplify.simplify import simplify_mesh
 from mayavi import mlab
 from time import time
 
-lion = read_ply('./test_data/bunny.ply')
+lion = read_ply('./test_data/Lion.ply')
 print(lion)
 
 pos = lion.pos
