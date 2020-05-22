@@ -130,8 +130,6 @@ dmypy.json
 
 
 # cython
-*.c
-*.h
 
 *.ipynb
 
