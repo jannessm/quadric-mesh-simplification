@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "q.h"
 #include "test_utils.h"
 #include "mesh.h"
@@ -49,4 +50,6 @@ int main(void) {
   q_equal(test_case, expected, q, 0, 4 * 16);
 
   printf("✓ %s\n", test_case);
+
+  free(q);
 }

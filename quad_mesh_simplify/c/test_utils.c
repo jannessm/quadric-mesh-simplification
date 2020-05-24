@@ -47,11 +47,13 @@ void q_equal(const char* test_case, double* expected, double* result, unsigned i
 
 void q_not_equal(const char* test_case, double* expected, double* result, unsigned int from, unsigned int to) {
   int i;
+  bool not_equal = true;
   for (i = from; i < to; i++) {
-    if (expected[i] - result[i] < 10e-6) {
-      fprintf(stderr, "✗ %s:\nerror at value %d\nexpected:                             got:\n", test_case, i);
-      print_Q_comparision(expected, result, from / 16, to / 16, true);
-      exit(-2);
+    if (expected[i] - result[i] > 10e-6) {
+      return;
     }
   }
+
+  fprintf(stderr, "✗ %s:\nvalues from %d to %d are equal!\n", test_case, from, to);
+  exit(-2);
 }

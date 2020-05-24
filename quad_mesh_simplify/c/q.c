@@ -3,23 +3,25 @@
 #include "utils.h"
 #include <omp.h>
 #include <stdbool.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 double* compute_Q(Mesh mesh) {
+  #ifdef _OPENMP
   omp_lock_t q_locks[mesh.n_vertices];
+  #endif
   double *K, *p, *Q;
   double *pos1, *pos2, *pos3;
   bool proc1, proc2, proc3;
   unsigned int i;
 
-  Q = malloc(sizeof(double) * mesh.n_vertices * 4 * 4);
-  memset(Q, 0, sizeof(double) * mesh.n_vertices * 4 * 4);
+  Q = calloc(mesh.n_vertices * 4 * 4, sizeof(double));
   
+  #ifdef _OPENMP
   for (i = 0; i < mesh.n_vertices; i++) {
     omp_init_lock(&(q_locks[i]));
   }
+  #endif
 
   #pragma omp parallel for shared(q_locks, Q) private(K, p, pos1, pos2, pos3, proc1, proc2, proc3)
   for (i = 0; i < mesh.n_face; i++) {
@@ -61,11 +63,16 @@ double* compute_Q(Mesh mesh) {
       add_K_to_Q(&(Q[mesh.face[i * 3 + 1] * 16]), K);
       add_K_to_Q(&(Q[mesh.face[i * 3 + 2] * 16]), K);
     #endif
+    
+    free(K);
+    free(p);
   }
 
+  #ifdef _OPENMP
   for (i = 0; i < mesh.n_vertices; i++) {
     omp_destroy_lock(&(q_locks[i]));
   }
+  #endif
   
   return Q;
 }
