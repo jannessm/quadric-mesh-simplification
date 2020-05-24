@@ -71,17 +71,3 @@ Mesh read_ply(char* filename) {
 
   return m;
 }
-
-void print_Q(double* q, unsigned int n_vertices, char to_stderr) {
-  unsigned int i, j;
-  for (i = 0; i < n_vertices; i++) {
-    for (j = i; j < i + 4; j++) {
-      if (to_stderr) {
-        fprintf(stderr, "%.4lf  %.4lf  %.4lf  %.4lf\n", q[i*4], q[i*4 + 1], q[i*4 + 2], q[i*4 + 3]);
-      } else {
-        printf("%.4lf  %.4lf  %.4lf  %.4lf\n", q[i*4], q[i*4 + 1], q[i*4 + 2], q[i*4 + 3]);
-      }
-    }
-    printf("\n");
-  }
-}

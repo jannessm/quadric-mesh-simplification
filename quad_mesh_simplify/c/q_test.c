@@ -1,7 +1,10 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include "q.h"
-#include "utils.h"
+#include "test_utils.h"
 #include "mesh.h"
+
+const char *test_case = "Q";
 
 int main(void) {
 
@@ -17,7 +20,7 @@ int main(void) {
     0, 2, 3
   };
 
-  double res[] = {
+  double expected[] = {
     0.5, -0.5, 0.,  0. ,
    -0.5, 0.5, 0.,  0. ,
     0.,  0.,  1.,  0. ,
@@ -43,16 +46,7 @@ int main(void) {
 
   double* q = compute_Q(m);
 
-  int i;
-  for (i = 0; i < 16; i++) {
-    if (res[i] - q[i] > 10e-6) {
-      fprintf(stderr, "FAIL q_test:\n\nQ:");
-      print_Q(q, 4, true);
-      fprintf(stderr, "\nExpected:\n");
-      print_Q(res, 4, true);
-      exit(-2);
-    }
-  }
+  q_equal(test_case, expected, q, 0, 4 * 16);
 
-  printf("Test Q: done\n");
+  printf("✓ %s\n", test_case);
 }

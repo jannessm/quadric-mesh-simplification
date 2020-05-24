@@ -18,10 +18,10 @@ double* compute_Q(Mesh mesh) {
   memset(Q, 0, sizeof(double) * mesh.n_vertices * 4 * 4);
   
   for (i = 0; i < mesh.n_vertices; i++) {
-    omp_init_lock(&q_locks[i]);
+    omp_init_lock(&(q_locks[i]));
   }
 
-  #pragma omp parallel for shared(q_locks, Q) private(K, p, pos1, pos2, pos3)
+  #pragma omp parallel for shared(q_locks, Q) private(K, p, pos1, pos2, pos3, proc1, proc2, proc3)
   for (i = 0; i < mesh.n_face; i++) {
     proc1 = false;
     proc2 = false;
@@ -35,29 +35,36 @@ double* compute_Q(Mesh mesh) {
     K = calculate_K(p);
 
     //update Q
+    #ifdef _OPENMP
     while (!proc1 || !proc2 || !proc3) {
-      if (omp_test_lock(&q_locks[mesh.face[i * 3]])) {
-        add_K_to_Q(&Q[mesh.face[i * 3] * 16], K);
-        omp_unset_lock(&q_locks[mesh.face[i * 3]]);
+      if (!proc1 && omp_test_lock(&(q_locks[mesh.face[i * 3]]))) {
+        add_K_to_Q(&(Q[mesh.face[i * 3] * 16]), K);
+        omp_unset_lock(&(q_locks[mesh.face[i * 3]]));
         proc1 = true;
       }
       
-      if (omp_test_lock(&q_locks[mesh.face[i * 3 + 1]])) {
-        add_K_to_Q(&Q[mesh.face[i * 3 + 1] * 16], K);
-        omp_unset_lock(&q_locks[mesh.face[i * 3 + 1]]);
+      if (!proc2 && omp_test_lock(&(q_locks[mesh.face[i * 3 + 1]]))) {
+        add_K_to_Q(&(Q[mesh.face[i * 3 + 1] * 16]), K);
+        omp_unset_lock(&(q_locks[mesh.face[i * 3 + 1]]));
         proc2 = true;
       }
 
-      if (omp_test_lock(&q_locks[mesh.face[i * 3 + 2]])) {
-        add_K_to_Q(&Q[mesh.face[i * 3 + 2] * 16], K);
-        omp_unset_lock(&q_locks[mesh.face[i * 3 + 2] + 1]);
+      if (!proc3 && omp_test_lock(&(q_locks[mesh.face[i * 3 + 2]]))) {
+        add_K_to_Q(&(Q[mesh.face[i * 3 + 2] * 16]), K);
+        omp_unset_lock(&(q_locks[mesh.face[i * 3 + 2]]));
         proc3 = true;
       }
     }
+    #endif
+    #ifndef _OPENMP
+      add_K_to_Q(&(Q[mesh.face[i * 3] * 16]), K);
+      add_K_to_Q(&(Q[mesh.face[i * 3 + 1] * 16]), K);
+      add_K_to_Q(&(Q[mesh.face[i * 3 + 2] * 16]), K);
+    #endif
   }
 
   for (i = 0; i < mesh.n_vertices; i++) {
-    omp_destroy_lock(&q_locks[i]);
+    omp_destroy_lock(&(q_locks[i]));
   }
   
   return Q;
