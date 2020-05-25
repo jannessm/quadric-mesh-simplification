@@ -3,11 +3,11 @@ cimport numpy as np
 
 DTYPE_DOUBLE = np.double
 DTYPE_LONG = np.long
-DTYPE_INT = np.int32
+DTYPE_INT = np.int8
 
 ctypedef np.double_t DTYPE_DOUBLE_T
 ctypedef np.long_t DTYPE_LONG_T
-ctypedef np.int32_t DTYPE_INT_T
+ctypedef np.int8_t DTYPE_INT_T
 
 from .maths cimport normal, calculate_K, add_inplace, mul_scalar_2D
 from cpython cimport array
@@ -37,7 +37,7 @@ cpdef void preserve_bounds(
     cdef double[:] pos1, pos2, pos3, p_view, n_view
     
     cdef int i, j, a, num_nodes, v1, v2
-    cdef int [:,:] edges
+    cdef char [:,:] edges
     
     num_nodes = positions.shape[0]
 

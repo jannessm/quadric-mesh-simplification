@@ -2,6 +2,7 @@ import numpy as np
 cimport numpy as np
 cimport cython
 from cpython cimport array
+from cpython.exc cimport PyErr_CheckSignals
 import array
 
 DTYPE_DOUBLE = np.double
@@ -10,7 +11,7 @@ DTYPE_LONG = np.long
 ctypedef np.double_t DTYPE_DOUBLE_T
 ctypedef np.long_t DTYPE_LONG_T
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     from time import time
@@ -64,13 +65,13 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     assert(num_nodes < positions.shape[0])
 
     # copy positions, face and features for manipulation
-    pos_copy = np.copy(positions)
+    pos_copy = np.copy(positions).astype('double')
     pos = pos_copy
     
-    new_positions_ = np.copy(positions)
+    new_positions_ = np.copy(pos_copy)
     new_positions = new_positions_
     
-    face_copy = np.copy(face_in)
+    face_copy = np.copy(face_in).astype('long')
     face = face_copy
 
     deleted_pos_ = array.array('B', [])
@@ -82,7 +83,7 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     deleted_faces = deleted_face_
 
     if features is not None:
-        features_copy = np.copy(features)
+        features_copy = np.copy(features).astype('double')
         feats = features_copy
     else:
         feats = None
@@ -152,6 +153,10 @@ cdef void contract(
     pos2 = pos2_
 
     while heap.length() > 0 and pos.shape[0] - num_deleted_nodes > num_nodes:
+        # check if ctrl + c was pressed
+        if num_deleted_nodes % 100 == 0:
+            PyErr_CheckSignals()
+        
         p = heap.pop()
         v1 = <long>p[1]
         v2 = <long>p[2]

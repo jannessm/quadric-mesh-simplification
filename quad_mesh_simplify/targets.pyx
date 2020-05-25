@@ -2,7 +2,7 @@ import numpy as np
 
 DTYPE_DOUBLE = np.double
 
-from . cimport maths
+from .maths cimport add_2D, mul_scalar_1D, error
 
 from cpython cimport array
 import array
@@ -97,7 +97,7 @@ cpdef void calculate_pair_attributes(
     cdef int pair_shape = 3 + 3 + features_len
     cdef int target_offset = 3
     cdef int feature_offset = 3 + 3
-    cdef double min_error, error
+    cdef double min_error, err
 
     new_Q = np.zeros((4, 4), dtype=DTYPE_DOUBLE)
     new_Q_view = new_Q
@@ -114,7 +114,7 @@ cpdef void calculate_pair_attributes(
     pair[1] = v1
     pair[2] = v2
 
-    maths.add_2D(Q[v1], Q[v2], new_Q_view)
+    add_2D(Q[v1], Q[v2], new_Q_view)
     # do not use explicit solution because of feature trade-off
 
     # calculate errors for a 10 different targets on p1 -> p2
@@ -125,22 +125,22 @@ cpdef void calculate_pair_attributes(
     for i in range(3):
         p12_view[i] = p2_view[i] - p1_view[i]
     
-    maths.mul_scalar_1D(p12_view, 0.1)
+    mul_scalar_1D(p12_view, 0.1)
 
     for j in range(3):
         p112_view[j] = p1_view[j]
 
     min_id = 0
-    min_error = maths.error(p1_view, new_Q_view)
+    min_error = error(p1_view, new_Q_view)
 
     for i in range(11):
         for j in range(3):
             p112_view[j] = p1_view[j] + p12_view[j] * i
     
-        error =  maths.error(p112_view, new_Q_view)
+        err =  error(p112_view, new_Q_view)
 
-        if error <= min_error:
-            min_error = error
+        if err <= min_error:
+            min_error = err
             min_id = i
             for j in range(3):
                 pair[target_offset + j] = p112_view[j]

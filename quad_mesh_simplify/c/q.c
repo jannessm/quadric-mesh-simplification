@@ -23,15 +23,15 @@ double* compute_Q(Mesh mesh) {
   }
   #endif
 
-  #pragma omp parallel for shared(q_locks, Q) private(K, p, pos1, pos2, pos3, proc1, proc2, proc3)
+  #pragma omp parallel for shared(q_locks, Q, mesh) private(i, K, p, pos1, pos2, pos3, proc1, proc2, proc3)
   for (i = 0; i < mesh.n_face; i++) {
     proc1 = false;
     proc2 = false;
     proc3 = false;
 
-    pos1 = &mesh.positions[mesh.face[i*3] * 3];
-    pos2 = &mesh.positions[mesh.face[i*3 + 1] * 3];
-    pos3 = &mesh.positions[mesh.face[i*3 + 2] * 3];
+    pos1 = &(mesh.positions[mesh.face[i*3] * 3]);
+    pos2 = &(mesh.positions[mesh.face[i*3 + 1] * 3]);
+    pos3 = &(mesh.positions[mesh.face[i*3 + 2] * 3]);
 
     p = normal(pos1, pos2, pos3);
     K = calculate_K(p);
