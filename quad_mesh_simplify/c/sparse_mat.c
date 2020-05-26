@@ -13,7 +13,7 @@ double sparse_get(SparseMat* mat, unsigned int row, unsigned int column) {
   return 0;
 }
 
-bool sparse_has_entry(SparseMat* mat, unsigned int row, unsigned int column) {
+char sparse_has_entry(SparseMat* mat, unsigned int row, unsigned int column) {
   unsigned int i, j;
   for (i = 0; i < mat->length; i++) {
     if (mat->rows[i] == row && mat->columns[i] == column) {
@@ -48,8 +48,12 @@ void sparse_set(SparseMat* mat, unsigned int row, unsigned int column, double va
   }
 }
 
-SparseMat sparse_empty() {
-  SparseMat mat = {NULL, NULL, NULL, 0};
+SparseMat* sparse_empty() {
+  SparseMat* mat = malloc(sizeof(SparseMat));
+  mat->values = NULL;
+  mat->rows = NULL;
+  mat->columns = NULL;
+  mat->length = 0;
   return mat;
 }
 
@@ -57,6 +61,7 @@ void sparse_free(SparseMat* mat) {
   free(mat->values);
   free(mat->rows);
   free(mat->columns);
+  free(mat);
 }
 
 void print_sparse(SparseMat* mat) {
