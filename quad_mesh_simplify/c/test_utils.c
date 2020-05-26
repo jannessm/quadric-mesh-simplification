@@ -62,21 +62,39 @@ void q_not_equal(const char* test_case, double* expected, double* result, unsign
 void print_array_comparison(
   Array2D_uint* arr1, Array2D_uint* arr2,
   bool to_stderr) {
-  unsigned int i, j;
-  for (i = 0; i < arr1->rows; i++) {
+
+  unsigned int i, j, max_rows;
+  max_rows = arr1->rows > arr2->rows ? arr1->rows : arr2->rows;
+
+  for (i = 0; i < max_rows; i++) {
+
     for (j = 0; j < arr1->columns; j++) {
-      if (to_stderr) {
-        fprintf(stderr, "%d  ", arr1->data[i * arr1->columns + j]);
+      if (to_stderr && i < arr1->rows) {
+        fprintf(stderr, "%u  ", arr1->data[i * arr1->columns + j]);
+      } else if (arr1->rows) {
+        printf("%u  ", arr1->data[i * arr1->columns + j]);
+      } else if (to_stderr) {
+        fprintf(stderr, "   ");
       } else {
-        printf("%d  ", arr1->data[i * arr1->columns + j]);
+        printf("   ");
       }
     }
-    printf("        ");
-    for (j = 0; j < arr1->columns; j++) {
-      if (to_stderr) {
-        fprintf(stderr, "%d  ", arr2->data[i * arr1->columns + j]);
+
+    if (to_stderr) {
+      fprintf(stderr, "        ");
+    } else {
+      printf("        ");
+    }
+    
+    for (j = 0; j < arr2->columns; j++) {
+      if (to_stderr && i < arr2->rows) {
+        fprintf(stderr, "%u  ", arr2->data[i * arr2->columns + j]);
+      } else if (arr2->rows) {
+        printf("%u  ", arr2->data[i * arr2->columns + j]);
+      } else if (to_stderr) {
+        fprintf(stderr, "   ");
       } else {
-        printf("%d  ", arr2->data[i * arr1->columns + j]);
+        printf("   ");
       }
     }
     printf("\n");
@@ -90,14 +108,15 @@ void array_equal(
 
   if (expected->rows != result->rows || expected->columns != expected->columns) {
     fprintf(stderr, "✗ %s:\narrays doesnt have the same size\n", test_case);
-    fprintf(stderr, "  expected (%d x %d)\n  got      (%d x %d)\n", expected->rows, expected->columns, result->rows, result->columns);
+    fprintf(stderr, "  expected (%d x %d)  got      (%d x %d)\n", expected->rows, expected->columns, result->rows, result->columns);
+    print_array_comparison(expected, result, true);
     exit(-2);
   }
 
   int i;
   for (i = from; i < to; i++) {
     if (expected->data[i] - result->data[i] > 10e-6) {
-      fprintf(stderr, "✗ %s:\nerror at value %d\nexpected:                             got:\n", test_case, i);
+      fprintf(stderr, "✗ %s:\nerror at value %d\nexpected:     got:\n", test_case, i);
       print_array_comparison(expected, result, true);
       exit(-2);
     }
