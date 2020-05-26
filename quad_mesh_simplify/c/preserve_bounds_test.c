@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "test_utils.h"
 #include "mesh.h"
+#include "sparse_mat.h"
 
 const char* test_case = "preserve bounds";
 
@@ -141,9 +142,28 @@ int main(void) {
 
   Mesh m = {positions, NULL, face, 10, 10};
 
-  preserve_bounds(m, q);
+  unsigned int i, j, a, v1, v2;
+  SparseMat edges = sparse_empty();
 
-  int i;
+  // create edges
+  for (i = 0; i < m.n_face; i++) {
+    for (j = 0; j < 3; j++) {
+      a = (j + 1) % 3;
+      v1 = m.face[i * 3 + j] < m.face[i * 3 + a] ? m.face[i * 3 + j] : m.face[i * 3 + a];
+      v2 = m.face[i * 3 + j] == v1 ? m.face[i * 3 + a] : m.face[i * 3 + j];
+
+      // edge was not seen before
+      if (sparse_get(&edges, v1, v2) == 0) {
+        sparse_set(&edges, v1, v2, 1);
+      } else {
+        sparse_set(&edges, v1, v2, sparse_get(&edges, v1, v2)+1);
+      }
+    }
+  }
+
+  preserve_bounds(m, q, &edges);
+
+  sparse_free(&edges);
 
   // 0 - 2 NOT equal
   q_not_equal(test_case, q_old, q, 0, 3 * 16);
