@@ -6,5 +6,6 @@
     unsigned int* face;
     unsigned int n_vertices;
     unsigned int n_face;
+    unsigned int feature_length;
   } Mesh;
 #endif

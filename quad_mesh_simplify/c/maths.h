@@ -10,4 +10,6 @@ double dot1d(double* v1, double* v2);
 void add_K_to_Q(double* A, double* B);
 
 double* calculate_K(double* p);
+
+double error(double* p, double* Q);
 #endif

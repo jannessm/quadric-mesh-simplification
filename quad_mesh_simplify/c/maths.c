@@ -71,3 +71,21 @@ double* calculate_K(double* p) {
   }
   return K;
 }
+
+double error(double* p, double* Q) {
+  int i, j;
+  double err = 0;
+  for (i = 0; i < 3; i++) {
+    for (j = 0; j < 3; j++) {
+      err += p[j] * Q[j * 4 + i] * p[i];
+    }
+    err += Q[3 * 4 + i] * p[i];
+  }
+
+  for (i = 0; i < 3; i++) {
+    err += p[i] * Q[i * 4 + 3];
+  }
+  err += Q[15];
+
+  return err;
+}

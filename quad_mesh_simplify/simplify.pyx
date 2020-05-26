@@ -39,69 +39,6 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     :rtype: (:class:`ndarray`, :class:`ndarray`)
     """
 
-    if DEBUG:
-        start = time()
-
-    cdef np.ndarray[DTYPE_LONG_T, ndim=2] face_copy
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=3] Q_
-    cdef np.ndarray[DTYPE_DOUBLE_T, ndim=2] pos_copy, features_copy, new_positions_, pairs
-    
-    cdef array.array deleted_pos_, deleted_faces_
-
-    cdef PairHeap heap
-    
-    cdef double [:, :, :] Q
-    cdef double [:, :] pos, new_positions, feats
-    
-    cdef long [:, :] face, valid_pairs, face_view
-    
-    cdef char [:] deleted_pos, deleted_faces
-    cdef char reverse_update
-    
-    cdef int update_failed, diminish_by
-
-    assert(positions.shape[1] == 3)
-    assert(face_in.shape[1] == 3)
-    assert(num_nodes < positions.shape[0])
-
-    # copy positions, face and features for manipulation
-    pos_copy = np.copy(positions).astype('double')
-    pos = pos_copy
-    
-    new_positions_ = np.copy(pos_copy)
-    new_positions = new_positions_
-    
-    face_copy = np.copy(face_in).astype('long')
-    face = face_copy
-
-    deleted_pos_ = array.array('B', [])
-    deleted_pos_ = array.clone(deleted_pos_, pos.shape[0], True)
-    deleted_pos = deleted_pos_
-
-    deleted_face_ = array.array('B', [])
-    deleted_face_ = array.clone(deleted_face_, face.shape[0], True)
-    deleted_faces = deleted_face_
-
-    if features is not None:
-        features_copy = np.copy(features).astype('double')
-        feats = features_copy
-    else:
-        feats = None
-
-    # 1. compute Q for all vertices
-    Q_ = compute_Q(pos, face)
-    Q = Q_
-
-    # add penalty for boundaries
-    preserve_bounds(pos, face, Q)
-
-    # 2. Select valid pairs
-    valid_pairs = compute_valid_pairs(pos, face, threshold)
-
-    # 3. compute optimal contration targets
-    # of shape err, v1, v2, target, (features)    
-    pairs = compute_targets(pos, Q, valid_pairs, feats)
-
     # 4. create heap sorted by costs
     heap = PairHeap(pairs)
     

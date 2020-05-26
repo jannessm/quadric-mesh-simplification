@@ -141,7 +141,7 @@ int main(void) {
     2., 2., 2., 2.
   };
 
-  Mesh m = {positions, NULL, face, 10, 10};
+  Mesh m = {positions, NULL, face, 10, 10, 0};
 
   SparseMat* edges = create_edges(m);
 

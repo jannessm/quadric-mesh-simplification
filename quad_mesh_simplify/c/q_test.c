@@ -43,7 +43,7 @@ int main(void) {
     0.,  0.,  0.,  0. ,
   };
 
-  Mesh m = {positions, NULL, face, 4, 2};
+  Mesh m = {positions, NULL, face, 4, 2, 0};
 
   double* q = compute_Q(m);
 

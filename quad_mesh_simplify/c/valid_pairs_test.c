@@ -43,7 +43,7 @@ void test_valid_edges() {
 
   SparseMat* edges = create_edges(m);
 
-  Array2D_uint* result = compute_valid_pairs(m, edges, 0);
+  Array2D_uint* result = compute_valid_pairs(&m, edges, 0);
 
   array_equal(test_case, &expected, result, 0, expected.rows * expected.columns);
 
@@ -92,7 +92,7 @@ void test_valid_pairs() {
 
   SparseMat* edges = create_edges(m);
 
-  Array2D_uint* result = compute_valid_pairs(m, edges, 2);
+  Array2D_uint* result = compute_valid_pairs(&m, edges, 2);
 
   array_equal(test_case, &expected, result, 0, expected.rows * expected.columns);
 
