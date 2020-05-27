@@ -39,6 +39,11 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     :rtype: (:class:`ndarray`, :class:`ndarray`)
     """
 
+    
+    # 3. compute optimal contration targets
+    # of shape err, v1, v2, target, (features)    
+    pairs = compute_targets(pos, Q, valid_pairs, feats)
+
     # 4. create heap sorted by costs
     heap = PairHeap(pairs)
     

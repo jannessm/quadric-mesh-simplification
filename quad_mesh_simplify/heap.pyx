@@ -8,18 +8,6 @@ cdef class PairHeap:
         self.pairs = pairs
         self.length_ = self.nodes.shape[0]
         self.build()
-    
-    cpdef long length(self):
-        return self.length_ - 1
-
-    cdef double _get_value(self, long i):
-        return self.pairs[self.nodes[i], 0]
-
-    cdef double get_value(self, long i):
-        return self.pairs[self.nodes[i + 1], 0]
-
-    cpdef double[:] get_pair(self, long i):
-        return self.pairs[self.nodes[i + 1]]
 
     cdef void insert(self, long i):
         cdef array.array new = array.array('I', [i])

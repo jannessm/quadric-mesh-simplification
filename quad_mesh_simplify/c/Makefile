@@ -1,6 +1,6 @@
-referenced_files = test_utils.c maths.c sparse_mat.c edges.c array.c pair.c -lm -g
+referenced_files = test_utils.c maths.c sparse_mat.c edges.c array.c pair.c pair_heap.c -lm -g
 
-test: test_Q test_preserve_bounds test_valid_pairs
+test: test_Q test_preserve_bounds test_valid_pairs test_pair_heap
 
 test_Q: test_Q_omp
 	gcc q_test.c q.c $(referenced_files) -o q_test.o 
@@ -33,3 +33,7 @@ test_targets: test_targets_omp
 test_targets_omp:
 	gcc -fopenmp targets_test.c targets.c $(referenced_files) -o targets_test.o 
 	./targets_test.o
+
+test_pair_heap:
+	gcc pair_heap_test.c $(referenced_files) -o pair_heap_test.o 
+	valgrind --leak-check=yes -q ./pair_heap_test.o
