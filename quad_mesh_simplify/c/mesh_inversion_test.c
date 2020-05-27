@@ -17,11 +17,7 @@ void test_non_inverted_mesh() {
   };
 
   double new_pos[] = {
-    0.25, 0, 0.,
-    .5, .5, 1.,
-    .5, .5, 1.,
-    -.5, 0.5, 1.,
-    0.75, 0., 0.
+    .5, .5, 1.
   };
 
   unsigned int face[] = {
@@ -63,10 +59,7 @@ void test_inverted_mesh() {
   };
 
   double new_pos[] = {
-    0.25, 0, 0.,
-    -.25, 0, 0.,
-    0.5, .5, 1.,
-    -.5, .5, 1.,
+    -.25, 0, 0.
   };
 
   unsigned int face[] = {

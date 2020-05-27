@@ -5,7 +5,7 @@
 #include "sparse_mat.h"
 #include "maths.h"
 
-Array2D_uint* compute_valid_pairs(Mesh* mesh, SparseMat* edges, unsigned int threshold) {
+Array2D_uint* compute_valid_pairs(Mesh* mesh, SparseMat* edges, double threshold) {
   unsigned int i, j, k;
   unsigned int pair[2];
   double distance[3];

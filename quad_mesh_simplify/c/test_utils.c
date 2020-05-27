@@ -110,7 +110,7 @@ void array_equal(
     fprintf(stderr, "✗ %s:\narrays doesnt have the same size\n", test_case);
     fprintf(stderr, "  expected (%d x %d)  got      (%d x %d)\n", expected->rows, expected->columns, result->rows, result->columns);
     print_array_comparison(expected, result, true);
-    exit(-2);
+    exit(0);
   }
 
   int i;
@@ -118,7 +118,7 @@ void array_equal(
     if (expected->data[i] - result->data[i] > 10e-6) {
       fprintf(stderr, "✗ %s:\nerror at value %d\nexpected:     got:\n", test_case, i);
       print_array_comparison(expected, result, true);
-      exit(-2);
+      exit(0);
     }
   }
 }

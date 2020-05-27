@@ -7,31 +7,31 @@
 #include "sparse_mat.h"
 
 
-void preserve_bounds(Mesh mesh, double* Q, SparseMat* edges) {
+void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges) {
   unsigned int i, j, k, a, v1, v2;
 
   double *pos1, *pos2, *pos3, *p, *K;
   bool proc1, proc2;
   #ifdef _OPENMP
-  omp_lock_t q_locks[mesh.n_vertices];
+  omp_lock_t q_locks[mesh->n_vertices];
 
-  for (i = 0; i < mesh.n_vertices; i++) {
+  for (i = 0; i < mesh->n_vertices; i++) {
     omp_init_lock(&(q_locks[i]));
   }
   #endif
 
   // add penalties
   #pragma omp parallel for private(i, j, k, a, v1, v2, pos1, pos2, pos3, p, K, proc1, proc2) shared(q_locks, Q)
-  for (i = 0; i < mesh.n_face; i++) {
+  for (i = 0; i < mesh->n_face; i++) {
     for (j = 0; j < 3; j++) {
       a = (j + 1) % 3;
-      v1 = mesh.face[i * 3 + j] < mesh.face[i * 3 + a] ? mesh.face[i * 3 + j] : mesh.face[i * 3 + a];
-      v2 = mesh.face[i * 3 + j] == v1 ? mesh.face[i * 3 + a] : mesh.face[i * 3 + j];
+      v1 = mesh->face[i * 3 + j] < mesh->face[i * 3 + a] ? mesh->face[i * 3 + j] : mesh->face[i * 3 + a];
+      v2 = mesh->face[i * 3 + j] == v1 ? mesh->face[i * 3 + a] : mesh->face[i * 3 + j];
 
       // edge was seen once and therefore is a border of the mesh
       if (sparse_get(edges, v1, v2) == 1) {
-        pos1 = &mesh.positions[v1];
-        pos2 = &mesh.positions[v2];
+        pos1 = &mesh->positions[v1];
+        pos2 = &mesh->positions[v2];
         pos3 = malloc(sizeof(double) * 3);
 
         pos3[0] = pos2[0] - pos1[0];
@@ -77,7 +77,7 @@ void preserve_bounds(Mesh mesh, double* Q, SparseMat* edges) {
   }
 
   #ifdef _OPENMP
-  for (i = 0; i < mesh.n_vertices; i++) {
+  for (i = 0; i < mesh->n_vertices; i++) {
     omp_destroy_lock(&(q_locks[i]));
   }
   #endif

@@ -8,22 +8,22 @@ __version__ = '0.0.1'
 
 url = 'https://github.com/jannessm/quadric-mesh-simplification'
 
-ext = '.pyx' if FROM_SOURCE else '.c'
-
 files = [
-	'quad_mesh_simplify.clean_mesh',
-	'quad_mesh_simplify.contract_pair',
-	'quad_mesh_simplify.maths',
-	'quad_mesh_simplify.heap',
-	'quad_mesh_simplify.mesh_inversion',
-	'quad_mesh_simplify.preserve_bounds',
-	'quad_mesh_simplify.q',
-	'quad_mesh_simplify.simplify',
-	'quad_mesh_simplify.targets',
-	'quad_mesh_simplify.valid_pairs',
+	'array.c',
+	'clean_mesh.c',
+	'contract_pair.c',
+	'edges.c',
+	'maths.c',
+	'mesh_inversion.c',
+	'pair_heap.c',
+	'pair.c',
+	'preserve_bounds.c',
+	'q.c',
+	'simplify.c',
+	'sparse_mat.c',
+	'targets.c',
+	'valid_pairs.c'
 ]
-
-files = [(f, f.replace('.', '/') + ext) for f in files]
 
 ext_modules = [
 	Extension(

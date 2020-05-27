@@ -45,7 +45,7 @@ int main(void) {
 
   Mesh m = {positions, NULL, face, 4, 2, 0};
 
-  double* q = compute_Q(m);
+  double* q = compute_Q(&m);
 
   q_equal(test_case, expected, q, 0, 4 * 16);
 
