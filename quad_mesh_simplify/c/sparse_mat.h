@@ -14,7 +14,7 @@ char sparse_has_entry(SparseMat* mat, unsigned int row, unsigned int column);
 
 void sparse_set(SparseMat* mat, unsigned int row, unsigned int column, double value);
 
-SparseMat* sparse_empty();
+SparseMat* sparse_empty(void);
 
 void sparse_free(SparseMat* mat);
 

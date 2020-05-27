@@ -40,7 +40,7 @@ void clean_positions_and_features(Mesh* mesh, bool* deleted_pos) {
 }
 
 void clean_face(Mesh* mesh, bool* deleted_faces, bool* deleted_positions) {
-  unsigned int new_size, i, j, new_i, diminish_by;
+  unsigned int i, j, new_i, diminish_by;
   unsigned int *sum_diminish, *new_face;
   
   diminish_by = 0;
@@ -55,9 +55,15 @@ void clean_face(Mesh* mesh, bool* deleted_faces, bool* deleted_positions) {
     }
   }
 
-  for (i = 0; i < diminish_by; i++) {
-    for (j = 0; j < 3; j++) {
-      new_face[i * 3 + j] -= sum_diminish[new_face[i * 3 + j]];
+  new_face = malloc(diminish_by * 3 * sizeof(unsigned int));
+
+  new_i = 0;
+  for (i = 0; i < mesh->n_face; i++) {
+    if (!deleted_faces[i]) {
+      for (j = 0; j < 3; j++) {
+        mesh->face[new_i * 3 + j] -= sum_diminish[mesh->face[i * 3 + j]];
+      }
+      new_i++;
     }
   }
 

@@ -44,7 +44,7 @@ void update_face(
   bool v1_in_face, v2_in_face;
 
   #pragma omp parallel for shared(mesh, deleted_faces, v1, v2) private(i, j, v1_in_face, v2_in_face)
-  for (int i = 0; i < mesh->n_face; i++) {
+  for (i = 0; i < mesh->n_face; i++) {
     if (deleted_faces[i]) {
       continue;
     }

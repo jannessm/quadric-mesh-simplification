@@ -14,7 +14,7 @@ typedef struct PairList {
 } PairList;
 #endif
 
-PairList* pairlist_init();
+PairList* pairlist_init(void);
 
 void pairlist_append(PairList* list, Pair* pair);
 

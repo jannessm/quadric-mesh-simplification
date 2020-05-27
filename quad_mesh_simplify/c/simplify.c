@@ -1,5 +1,4 @@
-#include <Python.h>
-#include <numpy/arrayobject.h>
+#include "simplify.h"
 #include <stdbool.h>
 
 #include "mesh.h"
@@ -44,7 +43,6 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
 
   Pair* p;
   unsigned int num_deleted_nodes = 0, i;
-  double *pos1, *pos2;
 
   while (mesh->n_vertices - num_deleted_nodes < num_nodes && heap->length > 0) {
     p = heap_pop(heap);

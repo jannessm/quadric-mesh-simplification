@@ -1,3 +1,4 @@
+#include <Python.h>
 #include <numpy/arrayobject.h>
 #include <stdbool.h>
 

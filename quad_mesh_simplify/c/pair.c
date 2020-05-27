@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include "pair.h"
 
-PairList* pairlist_init() {
+PairList* pairlist_init(void) {
   PairList* list = malloc(sizeof(PairList));
   list->length = 0;
   list->list = malloc(sizeof(Pair*) * 0);
+  return list;
 }
 
 void pairlist_append(PairList* list, Pair* pair) {

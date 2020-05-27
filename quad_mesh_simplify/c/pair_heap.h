@@ -4,7 +4,7 @@
   #define INCLUDE_PAIR_HEAP
   typedef struct {
     Pair** nodes;
-    int length;
+    unsigned int length;
   } PairHeap;
 #endif
 
