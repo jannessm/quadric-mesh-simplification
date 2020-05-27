@@ -39,18 +39,6 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
     :rtype: (:class:`ndarray`, :class:`ndarray`)
     """
 
-    
-    # 3. compute optimal contration targets
-    # of shape err, v1, v2, target, (features)    
-    pairs = compute_targets(pos, Q, valid_pairs, feats)
-
-    # 4. create heap sorted by costs
-    heap = PairHeap(pairs)
-    
-    if DEBUG:
-        print('setup in {} sec'.format(time() - start))
-        start = time()
-
     # 5. contract vertices until num_nodes reached
     contract(heap, Q, pos, new_positions, feats, face, deleted_pos, deleted_faces, num_nodes)
 
