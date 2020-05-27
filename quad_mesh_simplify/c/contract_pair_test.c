@@ -218,15 +218,15 @@ void test_update_features() {
   p1->feature[1] = -2;
   p1->feature[2] = -3;
 
-  Mesh m = {positions, features, NULL, 6, 4, 0};
+  Mesh m = {positions, features, NULL, 6, 4, 3};
 
   update_features(&m, p1);
 
   for (i = 0; i < 12; i++) {
     if (m.features[i] != expected[i]) {
-      fprintf(stderr, "✗ %s:\n  expected:                 got:\n", test_case);
+      fprintf(stderr, "✗ %s:\n  expected:                   got:\n", test_case);
       for (j = 0; j < 4; j++) {
-        fprintf(stderr, "  %.4f %.4f %.4f        %.4f %.4f %.4f\n",
+        fprintf(stderr, " % .4f % .4f % .4f     % .4f % .4f % .4f\n",
         expected[j * 3], expected[j * 3 + 1], expected[j * 3 + 2],
         m.features[j * 3], m.features[j * 3 + 1], m.features[j * 3 + 2]
         );
@@ -243,4 +243,5 @@ void test_update_features() {
 int main(void) {
   test_update_pairs();
   test_update_face();
+  test_update_features();
 }

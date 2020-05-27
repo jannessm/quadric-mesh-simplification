@@ -45,3 +45,11 @@ test_contract_pair: test_contract_pair_omp
 test_contract_pair_omp:
 	gcc -fopenmp contract_pair_test.c contract_pair.c targets.c $(referenced_files) -o contract_pair_test.o 
 	./contract_pair_test.o
+
+test_mesh_inversion: test_mesh_inversion_omp
+	gcc mesh_inversion_test.c mesh_inversion.c $(referenced_files) -o mesh_inversion_test.o 
+	valgrind --leak-check=yes -q ./mesh_inversion_test.o
+
+test_mesh_inversion_omp:
+	gcc -fopenmp mesh_inversion_test.c mesh_inversion.c $(referenced_files) -o mesh_inversion_test.o 
+	./mesh_inversion_test.o
