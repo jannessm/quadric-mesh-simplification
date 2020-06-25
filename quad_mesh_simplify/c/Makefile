@@ -1,6 +1,12 @@
 referenced_files = test_utils.c maths.c sparse_mat.c edges.c array.c pair.c pair_heap.c -lm -g
 
+build: array.c clean_mesh.c contract_pair.c edges.c maths.c mesh_inversion.c pair.c pair_heap.c preserve_bounds.c q.c simplify.c sparse_mat.c targets.c test_utils.c utils.c valid_pairs.c ../simplify.pyx
+	python ../../setup.py build_ext --inplace
+
 test: test_Q test_preserve_bounds test_valid_pairs test_pair_heap test_contract_pair test_mesh_inversion
+
+test_all: build
+	python ../simplify_test.py
 
 test_Q: test_Q_omp
 	gcc q_test.c q.c $(referenced_files) -o q_test.o 

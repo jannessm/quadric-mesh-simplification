@@ -5,8 +5,8 @@ from cpython cimport array
 from cpython.exc cimport PyErr_CheckSignals
 import array
 
-cdef extern from "c.simplify.h":
-    cpdef simplify_mesh_c(np.ndarray positions, np.ndarray face, np.ndarray features, unsigned int num_nodes, double threshold)
+cdef extern from "c/simplify.h":
+    cpdef simplify_mesh_c(positions, face, features, unsigned int num_nodes, double threshold)
 
 def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
@@ -21,9 +21,31 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     :rtype: (:class:`ndarray`, :class:`ndarray`)
     """
 
-    if features == None:
-        features = np.zeros((position.shape[0], 0))
+    # check types
+    if not type(positions) == np.ndarray:
+        raise Exception('positions has to be an ndarray.')
+    if not positions.shape[1] == 3:
+        raise Exception('positions has to be of shape N x 3.')
+    if not positions.dtype == np.double:
+        raise Exception('positions has to be of type double')
 
-    simplify_mesh_c(positions, face, features, num_nodes, threshold)
+    if not type(face) == np.ndarray:
+        raise Exception('face has to be an ndarray.')
+    if not face.shape[1] == 3:
+        raise Exception('face has to be of shape N x 3.')
+    if not face.dtype == np.long:
+        raise Exception('face has to be of type long')
+
+    if features == None:
+        features = np.zeros((positions.shape[0], 0), np.double)
+    if not type(features) == np.ndarray:
+        raise Exception('features has to be an ndarray.')
+    if not features.shape[0] == positions.shape[0]:
+        raise Exception('first dimensions of features has to match first shape of positions.')
+    if not features.dtype == np.double:
+        raise Exception('features has to be of type double')
+
+    if num_nodes < positions.shape[0]:
+        simplify_mesh_c(positions, face, features, num_nodes, threshold)
 
     return positions, face, features

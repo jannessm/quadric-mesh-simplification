@@ -2,4 +2,4 @@
 #include <numpy/arrayobject.h>
 #include <stdbool.h>
 
-void simplify_mesh_c(PyArray_OBJECT* positions, PyArray_OBJECT* face, PyArray_OBJECT* features, unsigned int num_nodes, double threshold);
+PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold);

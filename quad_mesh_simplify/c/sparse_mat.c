@@ -4,7 +4,7 @@
 #include "sparse_mat.h"
 
 double sparse_get(SparseMat* mat, unsigned int row, unsigned int column) {
-  unsigned int i, j;
+  unsigned int i;
   for (i = 0; i < mat->length; i++) {
     if (mat->rows[i] == row && mat->columns[i] == column) {
       return mat->values[i];
@@ -14,7 +14,7 @@ double sparse_get(SparseMat* mat, unsigned int row, unsigned int column) {
 }
 
 char sparse_has_entry(SparseMat* mat, unsigned int row, unsigned int column) {
-  unsigned int i, j;
+  unsigned int i;
   for (i = 0; i < mat->length; i++) {
     if (mat->rows[i] == row && mat->columns[i] == column) {
       return true;
@@ -25,7 +25,7 @@ char sparse_has_entry(SparseMat* mat, unsigned int row, unsigned int column) {
 }
 
 void sparse_set(SparseMat* mat, unsigned int row, unsigned int column, double value) {
-  unsigned int i, j;
+  unsigned int i;
 
   // if exists overwrite value
   if (sparse_has_entry(mat, row, column)) {

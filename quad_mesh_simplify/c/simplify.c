@@ -13,17 +13,32 @@
 #include "contract_pair.h"
 #include "clean_mesh.h"
 
-PyTupleObject simplify_mesh_c(PyArray_OBJECT* positions, PyArray_OBJECT* face, PyArray_OBJECT* features, unsigned int num_nodes, double threshold) {
+void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold);
+
+PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold) {
+  
   Mesh* mesh = malloc(sizeof(Mesh));
   
-  mesh->positions = (double*) PyArray_DATA(positions);
-  mesh->face = (unsigned int*) PyArray_DATA(face);
-  mesh->features = (double*) PyArray_DATA(feature);
-  mesh->n_vertices = PyArray_DIM(positions, 0);
-  mesh->n_faces = PyArray_DIM(face, 0);
-  mesh->feature_length = PyArray_DIM(features, 1);
+  mesh->positions = (double*) PyArray_DATA((PyArrayObject*) positions);
+  mesh->face = (unsigned int*) PyArray_DATA((PyArrayObject*) face);
+  mesh->features = (double*) PyArray_DATA((PyArrayObject*) features);
+  mesh->n_vertices = PyArray_DIM((PyArrayObject*) positions, 0);
+  mesh->n_face = PyArray_DIM((PyArrayObject*) face, 0);
+  mesh->feature_length = PyArray_DIM((PyArrayObject*) features, 1);
 
   _simplify_mesh(mesh, num_nodes, threshold);
+
+  npy_intp dim_pos[2], dim_face[2], dim_features[2];
+  dim_pos[0] = dim_features[0] = mesh->n_vertices;
+  dim_face[0] = mesh->n_face;
+  dim_pos[1] = dim_face[1] = 3;
+  dim_features[1] = mesh->feature_length;
+
+  PyObject* new_positions = PyArray_SimpleNewFromData(2, dim_pos, NPY_DOUBLE, mesh->positions);
+  PyObject* new_face = PyArray_SimpleNewFromData(2, dim_face, NPY_UINT, mesh->face);
+  PyObject* new_features = PyArray_SimpleNewFromData(2, dim_features, NPY_DOUBLE, mesh->features);
+
+  return PyTuple_Pack(3, new_positions, new_face, new_features);
 }
 
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
@@ -34,6 +49,7 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   preserve_bounds(mesh, Q, edges);
 
   Array2D_uint* valid_pairs = compute_valid_pairs(mesh, edges, threshold);
+  printf("so far so good\n");
 
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
 
