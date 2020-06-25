@@ -1,12 +1,7 @@
 import numpy as np
-cimport numpy as np
-cimport cython
-from cpython cimport array
-from cpython.exc cimport PyErr_CheckSignals
-import array
 
 cdef extern from "c/simplify.h":
-    cpdef simplify_mesh_c(positions, face, features, unsigned int num_nodes, double threshold)
+    cdef tuple simplify_mesh_c(positions, face, features, unsigned int num_nodes, double threshold)
 
 def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
@@ -45,7 +40,11 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     if not features.dtype == np.double:
         raise Exception('features has to be of type double')
 
+    new_pos = None
+    new_face = None
+    new_features = None
     if num_nodes < positions.shape[0]:
-        simplify_mesh_c(positions, face, features, num_nodes, threshold)
+        new_pos, new_face, new_features = simplify_mesh_c(positions, face, features, num_nodes, threshold)
+        print('done')
 
-    return positions, face, features
+    return new_pos, new_face, new_features

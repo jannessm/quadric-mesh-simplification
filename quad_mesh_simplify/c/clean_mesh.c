@@ -32,8 +32,8 @@ void clean_positions_and_features(Mesh* mesh, bool* deleted_pos) {
     }
   }
 
-  free(mesh->positions);
-  free(mesh->features);
+  // free(mesh->positions);
+  // free(mesh->features);
   mesh->positions = new_positions;
   mesh->features = new_features;
   mesh->n_vertices = new_size;
@@ -67,7 +67,7 @@ void clean_face(Mesh* mesh, bool* deleted_faces, bool* deleted_positions) {
     }
   }
 
-  free(mesh->face);
+  // free(mesh->face);
   free(sum_diminish);
 
   mesh->face = new_face;
