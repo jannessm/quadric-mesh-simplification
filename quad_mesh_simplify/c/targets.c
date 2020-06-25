@@ -25,6 +25,7 @@ PairList* compute_targets(Mesh* mesh, double* Q, Array2D_uint* valid_pairs) {
 }
 
 Pair* calculate_pair_attributes(Mesh* mesh, double* Q, unsigned int v1, unsigned int v2) {
+  printf("calc attr for %d & %d\n", v1, v2);
   Pair* pair = pair_init(mesh->feature_length);
 
   double *p1, *p2, p12[3], p112[3], new_Q[16];

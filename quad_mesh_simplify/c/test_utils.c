@@ -4,6 +4,26 @@
 #include <stdbool.h>
 #include "array.h"
 
+void print_array_double(double * arr, int rows, int cols) {
+  int i, j;
+  for (i = 0; i < rows; i++) {
+    for (j = 0; j < cols; j++) {
+      printf("%f ", arr[i*cols+j]);
+    }
+    printf("\n");
+  }
+}
+
+void print_array_uint(unsigned int* arr, int rows, int cols) {
+  int i, j;
+  for (i = 0; i < rows; i++) {
+    for (j = 0; j < cols; j++) {
+      printf("%u ", arr[i*cols+j]);
+    }
+    printf("\n");
+  }
+}
+
 void print_Q(double* q, unsigned int from_vertex, unsigned int to_vertex, char to_stderr) {
   unsigned int i, j;
   for (i = from_vertex; i < to_vertex; i++) {
@@ -36,7 +56,7 @@ void print_Q_comparison(double* q1, double* q2, unsigned int from_vertex, unsign
 }
 
 void q_equal(const char* test_case, double* expected, double* result, unsigned int from, unsigned int to) {
-  int i;
+  unsigned int i;
   for (i = from; i < to; i++) {
     if (expected[i] - result[i] > 10e-6) {
       fprintf(stderr, "✗ %s:\nerror at value %d\nexpected:                             got:\n", test_case, i);
@@ -47,8 +67,7 @@ void q_equal(const char* test_case, double* expected, double* result, unsigned i
 }
 
 void q_not_equal(const char* test_case, double* expected, double* result, unsigned int from, unsigned int to) {
-  int i;
-  bool not_equal = true;
+  unsigned int i;
   for (i = from; i < to; i++) {
     if (expected[i] - result[i] > 10e-6) {
       return;
@@ -113,7 +132,7 @@ void array_equal(
     exit(0);
   }
 
-  int i;
+  unsigned int i;
   for (i = from; i < to; i++) {
     if (expected->data[i] - result->data[i] > 10e-6) {
       fprintf(stderr, "✗ %s:\nerror at value %d\nexpected:     got:\n", test_case, i);

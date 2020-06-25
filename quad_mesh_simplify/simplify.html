@@ -701,12 +701,12 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
   __pyx_tuple__5 = <span class='py_c_api'>PyTuple_Pack</span>(1, __pyx_kp_s_face_has_to_be_of_shape_N_x_3);<span class='error_goto'> if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 35, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__5);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__5);
-</pre><pre class="cython line score-17" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">36</span>:     <span class="k">if</span> <span class="ow">not</span> <span class="n">face</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">long</span><span class="p">:</span></pre>
+</pre><pre class="cython line score-17" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">36</span>:     <span class="k">if</span> <span class="ow">not</span> <span class="n">face</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">:</span></pre>
 <pre class='cython code score-17 '>  __pyx_t_4 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_v_face, __pyx_n_s_dtype);<span class='error_goto'> if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 36, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_4);
   <span class='pyx_c_api'>__Pyx_GetModuleGlobalName</span>(__pyx_t_5, __pyx_n_s_np);<span class='error_goto'> if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_5);
-  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_long);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)</span>
+  __pyx_t_1 = <span class='pyx_c_api'>__Pyx_PyObject_GetAttrStr</span>(__pyx_t_5, __pyx_n_s_uint32);<span class='error_goto'> if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_1);
   <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = <span class='py_c_api'>PyObject_RichCompare</span>(__pyx_t_4, __pyx_t_1, Py_EQ); <span class='refnanny'>__Pyx_XGOTREF</span>(__pyx_t_5);<span class='error_goto'> if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)</span>
@@ -718,14 +718,14 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
   if (unlikely(__pyx_t_2)) {
 /* … */
   }
-</pre><pre class="cython line score-10" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">37</span>:         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;face has to be of type long&#39;</span><span class="p">)</span></pre>
+</pre><pre class="cython line score-10" onclick="(function(s){s.display=s.display==='block'?'none':'block'})(this.nextElementSibling.style)">+<span class="">37</span>:         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;face has to be of type unsigned int (np.uint32)&#39;</span><span class="p">)</span></pre>
 <pre class='cython code score-10 '>    __pyx_t_5 = <span class='pyx_c_api'>__Pyx_PyObject_Call</span>(((PyObject *)(&amp;((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__6, NULL);<span class='error_goto'> if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 37, __pyx_L1_error)</span>
     <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_t_5);
     <span class='pyx_c_api'>__Pyx_Raise</span>(__pyx_t_5, 0, 0, 0);
     <span class='pyx_macro_api'>__Pyx_DECREF</span>(__pyx_t_5); __pyx_t_5 = 0;
     <span class='error_goto'>__PYX_ERR(0, 37, __pyx_L1_error)</span>
 /* … */
-  __pyx_tuple__6 = <span class='py_c_api'>PyTuple_Pack</span>(1, __pyx_kp_s_face_has_to_be_of_type_long);<span class='error_goto'> if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 37, __pyx_L1_error)</span>
+  __pyx_tuple__6 = <span class='py_c_api'>PyTuple_Pack</span>(1, __pyx_kp_s_face_has_to_be_of_type_unsigned);<span class='error_goto'> if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 37, __pyx_L1_error)</span>
   <span class='refnanny'>__Pyx_GOTREF</span>(__pyx_tuple__6);
   <span class='refnanny'>__Pyx_GIVEREF</span>(__pyx_tuple__6);
 </pre><pre class="cython line score-0">&#xA0;<span class="">38</span>: </pre>

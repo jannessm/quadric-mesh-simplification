@@ -13,6 +13,8 @@
 #include "contract_pair.h"
 #include "clean_mesh.h"
 
+#define DEBUG
+
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold);
 
 PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold) {
@@ -25,6 +27,13 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
   mesh->n_vertices = PyArray_DIM((PyArrayObject*) positions, 0);
   mesh->n_face = PyArray_DIM((PyArrayObject*) face, 0);
   mesh->feature_length = PyArray_DIM((PyArrayObject*) features, 1);
+
+#ifdef DEBUG
+  printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
+  print_array_double(mesh->positions, mesh->n_vertices, 3);
+  printf("\n");
+  print_array_uint(mesh->face, mesh->n_face, 3);
+#endif
 
   _simplify_mesh(mesh, num_nodes, threshold);
 
@@ -46,10 +55,18 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
 
   SparseMat* edges = create_edges(mesh);
 
+#ifdef DEBUG
   preserve_bounds(mesh, Q, edges);
-
+  printf("\n");
+  print_Q(Q, 0, mesh->n_vertices);
+#endif
   Array2D_uint* valid_pairs = compute_valid_pairs(mesh, edges, threshold);
+
+#ifdef DEBUG
+  printf("\n");
+  print_array_uint(valid_pairs->data, valid_pairs->rows, valid_pairs->columns);
   printf("so far so good\n");
+#endif
 
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
 

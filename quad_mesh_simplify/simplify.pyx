@@ -33,8 +33,8 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         raise Exception('face has to be an ndarray.')
     if not face.shape[1] == 3:
         raise Exception('face has to be of shape N x 3.')
-    if not face.dtype == np.long:
-        raise Exception('face has to be of type long')
+    if not face.dtype == np.uint32:
+        raise Exception('face has to be of type unsigned int (np.uint32)')
 
     if features == None:
         features = np.zeros((positions.shape[0], 0), np.double)

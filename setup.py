@@ -21,7 +21,8 @@ files = [
 	'q.c',
 	'sparse_mat.c',
 	'targets.c',
-	'valid_pairs.c'
+	'valid_pairs.c',
+	'test_utils.c'
 ]
 
 ext_modules = [

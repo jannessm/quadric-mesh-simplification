@@ -2320,7 +2320,6 @@ static PyObject *__pyx_builtin_MemoryError;
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k__19[] = "*";
 static const char __pyx_k_face[] = "face";
-static const char __pyx_k_long[] = "long";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_spec[] = "__spec__";
@@ -2334,6 +2333,7 @@ static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_double[] = "double";
 static const char __pyx_k_import[] = "__import__";
+static const char __pyx_k_uint32[] = "uint32";
 static const char __pyx_k_features[] = "features";
 static const char __pyx_k_num_nodes[] = "num_nodes";
 static const char __pyx_k_positions[] = "positions";
@@ -2350,11 +2350,11 @@ static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_quad_mesh_simplify[] = "quad_mesh_simplify";
 static const char __pyx_k_face_has_to_be_an_ndarray[] = "face has to be an ndarray.";
 static const char __pyx_k_Pyx_CFunc_object____object[] = "__Pyx_CFunc_object____object____object____object____unsigned__int____double___to_py.<locals>.wrap";
-static const char __pyx_k_face_has_to_be_of_type_long[] = "face has to be of type long";
 static const char __pyx_k_ndarray_is_not_C_contiguous[] = "ndarray is not C contiguous";
 static const char __pyx_k_face_has_to_be_of_shape_N_x_3[] = "face has to be of shape N x 3.";
 static const char __pyx_k_features_has_to_be_an_ndarray[] = "features has to be an ndarray.";
 static const char __pyx_k_positions_has_to_be_an_ndarray[] = "positions has to be an ndarray.";
+static const char __pyx_k_face_has_to_be_of_type_unsigned[] = "face has to be of type unsigned int (np.uint32)";
 static const char __pyx_k_media_jannes_main_projects_quad[] = "/media/jannes/main/projects/quadric-mesh-simplification/quad_mesh_simplify/simplify.pyx";
 static const char __pyx_k_numpy_core_multiarray_failed_to[] = "numpy.core.multiarray failed to import";
 static const char __pyx_k_unknown_dtype_code_in_numpy_pxd[] = "unknown dtype code in numpy.pxd (%d)";
@@ -2385,14 +2385,13 @@ static PyObject *__pyx_n_s_dtype;
 static PyObject *__pyx_n_s_face;
 static PyObject *__pyx_kp_s_face_has_to_be_an_ndarray;
 static PyObject *__pyx_kp_s_face_has_to_be_of_shape_N_x_3;
-static PyObject *__pyx_kp_s_face_has_to_be_of_type_long;
+static PyObject *__pyx_kp_s_face_has_to_be_of_type_unsigned;
 static PyObject *__pyx_n_s_features;
 static PyObject *__pyx_kp_s_features_has_to_be_an_ndarray;
 static PyObject *__pyx_kp_s_features_has_to_be_of_type_doubl;
 static PyObject *__pyx_kp_s_first_dimensions_of_features_has;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_initializing;
-static PyObject *__pyx_n_s_long;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_kp_s_media_jannes_main_projects_quad;
 static PyObject *__pyx_n_s_name;
@@ -2415,6 +2414,7 @@ static PyObject *__pyx_n_s_spec;
 static PyObject *__pyx_kp_s_stringsource;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_threshold;
+static PyObject *__pyx_n_s_uint32;
 static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_wrap;
 static PyObject *__pyx_n_s_zeros;
@@ -2501,14 +2501,13 @@ typedef struct {
   PyObject *__pyx_n_s_face;
   PyObject *__pyx_kp_s_face_has_to_be_an_ndarray;
   PyObject *__pyx_kp_s_face_has_to_be_of_shape_N_x_3;
-  PyObject *__pyx_kp_s_face_has_to_be_of_type_long;
+  PyObject *__pyx_kp_s_face_has_to_be_of_type_unsigned;
   PyObject *__pyx_n_s_features;
   PyObject *__pyx_kp_s_features_has_to_be_an_ndarray;
   PyObject *__pyx_kp_s_features_has_to_be_of_type_doubl;
   PyObject *__pyx_kp_s_first_dimensions_of_features_has;
   PyObject *__pyx_n_s_import;
   PyObject *__pyx_n_s_initializing;
-  PyObject *__pyx_n_s_long;
   PyObject *__pyx_n_s_main;
   PyObject *__pyx_kp_s_media_jannes_main_projects_quad;
   PyObject *__pyx_n_s_name;
@@ -2531,6 +2530,7 @@ typedef struct {
   PyObject *__pyx_kp_s_stringsource;
   PyObject *__pyx_n_s_test;
   PyObject *__pyx_n_s_threshold;
+  PyObject *__pyx_n_s_uint32;
   PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
   PyObject *__pyx_n_s_wrap;
   PyObject *__pyx_n_s_zeros;
@@ -2618,14 +2618,13 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_face);
   Py_CLEAR(clear_module_state->__pyx_kp_s_face_has_to_be_an_ndarray);
   Py_CLEAR(clear_module_state->__pyx_kp_s_face_has_to_be_of_shape_N_x_3);
-  Py_CLEAR(clear_module_state->__pyx_kp_s_face_has_to_be_of_type_long);
+  Py_CLEAR(clear_module_state->__pyx_kp_s_face_has_to_be_of_type_unsigned);
   Py_CLEAR(clear_module_state->__pyx_n_s_features);
   Py_CLEAR(clear_module_state->__pyx_kp_s_features_has_to_be_an_ndarray);
   Py_CLEAR(clear_module_state->__pyx_kp_s_features_has_to_be_of_type_doubl);
   Py_CLEAR(clear_module_state->__pyx_kp_s_first_dimensions_of_features_has);
   Py_CLEAR(clear_module_state->__pyx_n_s_import);
   Py_CLEAR(clear_module_state->__pyx_n_s_initializing);
-  Py_CLEAR(clear_module_state->__pyx_n_s_long);
   Py_CLEAR(clear_module_state->__pyx_n_s_main);
   Py_CLEAR(clear_module_state->__pyx_kp_s_media_jannes_main_projects_quad);
   Py_CLEAR(clear_module_state->__pyx_n_s_name);
@@ -2648,6 +2647,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_kp_s_stringsource);
   Py_CLEAR(clear_module_state->__pyx_n_s_test);
   Py_CLEAR(clear_module_state->__pyx_n_s_threshold);
+  Py_CLEAR(clear_module_state->__pyx_n_s_uint32);
   Py_CLEAR(clear_module_state->__pyx_kp_u_unknown_dtype_code_in_numpy_pxd);
   Py_CLEAR(clear_module_state->__pyx_n_s_wrap);
   Py_CLEAR(clear_module_state->__pyx_n_s_zeros);
@@ -2722,14 +2722,13 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_face);
   Py_VISIT(traverse_module_state->__pyx_kp_s_face_has_to_be_an_ndarray);
   Py_VISIT(traverse_module_state->__pyx_kp_s_face_has_to_be_of_shape_N_x_3);
-  Py_VISIT(traverse_module_state->__pyx_kp_s_face_has_to_be_of_type_long);
+  Py_VISIT(traverse_module_state->__pyx_kp_s_face_has_to_be_of_type_unsigned);
   Py_VISIT(traverse_module_state->__pyx_n_s_features);
   Py_VISIT(traverse_module_state->__pyx_kp_s_features_has_to_be_an_ndarray);
   Py_VISIT(traverse_module_state->__pyx_kp_s_features_has_to_be_of_type_doubl);
   Py_VISIT(traverse_module_state->__pyx_kp_s_first_dimensions_of_features_has);
   Py_VISIT(traverse_module_state->__pyx_n_s_import);
   Py_VISIT(traverse_module_state->__pyx_n_s_initializing);
-  Py_VISIT(traverse_module_state->__pyx_n_s_long);
   Py_VISIT(traverse_module_state->__pyx_n_s_main);
   Py_VISIT(traverse_module_state->__pyx_kp_s_media_jannes_main_projects_quad);
   Py_VISIT(traverse_module_state->__pyx_n_s_name);
@@ -2752,6 +2751,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_kp_s_stringsource);
   Py_VISIT(traverse_module_state->__pyx_n_s_test);
   Py_VISIT(traverse_module_state->__pyx_n_s_threshold);
+  Py_VISIT(traverse_module_state->__pyx_n_s_uint32);
   Py_VISIT(traverse_module_state->__pyx_kp_u_unknown_dtype_code_in_numpy_pxd);
   Py_VISIT(traverse_module_state->__pyx_n_s_wrap);
   Py_VISIT(traverse_module_state->__pyx_n_s_zeros);
@@ -2826,14 +2826,13 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_face __pyx_mstate_global->__pyx_n_s_face
 #define __pyx_kp_s_face_has_to_be_an_ndarray __pyx_mstate_global->__pyx_kp_s_face_has_to_be_an_ndarray
 #define __pyx_kp_s_face_has_to_be_of_shape_N_x_3 __pyx_mstate_global->__pyx_kp_s_face_has_to_be_of_shape_N_x_3
-#define __pyx_kp_s_face_has_to_be_of_type_long __pyx_mstate_global->__pyx_kp_s_face_has_to_be_of_type_long
+#define __pyx_kp_s_face_has_to_be_of_type_unsigned __pyx_mstate_global->__pyx_kp_s_face_has_to_be_of_type_unsigned
 #define __pyx_n_s_features __pyx_mstate_global->__pyx_n_s_features
 #define __pyx_kp_s_features_has_to_be_an_ndarray __pyx_mstate_global->__pyx_kp_s_features_has_to_be_an_ndarray
 #define __pyx_kp_s_features_has_to_be_of_type_doubl __pyx_mstate_global->__pyx_kp_s_features_has_to_be_of_type_doubl
 #define __pyx_kp_s_first_dimensions_of_features_has __pyx_mstate_global->__pyx_kp_s_first_dimensions_of_features_has
 #define __pyx_n_s_import __pyx_mstate_global->__pyx_n_s_import
 #define __pyx_n_s_initializing __pyx_mstate_global->__pyx_n_s_initializing
-#define __pyx_n_s_long __pyx_mstate_global->__pyx_n_s_long
 #define __pyx_n_s_main __pyx_mstate_global->__pyx_n_s_main
 #define __pyx_kp_s_media_jannes_main_projects_quad __pyx_mstate_global->__pyx_kp_s_media_jannes_main_projects_quad
 #define __pyx_n_s_name __pyx_mstate_global->__pyx_n_s_name
@@ -2856,6 +2855,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_kp_s_stringsource __pyx_mstate_global->__pyx_kp_s_stringsource
 #define __pyx_n_s_test __pyx_mstate_global->__pyx_n_s_test
 #define __pyx_n_s_threshold __pyx_mstate_global->__pyx_n_s_threshold
+#define __pyx_n_s_uint32 __pyx_mstate_global->__pyx_n_s_uint32
 #define __pyx_kp_u_unknown_dtype_code_in_numpy_pxd __pyx_mstate_global->__pyx_kp_u_unknown_dtype_code_in_numpy_pxd
 #define __pyx_n_s_wrap __pyx_mstate_global->__pyx_n_s_wrap
 #define __pyx_n_s_zeros __pyx_mstate_global->__pyx_n_s_zeros
@@ -3198,7 +3198,7 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
  *         raise Exception('face has to be an ndarray.')
  *     if not face.shape[1] == 3:             # <<<<<<<<<<<<<<
  *         raise Exception('face has to be of shape N x 3.')
- *     if not face.dtype == np.long:
+ *     if not face.dtype == np.uint32:
  */
   __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_face, __pyx_n_s_shape); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -3217,8 +3217,8 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
  *         raise Exception('face has to be an ndarray.')
  *     if not face.shape[1] == 3:
  *         raise Exception('face has to be of shape N x 3.')             # <<<<<<<<<<<<<<
- *     if not face.dtype == np.long:
- *         raise Exception('face has to be of type long')
+ *     if not face.dtype == np.uint32:
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')
  */
     __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)(&((PyTypeObject*)PyExc_Exception)[0])), __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 35, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
@@ -3231,22 +3231,22 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
  *         raise Exception('face has to be an ndarray.')
  *     if not face.shape[1] == 3:             # <<<<<<<<<<<<<<
  *         raise Exception('face has to be of shape N x 3.')
- *     if not face.dtype == np.long:
+ *     if not face.dtype == np.uint32:
  */
   }
 
   /* "../simplify.pyx":36
  *     if not face.shape[1] == 3:
  *         raise Exception('face has to be of shape N x 3.')
- *     if not face.dtype == np.long:             # <<<<<<<<<<<<<<
- *         raise Exception('face has to be of type long')
+ *     if not face.dtype == np.uint32:             # <<<<<<<<<<<<<<
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')
  * 
  */
   __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_face, __pyx_n_s_dtype); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_long); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_uint32); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_5 = PyObject_RichCompare(__pyx_t_4, __pyx_t_1, Py_EQ); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 36, __pyx_L1_error)
@@ -3259,8 +3259,8 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
 
     /* "../simplify.pyx":37
  *         raise Exception('face has to be of shape N x 3.')
- *     if not face.dtype == np.long:
- *         raise Exception('face has to be of type long')             # <<<<<<<<<<<<<<
+ *     if not face.dtype == np.uint32:
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')             # <<<<<<<<<<<<<<
  * 
  *     if features == None:
  */
@@ -3273,14 +3273,14 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
     /* "../simplify.pyx":36
  *     if not face.shape[1] == 3:
  *         raise Exception('face has to be of shape N x 3.')
- *     if not face.dtype == np.long:             # <<<<<<<<<<<<<<
- *         raise Exception('face has to be of type long')
+ *     if not face.dtype == np.uint32:             # <<<<<<<<<<<<<<
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')
  * 
  */
   }
 
   /* "../simplify.pyx":39
- *         raise Exception('face has to be of type long')
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')
  * 
  *     if features == None:             # <<<<<<<<<<<<<<
  *         features = np.zeros((positions.shape[0], 0), np.double)
@@ -3347,7 +3347,7 @@ static PyObject *__pyx_pf_18quad_mesh_simplify_simplify_mesh(CYTHON_UNUSED PyObj
     __pyx_t_5 = 0;
 
     /* "../simplify.pyx":39
- *         raise Exception('face has to be of type long')
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')
  * 
  *     if features == None:             # <<<<<<<<<<<<<<
  *         features = np.zeros((positions.shape[0], 0), np.double)
@@ -7027,14 +7027,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, __pyx_k_face, sizeof(__pyx_k_face), 0, 0, 1, 1},
   {0, __pyx_k_face_has_to_be_an_ndarray, sizeof(__pyx_k_face_has_to_be_an_ndarray), 0, 0, 1, 0},
   {0, __pyx_k_face_has_to_be_of_shape_N_x_3, sizeof(__pyx_k_face_has_to_be_of_shape_N_x_3), 0, 0, 1, 0},
-  {0, __pyx_k_face_has_to_be_of_type_long, sizeof(__pyx_k_face_has_to_be_of_type_long), 0, 0, 1, 0},
+  {0, __pyx_k_face_has_to_be_of_type_unsigned, sizeof(__pyx_k_face_has_to_be_of_type_unsigned), 0, 0, 1, 0},
   {0, __pyx_k_features, sizeof(__pyx_k_features), 0, 0, 1, 1},
   {0, __pyx_k_features_has_to_be_an_ndarray, sizeof(__pyx_k_features_has_to_be_an_ndarray), 0, 0, 1, 0},
   {0, __pyx_k_features_has_to_be_of_type_doubl, sizeof(__pyx_k_features_has_to_be_of_type_doubl), 0, 0, 1, 0},
   {0, __pyx_k_first_dimensions_of_features_has, sizeof(__pyx_k_first_dimensions_of_features_has), 0, 0, 1, 0},
   {0, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {0, __pyx_k_initializing, sizeof(__pyx_k_initializing), 0, 0, 1, 1},
-  {0, __pyx_k_long, sizeof(__pyx_k_long), 0, 0, 1, 1},
   {0, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {0, __pyx_k_media_jannes_main_projects_quad, sizeof(__pyx_k_media_jannes_main_projects_quad), 0, 0, 1, 0},
   {0, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
@@ -7057,6 +7056,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, __pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 0, 1, 0},
   {0, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {0, __pyx_k_threshold, sizeof(__pyx_k_threshold), 0, 0, 1, 1},
+  {0, __pyx_k_uint32, sizeof(__pyx_k_uint32), 0, 0, 1, 1},
   {0, __pyx_k_unknown_dtype_code_in_numpy_pxd, sizeof(__pyx_k_unknown_dtype_code_in_numpy_pxd), 0, 1, 0, 0},
   {0, __pyx_k_wrap, sizeof(__pyx_k_wrap), 0, 0, 1, 1},
   {0, __pyx_k_zeros, sizeof(__pyx_k_zeros), 0, 0, 1, 1},
@@ -7078,14 +7078,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_face, __pyx_k_face, sizeof(__pyx_k_face), 0, 0, 1, 1},
   {&__pyx_kp_s_face_has_to_be_an_ndarray, __pyx_k_face_has_to_be_an_ndarray, sizeof(__pyx_k_face_has_to_be_an_ndarray), 0, 0, 1, 0},
   {&__pyx_kp_s_face_has_to_be_of_shape_N_x_3, __pyx_k_face_has_to_be_of_shape_N_x_3, sizeof(__pyx_k_face_has_to_be_of_shape_N_x_3), 0, 0, 1, 0},
-  {&__pyx_kp_s_face_has_to_be_of_type_long, __pyx_k_face_has_to_be_of_type_long, sizeof(__pyx_k_face_has_to_be_of_type_long), 0, 0, 1, 0},
+  {&__pyx_kp_s_face_has_to_be_of_type_unsigned, __pyx_k_face_has_to_be_of_type_unsigned, sizeof(__pyx_k_face_has_to_be_of_type_unsigned), 0, 0, 1, 0},
   {&__pyx_n_s_features, __pyx_k_features, sizeof(__pyx_k_features), 0, 0, 1, 1},
   {&__pyx_kp_s_features_has_to_be_an_ndarray, __pyx_k_features_has_to_be_an_ndarray, sizeof(__pyx_k_features_has_to_be_an_ndarray), 0, 0, 1, 0},
   {&__pyx_kp_s_features_has_to_be_of_type_doubl, __pyx_k_features_has_to_be_of_type_doubl, sizeof(__pyx_k_features_has_to_be_of_type_doubl), 0, 0, 1, 0},
   {&__pyx_kp_s_first_dimensions_of_features_has, __pyx_k_first_dimensions_of_features_has, sizeof(__pyx_k_first_dimensions_of_features_has), 0, 0, 1, 0},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_initializing, __pyx_k_initializing, sizeof(__pyx_k_initializing), 0, 0, 1, 1},
-  {&__pyx_n_s_long, __pyx_k_long, sizeof(__pyx_k_long), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_kp_s_media_jannes_main_projects_quad, __pyx_k_media_jannes_main_projects_quad, sizeof(__pyx_k_media_jannes_main_projects_quad), 0, 0, 1, 0},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
@@ -7108,6 +7107,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_stringsource, __pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 0, 1, 0},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_threshold, __pyx_k_threshold, sizeof(__pyx_k_threshold), 0, 0, 1, 1},
+  {&__pyx_n_s_uint32, __pyx_k_uint32, sizeof(__pyx_k_uint32), 0, 0, 1, 1},
   {&__pyx_kp_u_unknown_dtype_code_in_numpy_pxd, __pyx_k_unknown_dtype_code_in_numpy_pxd, sizeof(__pyx_k_unknown_dtype_code_in_numpy_pxd), 0, 1, 0, 0},
   {&__pyx_n_s_wrap, __pyx_k_wrap, sizeof(__pyx_k_wrap), 0, 0, 1, 1},
   {&__pyx_n_s_zeros, __pyx_k_zeros, sizeof(__pyx_k_zeros), 0, 0, 1, 1},
@@ -7179,8 +7179,8 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         raise Exception('face has to be an ndarray.')
  *     if not face.shape[1] == 3:
  *         raise Exception('face has to be of shape N x 3.')             # <<<<<<<<<<<<<<
- *     if not face.dtype == np.long:
- *         raise Exception('face has to be of type long')
+ *     if not face.dtype == np.uint32:
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')
  */
   __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_face_has_to_be_of_shape_N_x_3); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
@@ -7188,12 +7188,12 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 
   /* "../simplify.pyx":37
  *         raise Exception('face has to be of shape N x 3.')
- *     if not face.dtype == np.long:
- *         raise Exception('face has to be of type long')             # <<<<<<<<<<<<<<
+ *     if not face.dtype == np.uint32:
+ *         raise Exception('face has to be of type unsigned int (np.uint32)')             # <<<<<<<<<<<<<<
  * 
  *     if features == None:
  */
-  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_face_has_to_be_of_type_long); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_face_has_to_be_of_type_unsigned); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
@@ -7380,36 +7380,36 @@ if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 1, __pyx_L1_error)
   if (__Pyx_InitString(__pyx_string_tab[14], &__pyx_n_s_face) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[15], &__pyx_kp_s_face_has_to_be_an_ndarray) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[16], &__pyx_kp_s_face_has_to_be_of_shape_N_x_3) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[17], &__pyx_kp_s_face_has_to_be_of_type_long) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[17], &__pyx_kp_s_face_has_to_be_of_type_unsigned) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[18], &__pyx_n_s_features) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[19], &__pyx_kp_s_features_has_to_be_an_ndarray) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[20], &__pyx_kp_s_features_has_to_be_of_type_doubl) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[21], &__pyx_kp_s_first_dimensions_of_features_has) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[22], &__pyx_n_s_import) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[23], &__pyx_n_s_initializing) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[24], &__pyx_n_s_long) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[25], &__pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[26], &__pyx_kp_s_media_jannes_main_projects_quad) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[27], &__pyx_n_s_name) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[28], &__pyx_kp_u_ndarray_is_not_C_contiguous) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[29], &__pyx_kp_u_ndarray_is_not_Fortran_contiguou) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[30], &__pyx_n_s_np) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[31], &__pyx_n_s_num_nodes) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[32], &__pyx_n_s_numpy) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[33], &__pyx_kp_s_numpy_core_multiarray_failed_to) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[34], &__pyx_kp_s_numpy_core_umath_failed_to_impor) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[35], &__pyx_n_s_positions) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[36], &__pyx_kp_s_positions_has_to_be_an_ndarray) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[37], &__pyx_kp_s_positions_has_to_be_of_shape_N_x) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[38], &__pyx_kp_s_positions_has_to_be_of_type_doub) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[39], &__pyx_n_s_quad_mesh_simplify) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[40], &__pyx_n_s_range) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[41], &__pyx_n_s_shape) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[42], &__pyx_n_s_simplify_mesh) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[43], &__pyx_n_s_spec) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[44], &__pyx_kp_s_stringsource) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[45], &__pyx_n_s_test) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  if (__Pyx_InitString(__pyx_string_tab[46], &__pyx_n_s_threshold) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[24], &__pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[25], &__pyx_kp_s_media_jannes_main_projects_quad) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[26], &__pyx_n_s_name) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[27], &__pyx_kp_u_ndarray_is_not_C_contiguous) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[28], &__pyx_kp_u_ndarray_is_not_Fortran_contiguou) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[29], &__pyx_n_s_np) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[30], &__pyx_n_s_num_nodes) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[31], &__pyx_n_s_numpy) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[32], &__pyx_kp_s_numpy_core_multiarray_failed_to) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[33], &__pyx_kp_s_numpy_core_umath_failed_to_impor) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[34], &__pyx_n_s_positions) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[35], &__pyx_kp_s_positions_has_to_be_an_ndarray) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[36], &__pyx_kp_s_positions_has_to_be_of_shape_N_x) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[37], &__pyx_kp_s_positions_has_to_be_of_type_doub) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[38], &__pyx_n_s_quad_mesh_simplify) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[39], &__pyx_n_s_range) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[40], &__pyx_n_s_shape) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[41], &__pyx_n_s_simplify_mesh) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[42], &__pyx_n_s_spec) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[43], &__pyx_kp_s_stringsource) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[44], &__pyx_n_s_test) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[45], &__pyx_n_s_threshold) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (__Pyx_InitString(__pyx_string_tab[46], &__pyx_n_s_uint32) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[47], &__pyx_kp_u_unknown_dtype_code_in_numpy_pxd) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[48], &__pyx_n_s_wrap) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   if (__Pyx_InitString(__pyx_string_tab[49], &__pyx_n_s_zeros) < 0) __PYX_ERR(0, 1, __pyx_L1_error);

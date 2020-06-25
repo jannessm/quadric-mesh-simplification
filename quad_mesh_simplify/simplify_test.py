@@ -118,7 +118,7 @@ class SimplifyTests(unittest.TestCase):
             [1., 1., 1.],
             [0., -1., -1.],
             [0., 1., 1.],
-        ])
+        ], np.double)
         face = np.array([
             [0, 1, 4],
             [1, 3, 4],
@@ -132,10 +132,10 @@ class SimplifyTests(unittest.TestCase):
             [3, 9, 7],
             [5, 6, 7],
             [0, 1, 2]
-        ])
+        ], np.uint32)
 
         if DEBUG:
-            plot_test_mesh(pos, face, False)
+            plot_test_mesh(pos, face, True)
 
         for i in range(1, 8):
             res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 10 - i)
