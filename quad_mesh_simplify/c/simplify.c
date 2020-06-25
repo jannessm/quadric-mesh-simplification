@@ -17,6 +17,11 @@
 
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold);
 
+void capsule_cleanup(PyObject *capsule) {
+    void *memory = PyCapsule_GetPointer(capsule, NULL);
+    free(memory);
+}
+
 PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold) {
   
   Mesh* mesh = malloc(sizeof(Mesh));
@@ -37,14 +42,24 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
 
   _simplify_mesh(mesh, num_nodes, threshold);
 
-  npy_intp dim_pos[2], dim_face[2], dim_features[2];
-  dim_pos[0] = dim_features[0] = mesh->n_vertices;
-  dim_face[0] = mesh->n_face;
-  dim_pos[1] = dim_face[1] = 3;
-  dim_features[1] = mesh->feature_length;
+
+#ifdef DEBUG
+  printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
+  print_array_double(mesh->positions, mesh->n_vertices, 3);
+  printf("\n");
+  print_array_uint(mesh->face, mesh->n_face, 3);
+#endif
+
+  npy_intp dim_pos[] = {mesh->n_vertices, 3};
+  npy_intp dim_face[] = {mesh->n_face, 3};
+  npy_intp dim_features[] = {mesh->n_vertices, mesh->feature_length};
+  printf("new dims %d x %d\n", dim_pos[0], dim_pos[1]);
 
   PyObject* new_positions = PyArray_SimpleNewFromData(2, dim_pos, NPY_DOUBLE, mesh->positions);
-  PyObject* new_face = PyArray_SimpleNewFromData(2, dim_face, NPY_UINT, mesh->face);
+  printf("so far so good\n");
+  PyObject *capsule_pos = PyCapsule_New(mesh->positions, NULL, capsule_cleanup);
+  new_positions = PyArray_SetBaseObject((PyArrayObject *) new_positions, capsule_pos);
+  PyObject* new_face = PyArray_SimpleNewFromData(2, dim_face, NPY_UINT32, mesh->face);
   PyObject* new_features = PyArray_SimpleNewFromData(2, dim_features, NPY_DOUBLE, mesh->features);
 
   return PyTuple_Pack(3, new_positions, new_face, new_features);
