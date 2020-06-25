@@ -143,9 +143,9 @@ int main(void) {
 
   Mesh m = {positions, NULL, face, 10, 10, 0};
 
-  SparseMat* edges = create_edges(m);
+  SparseMat* edges = create_edges(&m);
 
-  preserve_bounds(m, q, edges);
+  preserve_bounds(&m, q, edges);
 
   sparse_free(edges);
 

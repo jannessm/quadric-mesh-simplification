@@ -1,6 +1,6 @@
 referenced_files = test_utils.c maths.c sparse_mat.c edges.c array.c pair.c pair_heap.c -lm -g
 
-test: test_Q test_preserve_bounds test_valid_pairs test_pair_heap test_contract_pair
+test: test_Q test_preserve_bounds test_valid_pairs test_pair_heap test_contract_pair test_mesh_inversion
 
 test_Q: test_Q_omp
 	gcc q_test.c q.c $(referenced_files) -o q_test.o 

@@ -41,7 +41,7 @@ void test_valid_edges() {
     sizeof(face)/sizeof(unsigned int) / 3
   };
 
-  SparseMat* edges = create_edges(m);
+  SparseMat* edges = create_edges(&m);
 
   Array2D_uint* result = compute_valid_pairs(&m, edges, 0);
 
@@ -90,7 +90,7 @@ void test_valid_pairs() {
     sizeof(face)/sizeof(unsigned int) / 3
   };
 
-  SparseMat* edges = create_edges(m);
+  SparseMat* edges = create_edges(&m);
 
   Array2D_uint* result = compute_valid_pairs(&m, edges, 2);
 

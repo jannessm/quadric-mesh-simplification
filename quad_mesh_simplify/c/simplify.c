@@ -1,4 +1,5 @@
 #include "simplify.h"
+
 #include <stdbool.h>
 
 #include "mesh.h"
