@@ -65,7 +65,6 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
 #ifdef DEBUG
   printf("\n");
   print_array_uint(valid_pairs->data, valid_pairs->rows, valid_pairs->columns);
-  printf("so far so good\n");
 #endif
 
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
@@ -79,6 +78,7 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   unsigned int num_deleted_nodes = 0, i;
 
   while (mesh->n_vertices - num_deleted_nodes < num_nodes && heap->length > 0) {
+    printf("so far so good\n");
     p = heap_pop(heap);
     
     if (p->v1 == p->v2 || deleted_positions[p->v1] || deleted_positions[p->v2]) {

@@ -11,5 +11,5 @@ void add_K_to_Q(double* A, double* B);
 
 double* calculate_K(double* p);
 
-double error(double* p, double* Q);
+double calc_error(double* p, double* Q);
 #endif

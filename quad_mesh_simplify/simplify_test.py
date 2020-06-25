@@ -135,7 +135,7 @@ class SimplifyTests(unittest.TestCase):
         ], np.uint32)
 
         if DEBUG:
-            plot_test_mesh(pos, face, True)
+            plot_test_mesh(pos, face, False)
 
         for i in range(1, 8):
             res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 10 - i)

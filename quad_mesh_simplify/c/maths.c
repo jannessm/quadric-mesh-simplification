@@ -72,7 +72,7 @@ double* calculate_K(double* p) {
   return K;
 }
 
-double error(double* p, double* Q) {
+double calc_error(double* p, double* Q) {
   int i, j;
   double err = 0;
   for (i = 0; i < 3; i++) {
