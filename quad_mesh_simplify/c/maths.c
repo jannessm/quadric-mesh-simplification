@@ -12,8 +12,8 @@ double* normal(double* v1, double* v2, double* v3) {
   for (i = 0; i < 3; i++) {
     a = (i + 1) % 3;
     b = (i + 2) % 3;
-    n[i] = (v1[a] - v2[a]) * (v3[b] - v2[b]) - 
-           (v1[b] - v2[b]) * (v3[a] - v2[a]);
+    n[i] = ((v2[a] - v1[a]) * (v3[b] - v1[b])) - 
+           ((v2[b] - v1[b]) * (v3[a] - v1[a]));
   }
 
   len = norm(n);

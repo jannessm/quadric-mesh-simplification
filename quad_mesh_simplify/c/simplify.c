@@ -55,13 +55,13 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
     mesh->face[i] = org_face[i];
   }
 
-// #ifdef DEBUG
-//   printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
-//   printf("reduce to %u nodes with threshold %f\n", num_nodes, threshold);
-//   print_array_double(mesh->positions, mesh->n_vertices, 3);
-//   printf("\n");
-//   print_array_uint(mesh->face, mesh->n_face, 3);
-// #endif
+#ifdef DEBUG
+  printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
+  printf("reduce to %u nodes with threshold %f\n", num_nodes, threshold);
+  print_array_double(mesh->positions, mesh->n_vertices, 3);
+  printf("\n");
+  print_array_uint(mesh->face, mesh->n_face, 3);
+#endif
 
   _simplify_mesh(mesh, num_nodes, threshold);
 
@@ -102,6 +102,11 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
 
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   double* Q = compute_Q(mesh);
+
+#ifdef DEBUG
+  printf("\n");
+  print_Q(Q, 0, mesh->n_vertices);
+#endif
 
   SparseMat* edges = create_edges(mesh);
 
