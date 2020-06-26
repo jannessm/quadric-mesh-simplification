@@ -59,7 +59,7 @@ void update_face(
 
       if (mesh->face[i * 3 + j] == v2) {
         v2_in_face = true;
-        mesh->face[i * 3 + j] = v2;
+        mesh->face[i * 3 + j] = v1;
       }
     }
 

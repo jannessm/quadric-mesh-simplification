@@ -40,7 +40,7 @@ void clean_positions_and_features(Mesh* mesh, bool* deleted_pos) {
 }
 
 void clean_face(Mesh* mesh, bool* deleted_faces, bool* deleted_positions) {
-  unsigned int i, j, new_i, diminish_by;
+  unsigned int i, j, new_i, diminish_by, new_size;
   unsigned int *sum_diminish, *new_face;
   
   diminish_by = 0;
@@ -49,19 +49,28 @@ void clean_face(Mesh* mesh, bool* deleted_faces, bool* deleted_positions) {
 
   for (i = 0; i < mesh->n_vertices; i++) {
     sum_diminish[i] = diminish_by;
-    
+    printf("%u ", diminish_by);
     if (deleted_positions[i]) {
       diminish_by++;
     }
   }
+  printf("\n");
 
-  new_face = malloc((mesh->n_face - diminish_by) * 3 * sizeof(unsigned int));
+  new_size = 0;
+  for (i = 0; i < mesh->n_face; i++) {
+    if (!deleted_faces[i]) {
+      new_size++;
+    }
+  }
+
+  new_face = malloc(new_size * 3 * sizeof(unsigned int));
 
   new_i = 0;
   for (i = 0; i < mesh->n_face; i++) {
     if (!deleted_faces[i]) {
       for (j = 0; j < 3; j++) {
         new_face[new_i * 3 + j] = mesh->face[i * 3 + j] - sum_diminish[mesh->face[i * 3 + j]];
+        printf("set %u to %u\n", mesh->face[i * 3 + j], new_face[new_i * 3 + j]);
       }
       new_i++;
     }
@@ -71,5 +80,5 @@ void clean_face(Mesh* mesh, bool* deleted_faces, bool* deleted_positions) {
   free(sum_diminish);
 
   mesh->face = new_face;
-  mesh->n_face = mesh->n_face - diminish_by;
+  mesh->n_face = new_size;
 }

@@ -76,7 +76,6 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
   npy_intp dim_pos[2] = {mesh->n_vertices, 3};
   npy_intp dim_face[2] = {mesh->n_face, 3};
   npy_intp dim_features[2] = {mesh->n_vertices, mesh->feature_length};
-  printf("new dims %d x %d\n", dim_pos[0], dim_pos[1]);
 
   PyObject* tuple = mesh->feature_length > 0 ? PyTuple_New(3) : PyTuple_New(2);
 
@@ -131,8 +130,13 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   unsigned int num_deleted_nodes = 0, i;
 
   while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
+    print_heap(heap);
     p = heap_pop(heap);
-    
+    printf("contract %d, %d\n", p->v1, p->v2);
+    for (i = 0; i < 3; i++) {
+      printf("%f ", p->target[i]);
+    }
+    printf("\n");
     if (p->v1 == p->v2 || deleted_positions[p->v1] || deleted_positions[p->v2]) {
       continue;
     }
@@ -142,8 +146,10 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
     }
 
     for (i = 0; i < 3; i++) {
+      printf("%f ", p->target[i]);
       mesh->positions[p->v1 * 3 + i] = p->target[i];
     }
+    printf("\n");
 
     deleted_positions[p->v2] = true;
 
@@ -151,15 +157,16 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
       Q[p->v1 * 16 + i] = Q[p->v2 * 16 + i] + Q[p->v2 * 16 + i];
     }
 
+    update_face(mesh, deleted_faces, p->v1, p->v2);
     update_pairs(heap, mesh, Q, p->v1, p->v2);
     update_features(mesh, p);
-    update_face(mesh, deleted_faces, p->v1, p->v2);
 
     pair_free(p);
+    num_deleted_nodes++;
   }
 
-  clean_positions_and_features(mesh, deleted_positions);
   clean_face(mesh, deleted_faces, deleted_positions);
+  clean_positions_and_features(mesh, deleted_positions);
 
   sparse_free(edges);
   array_free(valid_pairs);
