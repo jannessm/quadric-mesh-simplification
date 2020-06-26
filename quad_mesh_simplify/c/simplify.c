@@ -55,23 +55,23 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
     mesh->face[i] = org_face[i];
   }
 
-#ifdef DEBUG
-  printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
-  printf("reduce to %u nodes with threshold %f\n", num_nodes, threshold);
-  print_array_double(mesh->positions, mesh->n_vertices, 3);
-  printf("\n");
-  print_array_uint(mesh->face, mesh->n_face, 3);
-#endif
+// #ifdef DEBUG
+//   printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
+//   printf("reduce to %u nodes with threshold %f\n", num_nodes, threshold);
+//   print_array_double(mesh->positions, mesh->n_vertices, 3);
+//   printf("\n");
+//   print_array_uint(mesh->face, mesh->n_face, 3);
+// #endif
 
   _simplify_mesh(mesh, num_nodes, threshold);
 
 
-#ifdef DEBUG
-  printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
-  print_array_double(mesh->positions, mesh->n_vertices, 3);
-  printf("\n");
-  print_array_uint(mesh->face, mesh->n_face, 3);
-#endif
+// #ifdef DEBUG
+//   printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
+//   print_array_double(mesh->positions, mesh->n_vertices, 3);
+//   printf("\n");
+//   print_array_uint(mesh->face, mesh->n_face, 3);
+// #endif
 
   npy_intp dim_pos[2] = {mesh->n_vertices, 3};
   npy_intp dim_face[2] = {mesh->n_face, 3};
@@ -114,10 +114,10 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
 
   Array2D_uint* valid_pairs = compute_valid_pairs(mesh, edges, threshold);
 
-#ifdef DEBUG
-  printf("\n");
-  print_array_uint(valid_pairs->data, valid_pairs->rows, valid_pairs->columns);
-#endif
+// #ifdef DEBUG
+//   printf("\n");
+//   print_array_uint(valid_pairs->data, valid_pairs->rows, valid_pairs->columns);
+// #endif
 
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
 
@@ -128,15 +128,12 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
 
   Pair* p;
   unsigned int num_deleted_nodes = 0, i;
+  print_heap(heap);
 
   while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
-    print_heap(heap);
     p = heap_pop(heap);
     printf("contract %d, %d\n", p->v1, p->v2);
-    for (i = 0; i < 3; i++) {
-      printf("%f ", p->target[i]);
-    }
-    printf("\n");
+
     if (p->v1 == p->v2 || deleted_positions[p->v1] || deleted_positions[p->v2]) {
       continue;
     }
@@ -146,10 +143,8 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
     }
 
     for (i = 0; i < 3; i++) {
-      printf("%f ", p->target[i]);
       mesh->positions[p->v1 * 3 + i] = p->target[i];
     }
-    printf("\n");
 
     deleted_positions[p->v2] = true;
 
