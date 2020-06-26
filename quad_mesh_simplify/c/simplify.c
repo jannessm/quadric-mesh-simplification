@@ -24,17 +24,40 @@ void capsule_cleanup(PyObject *capsule) {
 PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold) {
   
   _import_array();
+  int i, j;
+
+  double* org_pos, * org_features;
+  unsigned int* org_face;
   Mesh* mesh = malloc(sizeof(Mesh));
   
-  mesh->positions = (double*) PyArray_DATA((PyArrayObject*) positions);
-  mesh->face = (unsigned int*) PyArray_DATA((PyArrayObject*) face);
-  mesh->features = (double*) PyArray_DATA((PyArrayObject*) features);
   mesh->n_vertices = PyArray_DIM((PyArrayObject*) positions, 0);
   mesh->n_face = PyArray_DIM((PyArrayObject*) face, 0);
   mesh->feature_length = PyArray_DIM((PyArrayObject*) features, 1);
 
+  // copy data to mesh
+  mesh->positions = malloc(sizeof(double) * 3 * mesh->n_vertices);
+  mesh->face = malloc(sizeof(unsigned int) * 3 * mesh->n_face);
+  mesh->features = malloc(sizeof(double) * mesh->feature_length * mesh->n_vertices);
+  org_pos = (double*) PyArray_DATA((PyArrayObject*) positions);
+  org_face = (unsigned int*) PyArray_DATA((PyArrayObject*) face);
+  org_features = (double*) PyArray_DATA((PyArrayObject*) features);
+
+  for (i = 0; i < mesh->n_vertices; i ++) {
+    for (j = 0; j < 3; j++) {
+      mesh->positions[i*3 + j] = org_pos[i * 3 + j];
+    }
+    for (j = 0; j < mesh->feature_length; j++) {
+      mesh->features[i*mesh->feature_length + j] = org_features[i*mesh->feature_length + j];
+    }
+  }
+
+  for (i = 0; i < mesh->n_face * 3; i++) {
+    mesh->face[i] = org_face[i];
+  }
+
 #ifdef DEBUG
   printf("\ngot mesh with n_vert %d n_face %d and features_len %d\n", mesh->n_vertices, mesh->n_face, mesh->feature_length);
+  printf("reduce to %u nodes with threshold %f\n", num_nodes, threshold);
   print_array_double(mesh->positions, mesh->n_vertices, 3);
   printf("\n");
   print_array_uint(mesh->face, mesh->n_face, 3);
@@ -55,37 +78,27 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
   npy_intp dim_features[2] = {mesh->n_vertices, mesh->feature_length};
   printf("new dims %d x %d\n", dim_pos[0], dim_pos[1]);
 
-  int i, j;
-  double new_pos[mesh->n_vertices][3];
-  for(i = 0; i < mesh->n_vertices; i++) {
-    for(j = 0; j < 3; j++) {
-      new_pos[i][j] = mesh->positions[i * 3 + j];
-    }
-  }
+  PyObject* tuple = mesh->feature_length > 0 ? PyTuple_New(3) : PyTuple_New(2);
 
-  PyArray_free(positions);
-  printf("so far so good\n");
-  PyArray_free(face);
-
-  PyObject* new_positions = PyArray_SimpleNewFromData(2, dim_pos, NPY_DOUBLE, (void*) new_pos);
+  PyObject* new_positions = PyArray_SimpleNewFromData(2, dim_pos, NPY_DOUBLE, (void*) mesh->positions);
   PyObject *capsule_pos = PyCapsule_New(mesh->positions, NULL, capsule_cleanup);
-  new_positions = PyArray_SetBaseObject((PyArrayObject *) new_positions, capsule_pos);
+  PyArray_SetBaseObject((PyArrayObject *) new_positions, capsule_pos);
+  PyTuple_SetItem(tuple, 0, new_positions);
   
   PyObject* new_face = PyArray_SimpleNewFromData(2, dim_face, NPY_UINT32, mesh->face);
   PyObject *capsule_face = PyCapsule_New(mesh->face, NULL, capsule_cleanup);
-  new_face = PyArray_SetBaseObject((PyArrayObject *) new_face, capsule_face);
+  PyArray_SetBaseObject((PyArrayObject *) new_face, capsule_face);
+  PyTuple_SetItem(tuple, 1, new_face);
   
   PyObject* new_features = NULL;
   if (mesh->feature_length > 0) {
     new_features = PyArray_SimpleNewFromData(2, dim_features, NPY_DOUBLE, mesh->features);
     PyObject *capsule_features = PyCapsule_New(mesh->positions, NULL, capsule_cleanup);
-    new_features = PyArray_SetBaseObject((PyArrayObject *) new_features, capsule_features);
+    PyArray_SetBaseObject((PyArrayObject *) new_features, capsule_features);
+    PyTuple_SetItem(tuple, 2, new_features);
   }
   
-
-  PyObject* tuple = PyTuple_New(3);
-  PyTuple_SET_ITEM(tuple, 0, new_positions);
-  return tuple;//PyTuple_Pack(3, new_positions, new_face, new_features);
+  return tuple;
 }
 
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
@@ -93,11 +106,13 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
 
   SparseMat* edges = create_edges(mesh);
 
-#ifdef DEBUG
   preserve_bounds(mesh, Q, edges);
+
+#ifdef DEBUG
   printf("\n");
   print_Q(Q, 0, mesh->n_vertices);
 #endif
+
   Array2D_uint* valid_pairs = compute_valid_pairs(mesh, edges, threshold);
 
 #ifdef DEBUG
@@ -115,8 +130,7 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   Pair* p;
   unsigned int num_deleted_nodes = 0, i;
 
-  while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0 && false) {
-    printf("so far so good\n");
+  while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
     p = heap_pop(heap);
     
     if (p->v1 == p->v2 || deleted_positions[p->v1] || deleted_positions[p->v2]) {

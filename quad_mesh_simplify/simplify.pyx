@@ -43,8 +43,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     new_pos = None
     new_face = None
     new_features = None
-    if num_nodes < positions.shape[0]:
-        new_pos, new_face, new_features = simplify_mesh_c(positions, face, features, num_nodes, threshold)
-        print('done')
-
-    return new_pos, new_face, new_features
+    if num_nodes < positions.shape[0] and features.shape[1] > 0:
+        return simplify_mesh_c(positions, face, features, num_nodes, threshold)
+    else:
+        return simplify_mesh_c(positions, face, features, num_nodes, threshold)
