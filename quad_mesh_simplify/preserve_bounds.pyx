@@ -64,7 +64,7 @@ cpdef void preserve_bounds(
     p_view = p
 
     n = np.zeros((4), dtype=DTYPE_DOUBLE)
-    n_view = p
+    n_view = n
 
     # add penalities
     for i in range(face.shape[0]):

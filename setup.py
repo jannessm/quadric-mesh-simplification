@@ -29,8 +29,8 @@ ext_modules = [
 	Extension(
 		f[0],
 		[f[1]],
-        extra_compile_args=['-fopenmp'],
-        extra_link_args=['-fopenmp'],
+        # extra_compile_args=['-fopenmp'],
+        # extra_link_args=['-fopenmp'],
         include_dirs=[np.get_include()],
         define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_17_API_VERSION")],
 	)
