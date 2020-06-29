@@ -30,7 +30,7 @@ Pair* heap_get_pair(PairHeap* heap, unsigned int i) {
 }
 
 void heap_build(PairHeap* heap) {
-  unsigned int i = heap->length >> 2;
+  unsigned int i;
   for (i = heap->length >> 2; i > 0; i--) {
     heap_percolate_down(heap, i);
   }
@@ -86,7 +86,7 @@ void print_node(PairHeap* heap, unsigned int i, unsigned int level) {
   if (heap->length - 1 < i) {
     printf("None");
   } else {
-    printf("%.4f (%u, %u)\n",
+    printf("%f (%u, %u)\n",
       heap_get_error(heap, i),
       heap_get_pair(heap, i)->v1,
       heap_get_pair(heap, i)->v2);
@@ -107,7 +107,7 @@ void print_node(PairHeap* heap, unsigned int i, unsigned int level) {
 }
 
 void print_heap(PairHeap* heap) {
-  printf("+- %.4f (%u, %u)\n|   +- ",
+  printf("+- %f (%u, %u)\n|   +- ",
     heap_get_error(heap, 1),
     heap_get_pair(heap, 1)->v1,
     heap_get_pair(heap, 1)->v2

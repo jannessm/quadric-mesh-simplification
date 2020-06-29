@@ -45,7 +45,7 @@ void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges) {
         K = calculate_K(p);
 
         for (k = 0; k < 16; k++) {
-          K[k] *= 10000;
+          K[k] *= 10e3;
         }
         
         proc1 = false;

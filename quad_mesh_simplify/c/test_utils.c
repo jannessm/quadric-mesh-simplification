@@ -27,11 +27,11 @@ void print_array_uint(unsigned int* arr, int rows, int cols) {
 void print_Q(double* q, unsigned int from_vertex, unsigned int to_vertex, char to_stderr) {
   unsigned int i, j;
   for (i = from_vertex; i < to_vertex; i++) {
-    for (j = i; j < i + 4; j++) {
+    for (j = 0; j < 4; j++) {
       if (to_stderr) {
-        fprintf(stderr, "%.4lf  %.4lf  %.4lf  %.4lf\n", q[j*4], q[j*4 + 1], q[j*4 + 2], q[j*4 + 3]);
+        fprintf(stderr, "%.4lf  %.4lf  %.4lf  %.4lf\n", q[i * 16 + j*4], q[i * 16 + j*4 + 1], q[i * 16 + j*4 + 2], q[i * 16 + j*4 + 3]);
       } else {
-        printf("%.4lf  %.4lf  %.4lf  %.4lf\n", q[j*4], q[j*4 + 1], q[j*4 + 2], q[j*4 + 3]);
+        printf("%.4lf  %.4lf  %.4lf  %.4lf\n", q[i * 16 + j*4], q[i * 16 + j*4 + 1], q[i * 16 + j*4 + 2], q[i * 16 + j*4 + 3]);
       }
     }
     printf("\n");
