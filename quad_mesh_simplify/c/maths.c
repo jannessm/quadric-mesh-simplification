@@ -12,8 +12,8 @@ double* normal(double* v1, double* v2, double* v3) {
   for (i = 0; i < 3; i++) {
     a = (i + 1) % 3;
     b = (i + 2) % 3;
-    n[i] = ((v2[a] - v1[a]) * (v3[b] - v1[b])) - 
-           ((v2[b] - v1[b]) * (v3[a] - v1[a]));
+    n[i] = ((v1[a] - v2[a]) * (v3[b] - v2[b])) - 
+           ((v1[b] - v2[b]) * (v3[a] - v2[a]));
   }
 
   len = norm(n);
@@ -53,11 +53,9 @@ double dot1d(double* v1, double* v2) {
 }
 
 void add_K_to_Q(double* A, double* B) {
-  int i, j;
-  for (i = 0; i < 4; i++) {
-    for (j = 0; j < 4; j++) {
-      A[i * 4 + j] += B[i * 4 + j];
-    }
+  int i;
+  for (i = 0; i < 16; i++) {
+      A[i] += B[i];
   } 
 }
 
