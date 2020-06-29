@@ -29,8 +29,8 @@ ext_modules = [
 	Extension(
 		'quad_mesh_simplify',
 		[osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify', 'c', f) for f in files] + [osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify','simplify.pyx')],
-		extra_compile_args=['-fopenmp'],
-		extra_link_args=['-fopenmp'],
+		# extra_compile_args=['-fopenmp'],
+		# extra_link_args=['-fopenmp'],
 		include_dirs=[np.get_include()],
 		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_17_API_VERSION")],
 	),
