@@ -14,6 +14,8 @@
 #include "clean_mesh.h"
 
 #define DEBUG
+#include <time.h>
+
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold);
 
 void capsule_cleanup(PyObject *capsule) {
@@ -85,6 +87,11 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
 }
 
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
+
+#ifdef DEBUG
+  clock_t start = clock();
+#endif
+
   double* Q = compute_Q(mesh);
 
   SparseMat* edges = create_edges(mesh);
@@ -96,6 +103,13 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
 
   PairHeap* heap = list_to_heap(targets);
+
+#ifdef DEBUG
+  clock_t end = clock();
+  float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+  printf("setup in %f seconds\n", seconds);
+  start = clock();
+#endif
 
   bool* deleted_positions = calloc(mesh->n_vertices, sizeof(bool));
   bool* deleted_faces = calloc(mesh->n_face, sizeof(bool));
@@ -141,4 +155,10 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   heap_free(heap);
   free(deleted_positions);
   free(deleted_faces);
+
+  #ifdef DEBUG
+    end = clock();
+    seconds = (float)(end - start) / CLOCKS_PER_SEC;
+    printf("reduction in %f seconds\n", seconds);
+  #endif
 }
