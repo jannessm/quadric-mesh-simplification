@@ -26,7 +26,7 @@ void capsule_cleanup(PyObject *capsule) {
 PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold) {
   
   _import_array();
-  int i, j;
+  unsigned int i, j;
 
   double* org_pos, * org_features;
   unsigned int* org_face;

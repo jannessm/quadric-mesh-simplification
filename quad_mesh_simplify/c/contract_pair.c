@@ -14,7 +14,7 @@ void update_pairs(
   unsigned int i;
   Pair* pair;
 
-  #pragma omp parallel for shared(heap, mesh, Q) private(i, pair)
+  #pragma omp parallel for shared(v1, v2, heap, mesh, Q) private(i, pair)
   for (i = 1; i < heap->length; i++) {
     pair = heap_get_pair(heap, i);
 
@@ -67,8 +67,6 @@ void update_face(
       deleted_faces[i] = true;
     }
   }
-
-  return;
 }
 
 

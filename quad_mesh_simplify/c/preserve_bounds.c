@@ -8,7 +8,7 @@
 
 
 void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges) {
-  unsigned int i, j, k, l, a, v1, v2, v3;
+  unsigned int i, j, k, a, v1, v2, v3;
 
   double *pos1, *pos2, *pos3, *p, *K, *n;
   bool proc1, proc2;
@@ -21,7 +21,7 @@ void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges) {
   #endif
 
   // add penalties
-  #pragma omp parallel for private(i, j, k, l, a, v1, v2, v3, pos1, pos2, pos3, p, n, K, proc1, proc2) shared(q_locks, Q, mesh, edges)
+  #pragma omp parallel for private(i, j, k, a, v1, v2, v3, pos1, pos2, pos3, p, n, K, proc1, proc2) shared(q_locks, Q, mesh, edges)
   for (i = 0; i < mesh->n_face; i++) {
     for (j = 0; j < 3; j++) {
       a = (j + 1) % 3;

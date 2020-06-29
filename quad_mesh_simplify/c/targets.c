@@ -11,7 +11,7 @@ PairList* compute_targets(Mesh* mesh, double* Q, Array2D_uint* valid_pairs) {
   unsigned int i;
   Pair* p;
 
-  #pragma omp parallel for shared(mesh, Q, valid_pairs, pairs) private(i, p)
+  #pragma omp parallel for shared(mesh, Q, valid_pairs, pairs) private(i, p) schedule(static, 1)
   for (i = 0; i < valid_pairs->rows; i++) {
     p = calculate_pair_attributes(
         mesh, Q,
