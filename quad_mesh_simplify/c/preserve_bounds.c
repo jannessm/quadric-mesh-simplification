@@ -2,12 +2,11 @@
 #include <stdbool.h>
 #include <omp.h>
 #include <stdlib.h>
-#include "mesh.h"
 #include "maths.h"
-#include "sparse_mat.h"
+#include "preserve_bounds.h"
 
 
-void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges) {
+void preserve_bounds(Mesh* mesh, double* Q, UpperTriangleMat* edges) {
   unsigned int i, j, k, a, v1, v2, v3;
 
   double *pos1, *pos2, *pos3, *p, *K, *n;
@@ -21,7 +20,7 @@ void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges) {
   #endif
 
   // add penalties
-  #pragma omp parallel for private(i, j, k, a, v1, v2, v3, pos1, pos2, pos3, p, n, K, proc1, proc2) shared(q_locks, Q, mesh, edges)
+  // #pragma omp parallel for private(i, j, k, a, v1, v2, v3, pos1, pos2, pos3, p, n, K, proc1, proc2) shared(q_locks, Q, mesh, edges)
   for (i = 0; i < mesh->n_face; i++) {
     for (j = 0; j < 3; j++) {
       a = (j + 1) % 3;
@@ -30,7 +29,7 @@ void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges) {
       v2 = mesh->face[i * 3 + j] == v1 ? mesh->face[i * 3 + a] : mesh->face[i * 3 + j];
 
       // edge was seen once and therefore is a border of the mesh
-      if (sparse_get(edges, v1, v2) == 1) {
+      if (upper_get(edges, v1, v2) == 1) {
         // do not order v1, v2
         v1 = mesh->face[i * 3 + j % 3];
         v2 = mesh->face[i * 3 + (j + 1) % 3];

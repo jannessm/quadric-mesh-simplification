@@ -1,5 +1,5 @@
 from torch_geometric.io import read_obj, read_ply
-from quad_mesh_simplify.simplify import simplify_mesh
+from quad_mesh_simplify import simplify_mesh
 from mayavi import mlab
 from time import time
 
@@ -15,7 +15,7 @@ mlab.triangular_mesh(
 mlab.show()
 
 start = time()
-res_pos, res_face = simplify_mesh(pos.numpy().astype('double'), face.numpy().T, 300)
+res_pos, res_face = simplify_mesh(pos.numpy().astype('double'), face.numpy().T.astype('uint32'), 300)
 print('needed',time() - start, 'sec')
 
 mlab.triangular_mesh(

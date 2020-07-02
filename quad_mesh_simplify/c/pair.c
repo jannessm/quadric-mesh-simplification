@@ -26,10 +26,19 @@ void pairlist_free(PairList* list) {
 Pair* pair_init(unsigned int feature_length) {
   Pair* new_pair = malloc(sizeof(Pair));
   new_pair->feature = malloc(sizeof(double) * feature_length);
+  new_pair->faces = malloc(sizeof(unsigned int) * 0);
+  new_pair->n_faces = 0;
   return new_pair;
+}
+
+void pair_add_face(Pair* pair, unsigned int face_id) {
+  pair->n_faces++;
+  pair->faces = realloc(pair->faces, sizeof(unsigned int) * pair->n_faces);
+  pair->faces[pair->n_faces - 1] = face_id;
 }
 
 void pair_free(Pair* pair) {
   free(pair->feature);
+  free(pair->faces);
   free(pair);
 }

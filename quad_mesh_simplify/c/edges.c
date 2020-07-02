@@ -1,9 +1,8 @@
-#include "sparse_mat.h"
-#include "mesh.h"
+#include "edges.h"
 
-SparseMat* create_edges(Mesh* mesh) {
+UpperTriangleMat* create_edges(Mesh* mesh) {
   unsigned int i, j, a, v1, v2;
-  SparseMat* edges = sparse_empty();
+  UpperTriangleMat* edges = upper_zeros(mesh->n_vertices, mesh->n_vertices);
 
   // create edges
   for (i = 0; i < mesh->n_face; i++) {
@@ -13,10 +12,10 @@ SparseMat* create_edges(Mesh* mesh) {
       v2 = mesh->face[i * 3 + j] == v1 ? mesh->face[i * 3 + a] : mesh->face[i * 3 + j];
 
       // edge was not seen before
-      if (sparse_get(edges, v1, v2) == 0) {
-        sparse_set(edges, v1, v2, 1);
+      if (upper_get(edges, v1, v2) == 0) {
+        upper_set(edges, v1, v2, 1);
       } else {
-        sparse_set(edges, v1, v2, sparse_get(edges, v1, v2)+1);
+        upper_set(edges, v1, v2, upper_get(edges, v1, v2) + 1);
       }
     }
   }

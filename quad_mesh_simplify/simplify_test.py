@@ -8,7 +8,7 @@ import numpy as np
 
 from testing_utils import plot_test_mesh
 
-DEBUG = True
+DEBUG = False
 
 class SimplifyTests(unittest.TestCase):
 
@@ -175,10 +175,11 @@ class SimplifyTests(unittest.TestCase):
         if DEBUG:
             plot_test_mesh(pos, face, False)
 
-        res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 5, threshold=0.6)
+        for _ in range(10):
+            res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 5, threshold=0.6)
 
-        if DEBUG:
-            plot_test_mesh(res_pos, res_face)
+            if DEBUG:
+                plot_test_mesh(res_pos, res_face)
 
         np.testing.assert_equal(res_face, new_face)
         np.testing.assert_equal(res_pos, new_pos)

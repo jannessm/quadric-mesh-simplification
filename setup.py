@@ -19,15 +19,15 @@ files = [
 	'pair.c',
 	'preserve_bounds.c',
 	'q.c',
-	'sparse_mat.c',
 	'targets.c',
+	'upper_tri.c',
 	'valid_pairs.c',
 	'test_utils.c'
 ]
 
 ext_modules = [
 	Extension(
-		'quad_mesh_simplify',
+		'simplify',
 		[osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify', 'c', f) for f in files] + [osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify','simplify.pyx')],
 		# extra_compile_args=['-fopenmp'],
 		# extra_link_args=['-fopenmp'],

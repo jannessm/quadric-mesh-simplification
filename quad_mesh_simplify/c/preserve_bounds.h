@@ -1,4 +1,4 @@
 #include "mesh.h"
-#include "sparse_mat.h"
+#include "upper_tri.h"
 
-void preserve_bounds(Mesh* mesh, double* Q, SparseMat* edges);
+void preserve_bounds(Mesh* mesh, double* Q, UpperTriangleMat* edges);

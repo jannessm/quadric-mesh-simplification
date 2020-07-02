@@ -94,13 +94,15 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
 
   double* Q = compute_Q(mesh);
 
-  SparseMat* edges = create_edges(mesh);
+  UpperTriangleMat* edges = create_edges(mesh);
 
   preserve_bounds(mesh, Q, edges);
 
   Array2D_uint* valid_pairs = compute_valid_pairs(mesh, edges, threshold);
+  upper_free(edges);
 
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
+  array_free(valid_pairs);
 
   PairHeap* heap = list_to_heap(targets);
 
@@ -118,6 +120,7 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   unsigned int num_deleted_nodes = 0, i;
 
   while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
+    if (((mesh->n_vertices - num_deleted_nodes) % 1000) == 0) printf("reduced to %d nodes\n", mesh->n_vertices - num_deleted_nodes);
     p = heap_pop(heap);
 
     if (p->v1 == p->v2 || deleted_positions[p->v1] || deleted_positions[p->v2]) {
@@ -150,8 +153,6 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   clean_face(mesh, deleted_faces, deleted_positions);
   clean_positions_and_features(mesh, deleted_positions);
 
-  sparse_free(edges);
-  array_free(valid_pairs);
   heap_free(heap);
   free(deleted_positions);
   free(deleted_faces);

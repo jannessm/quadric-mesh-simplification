@@ -1,5 +1,5 @@
 #include "array.h"
 #include "mesh.h"
-#include "sparse_mat.h"
+#include "upper_tri.h"
 
-Array2D_uint* compute_valid_pairs(Mesh* mesh, SparseMat* edges, double threshold);
+Array2D_uint* compute_valid_pairs(Mesh* mesh, UpperTriangleMat* edges, double threshold);
