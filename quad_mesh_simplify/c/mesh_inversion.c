@@ -49,7 +49,6 @@ bool has_mesh_inversion(unsigned int v1, unsigned int v2, Mesh* mesh, double* ne
 
   return_ = false;
 
-  #pragma omp parallel for shared(mesh, v1, v2, new_position, deleted_faces, return_) private(i, j, check_face)
   for (i = 0; i < mesh->n_face; i++) {
     if (deleted_faces[i] || return_) {
       continue;

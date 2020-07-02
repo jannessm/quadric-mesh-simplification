@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <omp.h>
 #include <stdlib.h>
 #include "maths.h"
 #include "preserve_bounds.h"
@@ -10,17 +9,8 @@ void preserve_bounds(Mesh* mesh, double* Q, UpperTriangleMat* edges) {
   unsigned int i, j, k, a, v1, v2, v3;
 
   double *pos1, *pos2, *pos3, *p, *K, *n;
-  bool proc1, proc2;
-  #ifdef _OPENMP
-  omp_lock_t q_locks[mesh->n_vertices];
-
-  for (i = 0; i < mesh->n_vertices; i++) {
-    omp_init_lock(&(q_locks[i]));
-  }
-  #endif
 
   // add penalties
-  // #pragma omp parallel for private(i, j, k, a, v1, v2, v3, pos1, pos2, pos3, p, n, K, proc1, proc2) shared(q_locks, Q, mesh, edges)
   for (i = 0; i < mesh->n_face; i++) {
     for (j = 0; j < 3; j++) {
       a = (j + 1) % 3;
@@ -47,29 +37,8 @@ void preserve_bounds(Mesh* mesh, double* Q, UpperTriangleMat* edges) {
           K[k] *= 10e3;
         }
         
-        proc1 = false;
-        proc2 = false;
-
-        //update Q
-        #ifdef _OPENMP
-        while (!proc1 || !proc2) {
-          if (!proc1 && omp_test_lock(&(q_locks[v1]))) {
-            add_K_to_Q(&(Q[v1 * 16]), K);
-            omp_unset_lock(&(q_locks[v1]));
-            proc1 = true;
-          }
-          
-          if (!proc2 && omp_test_lock(&(q_locks[v2]))) {
-            add_K_to_Q(&(Q[v2 * 16]), K);
-            omp_unset_lock(&(q_locks[v2]));
-            proc2 = true;
-          }
-        }
-        #endif
-        #ifndef _OPENMP
-          add_K_to_Q(&(Q[v1 * 16]), K);
-          add_K_to_Q(&(Q[v2 * 16]), K);
-        #endif
+        add_K_to_Q(&(Q[v1 * 16]), K);
+        add_K_to_Q(&(Q[v2 * 16]), K);
 
         free(n);
         free(p);
@@ -77,10 +46,4 @@ void preserve_bounds(Mesh* mesh, double* Q, UpperTriangleMat* edges) {
       }
     }
   }
-
-  #ifdef _OPENMP
-  for (i = 0; i < mesh->n_vertices; i++) {
-    omp_destroy_lock(&(q_locks[i]));
-  }
-  #endif
 }
