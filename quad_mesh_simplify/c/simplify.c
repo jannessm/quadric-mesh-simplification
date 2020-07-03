@@ -120,6 +120,9 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   unsigned int num_deleted_nodes = 0, i;
 
   while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
+    if (((mesh->n_vertices - num_deleted_nodes) % 500) == 0) {
+      if(PyErr_CheckSignals() != 0) exit(-1);
+    }
     if (((mesh->n_vertices - num_deleted_nodes) % 1000) == 0) printf("reduced to %d nodes\n", mesh->n_vertices - num_deleted_nodes);
     p = heap_pop(heap);
 
