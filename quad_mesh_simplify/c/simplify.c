@@ -13,7 +13,7 @@
 #include "contract_pair.h"
 #include "clean_mesh.h"
 
-#define DEBUG
+// #define DEBUG
 #include <time.h>
 
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold);
@@ -27,9 +27,6 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
   
   _import_array();
   unsigned int i, j;
-
-  double* org_pos, * org_features;
-  unsigned int* org_face;
   Mesh* mesh = malloc(sizeof(Mesh));
   
   mesh->n_vertices = PyArray_DIM((PyArrayObject*) positions, 0);
@@ -40,21 +37,20 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
   mesh->positions = malloc(sizeof(double) * 3 * mesh->n_vertices);
   mesh->face = malloc(sizeof(unsigned int) * 3 * mesh->n_face);
   mesh->features = malloc(sizeof(double) * mesh->feature_length * mesh->n_vertices);
-  org_pos = (double*) PyArray_DATA((PyArrayObject*) positions);
-  org_face = (unsigned int*) PyArray_DATA((PyArrayObject*) face);
-  org_features = (double*) PyArray_DATA((PyArrayObject*) features);
 
   for (i = 0; i < mesh->n_vertices; i ++) {
     for (j = 0; j < 3; j++) {
-      mesh->positions[i*3 + j] = org_pos[i * 3 + j];
+      mesh->positions[i * 3 + j] = *((double*) PyArray_GETPTR2((PyArrayObject*) positions, (npy_intp) i, (npy_intp) j));
     }
     for (j = 0; j < mesh->feature_length; j++) {
-      mesh->features[i*mesh->feature_length + j] = org_features[i*mesh->feature_length + j];
+      mesh->features[i*mesh->feature_length + j] = *((double*) PyArray_GETPTR2((PyArrayObject*) features, (npy_intp) i, (npy_intp) j));
     }
   }
 
-  for (i = 0; i < mesh->n_face * 3; i++) {
-    mesh->face[i] = org_face[i];
+  for (i = 0; i < mesh->n_face; i++) {
+    for (j = 0; j < 3; j++) {
+      mesh->face[i * 3 + j] = *((unsigned int*) PyArray_GETPTR2((PyArrayObject*) face, i, j));
+    }
   }
 
   _simplify_mesh(mesh, num_nodes, threshold);
@@ -95,19 +91,12 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   double* Q = compute_Q(mesh);
 
   UpperTriangleMat* edges = create_edges(mesh);
-  unsigned int n_edges = 0, i, j;
-  for (i = 0; i < edges->columns; i++) {
-    for (j = i + 1; j < edges->columns; j++) {
-      if (upper_get(edges, i, j) > 0) n_edges++;
-    }
-  }
-  printf("got %d edges\n", n_edges);
 
   preserve_bounds(mesh, Q, edges);
 
   Array2D_uint* valid_pairs = compute_valid_pairs(mesh, edges, threshold);
-  printf("got %d pairs\n", valid_pairs->rows);
   upper_free(edges);
+
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
   array_free(valid_pairs);
 
@@ -124,14 +113,13 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   bool* deleted_faces = calloc(mesh->n_face, sizeof(bool));
 
   Pair* p;
-  unsigned int num_deleted_nodes = 0;
+  unsigned int num_deleted_nodes = 0, i;
 
   while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
     // check for keyboard interrupt
     if (((mesh->n_vertices - num_deleted_nodes) % 250) == 0) {
       if(PyErr_CheckSignals() != 0) exit(-1);
     }
-    if (((mesh->n_vertices - num_deleted_nodes) % 1000) == 0) printf("reduced to %d nodes\n", mesh->n_vertices - num_deleted_nodes);
     
     p = heap_pop(heap);
 
