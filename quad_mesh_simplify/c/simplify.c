@@ -95,12 +95,19 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   double* Q = compute_Q(mesh);
 
   UpperTriangleMat* edges = create_edges(mesh);
+  unsigned int n_edges = 0, i, j;
+  for (i = 0; i < edges->columns; i++) {
+    for (j = i + 1; j < edges->columns; j++) {
+      if (upper_get(edges, i, j) > 0) n_edges++;
+    }
+  }
+  printf("got %d edges\n", n_edges);
 
   preserve_bounds(mesh, Q, edges);
 
   Array2D_uint* valid_pairs = compute_valid_pairs(mesh, edges, threshold);
+  printf("got %d pairs\n", valid_pairs->rows);
   upper_free(edges);
-
   PairList* targets = compute_targets(mesh, Q, valid_pairs);
   array_free(valid_pairs);
 
@@ -112,13 +119,12 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   printf("setup in %f seconds\n", seconds);
   start = clock();
 #endif
-  print_heap(heap);
 
   bool* deleted_positions = calloc(mesh->n_vertices, sizeof(bool));
   bool* deleted_faces = calloc(mesh->n_face, sizeof(bool));
 
   Pair* p;
-  unsigned int num_deleted_nodes = 0, i;
+  unsigned int num_deleted_nodes = 0;
 
   while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
     // check for keyboard interrupt

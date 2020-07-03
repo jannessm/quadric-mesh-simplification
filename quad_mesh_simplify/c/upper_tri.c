@@ -4,11 +4,19 @@
 #include "upper_tri.h"
 
 char upper_get(UpperTriangleMat* mat, unsigned int row, unsigned int column) {
-  return mat->values[row * mat->columns - ((row * (row + 1)) / 2) + column];
+  if (row > column) {
+    return mat->values[column * mat->columns - ((column * (column + 1)) / 2) + row];
+  } else {
+    return mat->values[row * mat->columns - ((row * (row + 1)) / 2) + column];
+  }
 }
 
 void upper_set(UpperTriangleMat* mat, unsigned int row, unsigned int column, char value) {
-  mat->values[row * mat->columns - ((row * (row + 1)) / 2) + column] = value;
+  if (row > column) {
+    mat->values[column * mat->columns - ((column * (column + 1)) / 2) + row] = value;
+  } else {
+    mat->values[row * mat->columns - ((row * (row + 1)) / 2) + column] = value;
+  }
 }
 
 UpperTriangleMat* upper_zeros(unsigned int rows, unsigned int columns) {
