@@ -96,7 +96,7 @@ def simplify_mesh(positions, face_in, num_nodes, features=None, threshold=0.):
 
     # 2. Select valid pairs
     valid_pairs = compute_valid_pairs(pos, face, threshold)
-
+    print(valid_pairs.shape)
     # 3. compute optimal contration targets
     # of shape err, v1, v2, target, (features)    
     pairs = compute_targets(pos, Q, valid_pairs, feats)
