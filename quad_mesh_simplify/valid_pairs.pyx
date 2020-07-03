@@ -39,19 +39,18 @@ cpdef np.ndarray[DTYPE_LONG_T, ndim=2] compute_valid_pairs(
 
     # option 1: connected by an edge
     for i in range(face.shape[0]):
-        for j in range(3):
-            v1 = face[i, j]
-            v2 = face[i, (j + 1) % 3]
-            v3 = face[i, (j + 2) % 3]
-            if not adj_matrix[v1, v2]:
-                adj_matrix[v1, v2] = True
-                adj_matrix[v2, v1] = True
-            if not adj_matrix[v2, v3]:
-                adj_matrix[v2, v3] = True
-                adj_matrix[v3, v2] = True
-            if not adj_matrix[v1, v3]:
-                adj_matrix[v1, v3] = True
-                adj_matrix[v3, v1] = True
+        v1 = face[i, 0]
+        v2 = face[i, 1]
+        v3 = face[i, 2]
+
+        adj_matrix[v1, v2] = True
+        adj_matrix[v2, v1] = True
+
+        adj_matrix[v2, v3] = True
+        adj_matrix[v3, v2] = True
+
+        adj_matrix[v1, v3] = True
+        adj_matrix[v3, v1] = True
 
     # option 2: distance below threshold
     if threshold > 0.:
