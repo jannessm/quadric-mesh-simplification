@@ -10,6 +10,6 @@ char upper_get(UpperTriangleMat* mat, unsigned int row, unsigned int column);
 
 void upper_set(UpperTriangleMat* mat, unsigned int row, unsigned int column, char value);
 
-UpperTriangleMat* upper_zeros(unsigned int rows, unsigned int columns);
+UpperTriangleMat* upper_zeros(unsigned int size);
 
 void upper_free(UpperTriangleMat* mat);

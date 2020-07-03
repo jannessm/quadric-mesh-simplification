@@ -5,24 +5,24 @@
 
 char upper_get(UpperTriangleMat* mat, unsigned int row, unsigned int column) {
   if (row > column) {
-    return mat->values[column * mat->columns - ((column * (column + 1)) / 2) + row];
+    return mat->values[(row * row + row) / 2 + column];
   } else {
-    return mat->values[row * mat->columns - ((row * (row + 1)) / 2) + column];
+    return mat->values[(column * column + column) / 2 + row];
   }
 }
 
 void upper_set(UpperTriangleMat* mat, unsigned int row, unsigned int column, char value) {
   if (row > column) {
-    mat->values[column * mat->columns - ((column * (column + 1)) / 2) + row] = value;
+    mat->values[(row * row + row) / 2 + column] = value;
   } else {
-    mat->values[row * mat->columns - ((row * (row + 1)) / 2) + column] = value;
+    mat->values[(column * column + column) / 2 + row] = value;
   }
 }
 
-UpperTriangleMat* upper_zeros(unsigned int rows, unsigned int columns) {
+UpperTriangleMat* upper_zeros(unsigned int size) {
   UpperTriangleMat* mat = malloc(sizeof(UpperTriangleMat));
-  mat->values = calloc(rows * columns - ((rows * (rows + 1)) / 2) + columns, sizeof(char));
-  mat->columns = columns;
+  mat->values = calloc((size * size + size) / 2, sizeof(char));
+  mat->columns = size;
   return mat;
 }
 
