@@ -112,6 +112,7 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   printf("setup in %f seconds\n", seconds);
   start = clock();
 #endif
+  print_heap(heap);
 
   bool* deleted_positions = calloc(mesh->n_vertices, sizeof(bool));
   bool* deleted_faces = calloc(mesh->n_face, sizeof(bool));
@@ -120,10 +121,12 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
   unsigned int num_deleted_nodes = 0, i;
 
   while (mesh->n_vertices - num_deleted_nodes > num_nodes && heap->length > 0) {
-    if (((mesh->n_vertices - num_deleted_nodes) % 500) == 0) {
+    // check for keyboard interrupt
+    if (((mesh->n_vertices - num_deleted_nodes) % 250) == 0) {
       if(PyErr_CheckSignals() != 0) exit(-1);
     }
     if (((mesh->n_vertices - num_deleted_nodes) % 1000) == 0) printf("reduced to %d nodes\n", mesh->n_vertices - num_deleted_nodes);
+    
     p = heap_pop(heap);
 
     if (p->v1 == p->v2 || deleted_positions[p->v1] || deleted_positions[p->v2]) {

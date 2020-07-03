@@ -2,7 +2,7 @@
 #include "mesh_inversion.h"
 #include "maths.h"
 
-bool flipped(unsigned int v1_id, unsigned int v2_id, Mesh* mesh, unsigned int* face, double* new_position) {
+bool flipped(unsigned int v1, unsigned int v2, Mesh* mesh, unsigned int* face, double* new_position) {
   double *vs[3], angle, *old_norm, *new_norm;
   unsigned int i, j, id[3];
   
@@ -10,6 +10,11 @@ bool flipped(unsigned int v1_id, unsigned int v2_id, Mesh* mesh, unsigned int* f
     id[0] = face[i % 3];
     id[1] = face[(i + 1) % 3];
     id[2] = face[(i + 2) % 3];
+
+    if ((id[0] == v1 || id[1] == v1 || id[2] == v1) && 
+        (id[0] == v2 || id[1] == v2 || id[2] == v2)) {
+      return false; // face will be deleted anyways
+    }
     
     vs[0] = &(mesh->positions[id[0] * 3]);
     vs[1] = &(mesh->positions[id[1] * 3]);
@@ -19,7 +24,7 @@ bool flipped(unsigned int v1_id, unsigned int v2_id, Mesh* mesh, unsigned int* f
 
     // replace old vertex by new one
     for (j = 0; j < 3; j++) {
-      if (id[j] == v1_id || id[j] == v2_id) {
+      if (id[j] == v1 || id[j] == v2) {
         vs[j] = new_position;
       }
     }
@@ -40,17 +45,15 @@ bool flipped(unsigned int v1_id, unsigned int v2_id, Mesh* mesh, unsigned int* f
   }
 
   return false;
-  
 }
 
 bool has_mesh_inversion(unsigned int v1, unsigned int v2, Mesh* mesh, double* new_position, bool* deleted_faces) {
   unsigned int i, j;
-  bool check_face, return_;
+  bool check_face;
 
-  return_ = false;
 
   for (i = 0; i < mesh->n_face; i++) {
-    if (deleted_faces[i] || return_) {
+    if (deleted_faces[i]) {
       continue;
     }
 
@@ -64,9 +67,9 @@ bool has_mesh_inversion(unsigned int v1, unsigned int v2, Mesh* mesh, double* ne
     }
 
     if (check_face && flipped(v1, v2, mesh, &(mesh->face[i * 3]), new_position)) {
-      return_ = true;
+      return true;
     }
   }
 
-  return return_;
+  return false;
 }

@@ -15,7 +15,7 @@ mlab.triangular_mesh(
 mlab.show()
 
 start = time()
-res_pos, res_face = simplify_mesh(pos.numpy().astype('double'), face.numpy().T.astype('uint32'), 300)
+res_pos, res_face = simplify_mesh(pos.numpy().astype('double'), face.numpy().T.astype('uint32'), 63000)
 print('needed',time() - start, 'sec')
 
 mlab.triangular_mesh(

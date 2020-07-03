@@ -2,13 +2,13 @@ import os.path as osp
 import sys
 sys.path.append(osp.join(osp.abspath(osp.dirname(__file__)),'..'))
 
-from c.quad_mesh_simplify import simplify_mesh
+from quad_mesh_simplify import simplify_mesh
 import unittest
 import numpy as np
 
 from testing_utils import plot_test_mesh
 
-DEBUG = False
+DEBUG = True
 
 class SimplifyTests(unittest.TestCase):
 
@@ -175,11 +175,10 @@ class SimplifyTests(unittest.TestCase):
         if DEBUG:
             plot_test_mesh(pos, face, False)
 
-        for _ in range(10):
-            res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 5, threshold=0.6)
+        res_pos, res_face = simplify_mesh(np.copy(pos), np.copy(face), 5, threshold=0.6)
 
-            if DEBUG:
-                plot_test_mesh(res_pos, res_face)
+        if DEBUG:
+            plot_test_mesh(res_pos, res_face)
 
         np.testing.assert_equal(res_face, new_face)
         np.testing.assert_equal(res_pos, new_pos)
