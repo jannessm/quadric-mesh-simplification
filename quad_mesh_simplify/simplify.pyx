@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 cdef extern from "c/simplify.h":
     cdef tuple simplify_mesh_c(positions, face, features, unsigned int num_nodes, double threshold)
@@ -31,7 +32,7 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     if not face.dtype == np.uint32:
         raise Exception('face has to be of type unsigned int (np.uint32)')
 
-    if features == None:
+    if features is None:
         features = np.zeros((positions.shape[0], 0), np.double)
     if not type(features) == np.ndarray:
         raise Exception('features has to be an ndarray.')
@@ -39,6 +40,9 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         raise Exception('first dimensions of features has to match first shape of positions.')
     if not features.dtype == np.double:
         raise Exception('features has to be of type double')
+
+    if (positions.shape[0] ** 2 + positions.shape[0]) / 2 > sys.maxsize * 2:
+        raise Exception('too many vertices. cannot build edge matrix.')
 
     new_pos = None
     new_face = None

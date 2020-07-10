@@ -2,6 +2,7 @@
 
 UpperTriangleMat* create_edges(Mesh* mesh) {
   unsigned int i, j, v1, v2;
+  char val;
   UpperTriangleMat* edges = upper_zeros(mesh->n_vertices);
 
   // create edges
@@ -9,8 +10,8 @@ UpperTriangleMat* create_edges(Mesh* mesh) {
     for (j = 0; j < 3; j++) {      
       v1 = mesh->face[i * 3 + j];
       v2 = mesh->face[i * 3 + ((j + 1) % 3)];
-
-      upper_set(edges, v1, v2, upper_get(edges, v1, v2) + 1);
+      val = upper_get(edges, v1, v2);
+      upper_set(edges, v1, v2, val + 1);
     }
   }
 

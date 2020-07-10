@@ -3,25 +3,30 @@
 #include <stdlib.h>
 #include "upper_tri.h"
 
-char upper_get(UpperTriangleMat* mat, unsigned int row, unsigned int column) {
+unsigned long sum_formular(unsigned int i) {
+  unsigned long i_ = (unsigned long) i;
+  return (unsigned long) (i_ * i_ + i_) / 2;
+}
+
+unsigned long get_index(unsigned int row, unsigned int column) {
   if (row > column) {
-    return mat->values[(row * row + row) / 2 + column];
+    return sum_formular(row) + column;
   } else {
-    return mat->values[(column * column + column) / 2 + row];
-  }
+    return sum_formular(column) + row;
+  } 
+}
+
+char upper_get(UpperTriangleMat* mat, unsigned int row, unsigned int column) {
+  return mat->values[get_index(row, column)];
 }
 
 void upper_set(UpperTriangleMat* mat, unsigned int row, unsigned int column, char value) {
-  if (row > column) {
-    mat->values[(row * row + row) / 2 + column] = value;
-  } else {
-    mat->values[(column * column + column) / 2 + row] = value;
-  }
+  mat->values[get_index(row, column)] = value;
 }
 
 UpperTriangleMat* upper_zeros(unsigned int size) {
   UpperTriangleMat* mat = malloc(sizeof(UpperTriangleMat));
-  mat->values = calloc((size * size + size) / 2, sizeof(char));
+  mat->values = calloc(sum_formular(size), sizeof(char));
   mat->columns = size;
   return mat;
 }

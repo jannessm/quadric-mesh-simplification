@@ -18,11 +18,6 @@
 
 void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold);
 
-void capsule_cleanup(PyObject *capsule) {
-    void *memory = PyCapsule_GetPointer(capsule, NULL);
-    free(memory);
-}
-
 PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold) {
   
   _import_array();
@@ -61,21 +56,15 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
 
   PyObject* tuple = mesh->feature_length > 0 ? PyTuple_New(3) : PyTuple_New(2);
 
-  PyObject* new_positions = PyArray_SimpleNewFromData(2, dim_pos, NPY_DOUBLE, (void*) mesh->positions);
-  PyObject *capsule_pos = PyCapsule_New(mesh->positions, NULL, capsule_cleanup);
-  PyArray_SetBaseObject((PyArrayObject *) new_positions, capsule_pos);
+  PyObject* new_positions = PyArray_SimpleNewFromData(2, dim_pos, NPY_DOUBLE, mesh->positions);
   PyTuple_SetItem(tuple, 0, new_positions);
   
   PyObject* new_face = PyArray_SimpleNewFromData(2, dim_face, NPY_UINT32, mesh->face);
-  PyObject *capsule_face = PyCapsule_New(mesh->face, NULL, capsule_cleanup);
-  PyArray_SetBaseObject((PyArrayObject *) new_face, capsule_face);
   PyTuple_SetItem(tuple, 1, new_face);
   
   PyObject* new_features = NULL;
   if (mesh->feature_length > 0) {
     new_features = PyArray_SimpleNewFromData(2, dim_features, NPY_DOUBLE, mesh->features);
-    PyObject *capsule_features = PyCapsule_New(mesh->positions, NULL, capsule_cleanup);
-    PyArray_SetBaseObject((PyArrayObject *) new_features, capsule_features);
     PyTuple_SetItem(tuple, 2, new_features);
   }
   

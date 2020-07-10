@@ -10,7 +10,7 @@ double* compute_Q(Mesh* mesh) {
   double *pos1, *pos2, *pos3;
   unsigned int i;
 
-  Q = calloc(mesh->n_vertices * 4 * 4, sizeof(double));
+  Q = calloc(mesh->n_vertices * 16, sizeof(double));
 
   for (i = 0; i < mesh->n_face; i++) {
     pos1 = &(mesh->positions[mesh->face[i*3] * 3]);

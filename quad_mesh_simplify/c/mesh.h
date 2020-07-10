@@ -4,8 +4,8 @@
     double* positions;
     double* features;
     unsigned int* face;
-    unsigned int n_vertices;
-    unsigned int n_face;
-    unsigned int feature_length;
+    unsigned long n_vertices;
+    unsigned long n_face;
+    unsigned long feature_length;
   } Mesh;
 #endif
