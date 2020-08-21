@@ -3,7 +3,7 @@ from Cython.Build import cythonize
 import numpy as np
 import os.path as osp
 
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 
 url = 'https://github.com/jannessm/quadric-mesh-simplification'
 
@@ -38,11 +38,24 @@ ext_modules = [
 
 ext_modules = cythonize(ext_modules)
 
+with open("README.md", "r") as fh:
+	long_description = fh.read()
+
+def parse_requirements(filename):
+	"""Load requirements from a pip requirements file."""
+	lineiter = (line.strip() for line in open(filename))
+	return [line for line in lineiter if line and not line.startswith("#")]
+
 setup(
   name='quad_mesh_simplify',
   version=__version__,
   author='Jannes Magnusson',
   url=url,
+	description="Simplify meshes including vertex features.",
+	long_description=long_description,
+	long_description_content_type="text/markdown",
+	install_requires=parse_requirements("requirements.txt"),
+  python_requires=">=3.6.3",
   ext_modules=ext_modules,
-  zip_safe=False
+  zip_safe=False,
 )
