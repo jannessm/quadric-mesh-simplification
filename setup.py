@@ -1,50 +1,61 @@
 from setuptools import Extension, setup
 from Cython.Build import cythonize
 import numpy as np
+import os.path as osp
 
-FROM_SOURCE = True
-
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 
 url = 'https://github.com/jannessm/quadric-mesh-simplification'
 
-ext = '.pyx' if FROM_SOURCE else '.c'
-
 files = [
-	'quad_mesh_simplify.clean_mesh',
-	'quad_mesh_simplify.contract_pair',
-	'quad_mesh_simplify.maths',
-	'quad_mesh_simplify.heap',
-	'quad_mesh_simplify.mesh_inversion',
-	'quad_mesh_simplify.preserve_bounds',
-	'quad_mesh_simplify.q',
-	'quad_mesh_simplify.simplify',
-	'quad_mesh_simplify.targets',
-	'quad_mesh_simplify.valid_pairs',
+	'simplify.c',
+	'array.c',
+	'clean_mesh.c',
+	'contract_pair.c',
+	'edges.c',
+	'maths.c',
+	'mesh_inversion.c',
+	'pair_heap.c',
+	'pair.c',
+	'preserve_bounds.c',
+	'q.c',
+	'targets.c',
+	'upper_tri.c',
+	'valid_pairs.c',
+	'test_utils.c'
 ]
-
-files = [(f, f.replace('.', '/') + ext) for f in files]
 
 ext_modules = [
 	Extension(
-		f[0],
-		[f[1]],
-        # extra_compile_args=['-fopenmp'],
-        # extra_link_args=['-fopenmp'],
-        include_dirs=[np.get_include()],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_17_API_VERSION")],
-	)
-	for f in files
+		'simplify',
+		[osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify', 'c', f) for f in files] + [osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify','simplify.pyx')],
+		# extra_compile_args=['-fopenmp'],
+		# extra_link_args=['-fopenmp'],
+		include_dirs=[np.get_include()],
+		define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_17_API_VERSION")],
+	),
 ]
 
-if FROM_SOURCE:
-    ext_modules = cythonize(ext_modules)
+ext_modules = cythonize(ext_modules)
+
+with open("README.md", "r") as fh:
+	long_description = fh.read()
+
+def parse_requirements(filename):
+	"""Load requirements from a pip requirements file."""
+	lineiter = (line.strip() for line in open(filename))
+	return [line for line in lineiter if line and not line.startswith("#")]
 
 setup(
   name='quad_mesh_simplify',
   version=__version__,
   author='Jannes Magnusson',
   url=url,
+	description="Simplify meshes including vertex features.",
+	long_description=long_description,
+	long_description_content_type="text/markdown",
+	install_requires=parse_requirements("requirements.txt"),
+  python_requires=">=3.6.3",
   ext_modules=ext_modules,
-  zip_safe=False
+  zip_safe=False,
 )
