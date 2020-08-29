@@ -16,9 +16,9 @@
 // #define DEBUG
 #include <time.h>
 
-void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold);
+void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold, double max_err);
 
-PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold) {
+PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* features, unsigned int num_nodes, double threshold, double max_err) {
   
   _import_array();
   unsigned int i, j;
@@ -48,7 +48,7 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
     }
   }
 
-  _simplify_mesh(mesh, num_nodes, threshold);
+  _simplify_mesh(mesh, num_nodes, threshold, max_err);
 
   npy_intp dim_pos[2] = {mesh->n_vertices, 3};
   npy_intp dim_face[2] = {mesh->n_face, 3};
@@ -71,7 +71,7 @@ PyObject* simplify_mesh_c(PyObject* positions, PyObject* face, PyObject* feature
   return tuple;
 }
 
-void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
+void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold, double max_err) {
 
 #ifdef DEBUG
   clock_t start = clock();
@@ -117,6 +117,10 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold) {
     }
 
     if (has_mesh_inversion(p->v1, p->v2, mesh, p->target, deleted_faces)) {
+      continue;
+    }
+
+    if (p->error > max_err) {
       continue;
     }
 
