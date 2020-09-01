@@ -2,9 +2,9 @@ import numpy as np
 import sys
 
 cdef extern from "c/simplify.h":
-    cdef tuple simplify_mesh_c(positions, face, features, unsigned int num_nodes, double threshold)
+    cdef tuple simplify_mesh_c(positions, face, features, unsigned int num_nodes, double threshold, double max_err)
 
-def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
+def simplify_mesh(positions, face, num_nodes, features=None, threshold=0., max_err=np.Infinity):
     r"""simplify a mesh by contracting edges using the algortihm from `"Surface Simplification Using Quadric Error Metrics"
     <http://mgarland.org/files/papers/quadrics.pdf>`_.
 
@@ -13,8 +13,11 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
         face (:class:`ndarray`): array of shape num_faces x 3 containing the indices for each triangular face
         num_nodes (number): number of nodes that the final mesh will have
         threshold (number, optional): threshold of vertices distance to be a valid pair
+        features (:class:`ndarray`): features for all nodes [num_nodes x feature_length]
+        threshold (number): if the distance between two vertices is below this threshold, they are considered as valid pairs that can be merged.
+        max_err (float): no vertices are merged that have an error higher than this number
 
-    :rtype: (:class:`ndarray`, :class:`ndarray`)
+    :rtype: (:class:`ndarray`, :class:`ndarray`, :class:`ndarray`)
     """
 
     # check types
@@ -48,4 +51,4 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0.):
     new_face = None
     new_features = None
     
-    return simplify_mesh_c(positions, face, features, num_nodes, threshold)
+    return simplify_mesh_c(positions, face, features, num_nodes, threshold, max_err)
