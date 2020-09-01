@@ -116,11 +116,11 @@ void _simplify_mesh(Mesh* mesh, unsigned int num_nodes, double threshold, double
       continue;
     }
 
-    if (has_mesh_inversion(p->v1, p->v2, mesh, p->target, deleted_faces)) {
-      continue;
+    if (p->error > max_err) {
+      break;
     }
 
-    if (p->error > max_err) {
+    if (has_mesh_inversion(p->v1, p->v2, mesh, p->target, deleted_faces)) {
       continue;
     }
 

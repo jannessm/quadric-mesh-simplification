@@ -13,8 +13,11 @@ def simplify_mesh(positions, face, num_nodes, features=None, threshold=0., max_e
         face (:class:`ndarray`): array of shape num_faces x 3 containing the indices for each triangular face
         num_nodes (number): number of nodes that the final mesh will have
         threshold (number, optional): threshold of vertices distance to be a valid pair
+        features (:class:`ndarray`): features for all nodes [num_nodes x feature_length]
+        threshold (number): if the distance between two vertices is below this threshold, they are considered as valid pairs that can be merged.
+        max_err (float): no vertices are merged that have an error higher than this number
 
-    :rtype: (:class:`ndarray`, :class:`ndarray`)
+    :rtype: (:class:`ndarray`, :class:`ndarray`, :class:`ndarray`)
     """
 
     # check types

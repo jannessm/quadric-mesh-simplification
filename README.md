@@ -13,6 +13,23 @@ $ python setup.py build_ext --inplace
 
 This package provides one simple function to reduce a given mesh. This can be done for simple meshes or meshes with vertex features.
 
+##### simplify_mesh(positions, face, num_nodes, features=None, threshold=0., max_err=np.Infinity)
+
+`positions` (numpy array): array of shape [num_nodes x 3] containing the x, y, z position for each node
+
+`face` (numpy array): array of shape [num_faces x 3] containing the indices for each triangular face
+
+`num_nodes` (int): number of nodes that the final mesh will have
+        threshold (number, optional): threshold of vertices distance to be a valid pair
+
+`features` (numpy array): features for all nodes [num_nodes x feature_length]
+
+`threshold` (double): if the distance between two vertices is below this threshold, they are considered as valid pairs that can be merged.
+
+`max_err` (double): no vertices are merged that have an error higher than this number. IMPORTANT: if provided it is not guaranteed that the output will have less than num_nodes vertices.
+
+Returns: `new_positions, new_face, (new_features)`
+
 ### Reduce a simple mesh
 
 ```python
@@ -35,3 +52,4 @@ This package provides one simple function to reduce a given mesh. This can be do
 
     new_positions, new_face = simplify_mesh(positions, face, <final_num_nodes>, threshold=0.5)
 ```
+
