@@ -3,7 +3,7 @@ from Cython.Build import cythonize
 import numpy as np
 import os.path as osp
 
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 url = 'https://github.com/jannessm/quadric-mesh-simplification'
 
@@ -27,7 +27,7 @@ files = [
 
 ext_modules = [
 	Extension(
-		'simplify',
+		'quad_mesh_simplify',
 		[osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify', 'c', f) for f in files] + [osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify','simplify.pyx')],
 		# extra_compile_args=['-fopenmp'],
 		# extra_link_args=['-fopenmp'],
