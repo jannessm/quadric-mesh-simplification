@@ -3,10 +3,18 @@ A leightweight package for simplifying a mesh containing node features. The algo
 
 ## Installation
 
+### with pip
+```bash
+$ pip install quad_mesh_simplify
+```
+
+### from source if distribution is not supported
 Download this repository and build the package by running:
 
 ```bash
+$ pip install -r requirements.txt
 $ python setup.py build_ext --inplace
+$ pip install .
 ```
 
 ## Usage
