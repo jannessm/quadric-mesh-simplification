@@ -1,6 +1,8 @@
 # Quadric mesh simplification
 A leightweight package for simplifying a mesh containing node features. The algorithm from [Surface Simplification Using Quadric Error Metrics](http://mgarland.org/files/papers/quadrics.pdf) was implemented using cython.
 
+Only python versions >= 3.6 are supported
+
 ## Installation
 
 ### with pip
