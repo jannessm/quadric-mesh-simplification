@@ -3,7 +3,7 @@ from Cython.Build import cythonize
 import numpy as np
 import os.path as osp
 
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 
 url = 'https://github.com/jannessm/quadric-mesh-simplification'
 
