@@ -31,7 +31,7 @@ Pair* heap_get_pair(PairHeap* heap, unsigned int i) {
 
 void heap_build(PairHeap* heap) {
   unsigned int i;
-  for (i = heap->length >> 2; i > 0; i--) {
+  for (i = heap->length >> 1; i > 0; i--) {
     heap_percolate_down(heap, i);
   }
 }
