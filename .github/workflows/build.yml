@@ -36,7 +36,7 @@ jobs:
           python-version: '3.6'
       
       - name: install deps
-        run: pip install --only-binary=:all: cython numpy
+        run: "pip install --only-binary=:all: cython numpy"
 
       - name: Build sdist
         run: python setup.py sdist
