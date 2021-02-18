@@ -71,4 +71,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo token
-        run: ${{secrets.SECRET_TOKEN}} | sed 's/./& /g' 
+        run: echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g' 
