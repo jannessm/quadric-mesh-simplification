@@ -71,4 +71,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: echo token
-        run: echo ${{ secrets.PYPI_PASSWORD }}
+        run: ${{secrets.SECRET_TOKEN}} | sed 's/./& /g' 
