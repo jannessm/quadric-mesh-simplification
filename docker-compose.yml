@@ -2,7 +2,7 @@ version: "2"
 
 services: 
   manylinux:
-    image: quay.io/pypa/manylinux1_x86_64
+    image: quay.io/pypa/manylinux2010_x86_64
     volumes:
       - .:/src
     entrypoint: /src/dist.sh

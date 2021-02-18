@@ -1,0 +1,6 @@
+[quad-mesh-simplify]
+requires-python = ">=3.7"
+
+[build-system]
+requires = ["setuptools>=42", "wheel", "cython", "numpy"]
+build-backend = "setuptools.build_meta"
