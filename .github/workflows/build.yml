@@ -61,6 +61,16 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+      
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: wheelhouse
 
       # Install dependencies
       - name: "Installs dependencies"
