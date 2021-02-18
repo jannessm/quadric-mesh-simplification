@@ -53,7 +53,7 @@ jobs:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     # upload to PyPI on every tag starting with 'v'
-    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+    if: github.event_name == 'push'
     # alternatively, to publish when a GitHub Release is created, use the following rule:
     # if: github.event_name == 'release' && github.event.action == 'published'
     steps:
@@ -65,5 +65,5 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
-          password: ${{ secrets.pypi_password }}
+          password: ${{ PYPI_PASSWORD }}
           # To test: repository_url: https://test.pypi.org/legacy/
