@@ -81,6 +81,6 @@ jobs:
       # Build and upload to PyPI
       - name: "Builds and uploads to PyPI"
         run: |
-          python3 -m twine upload -u __token__ -p $TWINE_PASSWORD dist/*
+          python3 -m twine upload -u __token__ -p $TWINE_PASSWORD -r quad-mesh-simplify dist/*
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
