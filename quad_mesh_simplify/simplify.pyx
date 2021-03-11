@@ -1,6 +1,8 @@
 import numpy as np
 import sys
 
+__feature = 'HI'
+
 cdef extern from "c/simplify.h":
     cdef tuple simplify_mesh_c(positions, face, features, unsigned int num_nodes, double threshold, double max_err)
 

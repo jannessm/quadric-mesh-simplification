@@ -25,10 +25,12 @@ files = [
 	'test_utils.c'
 ]
 
+src_path = osp.join(osp.dirname(osp.abspath(__file__)), 'quad_mesh_simplify')
+
 ext_modules = [
 	Extension(
-		'quad_mesh_simplify',
-		[osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify', 'c', f) for f in files] + [osp.join(osp.dirname(osp.abspath(__file__)),'quad_mesh_simplify','simplify.pyx')],
+		'simplify',
+		[osp.join(src_path, 'c', f) for f in files] + [osp.join(src_path,'simplify.pyx')],
 		# extra_compile_args=['-fopenmp'],
 		# extra_link_args=['-fopenmp'],
 		include_dirs=[np.get_include()],

@@ -5,6 +5,7 @@
 #include "pair.h"
 #include "maths.h"
 #include "targets.h"
+#include <stdio.h>
 
 PairList* compute_targets(Mesh* mesh, double* Q, Array2D_uint* valid_pairs) {
   PairList* pairs = pairlist_init();
@@ -67,6 +68,24 @@ Pair* calculate_pair_attributes(Mesh* mesh, double* Q, unsigned int v1, unsigned
     for (i = 0; i < mesh->feature_length; i++) {
       pair->feature[i] = mesh->features[v1 * mesh->feature_length + i] * min_id * 0.1 +
                           mesh->features[v2 * mesh->feature_length + i] * (1 - min_id * 0.1);
+    }
+
+    // DEBUG
+    double n1 = norm(&mesh->features[v1 * mesh->feature_length]);
+    double n2 = norm(&mesh->features[v2 * mesh->feature_length]);
+    double max = n1 > n2 ? n1 : n2;
+    double n = norm(pair->feature);
+    if (n > max + 10e-7) {
+      printf("new feat > 107:\n  min_id %d\n  %f %f %f: %f\n  v1 %d\n  %f %f %f\n  v2 %d\n  %f %f %f\n",
+        min_id,
+        pair->feature[0], pair->feature[1], pair->feature[2],
+        n,
+        v1,
+        mesh->features[v1 * mesh->feature_length], mesh->features[v1 * mesh->feature_length + 1], mesh->features[v1 * mesh->feature_length + 2],
+        v2,
+        mesh->features[v2 * mesh->feature_length], mesh->features[v2 * mesh->feature_length + 1], mesh->features[v2 * mesh->feature_length + 2]
+      );
+      exit(-1);
     }
   }
 
