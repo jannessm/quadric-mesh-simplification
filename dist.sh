@@ -11,7 +11,11 @@
 /opt/python/cp39-cp39/bin/pip install -r /src/requirements.txt
 /opt/python/cp39-cp39/bin/pip wheel /src -w /src/dist
 
+/opt/python/cp310-cp310/bin/pip install -r /src/requirements.txt
+/opt/python/cp310-cp310/bin/pip wheel /src -w /src/dist
+
 auditwheel repair /src/dist/quad_mesh_simplify*cp36*whl -w /src/dist
 auditwheel repair /src/dist/quad_mesh_simplify*cp37*whl -w /src/dist
 auditwheel repair /src/dist/quad_mesh_simplify*cp38*whl -w /src/dist
 auditwheel repair /src/dist/quad_mesh_simplify*cp39*whl -w /src/dist
+auditwheel repair /src/dist/quad_mesh_simplify*cp310*whl -w /src/dist
