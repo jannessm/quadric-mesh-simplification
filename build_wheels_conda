@@ -1,1 +1,6 @@
-
+conda create --name quad-mesh-3.10; conda activate quad-mesh-3.10; pip install -r requirements.txt; pip install twine; python setup.py bdist_wheel;
+conda create --name quad-mesh-3.9; conda activate quad-mesh-3.9; pip install -r requirements.txt; pip install twine; python setup.py bdist_wheel;
+conda create --name quad-mesh-3.8; conda activate quad-mesh-3.8; pip install -r requirements.txt; pip install twine; python setup.py bdist_wheel;
+conda create --name quad-mesh-3.7; conda activate quad-mesh-3.7; pip install -r requirements.txt; pip install twine; python setup.py bdist_wheel;
+conda create --name quad-mesh-3.6; conda activate quad-mesh-3.6; pip install -r requirements.txt; pip install twine; python setup.py bdist_wheel;
+twine upload dist/quad_mesh*
