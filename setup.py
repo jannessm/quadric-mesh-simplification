@@ -29,7 +29,7 @@ src_path = osp.join(osp.dirname(osp.abspath(__file__)), 'quad_mesh_simplify')
 
 ext_modules = [
 	Extension(
-		'simplify',
+		'quad_mesh_simplify',
 		[osp.join(src_path, 'c', f) for f in files] + [osp.join(src_path,'simplify.pyx')],
 		# extra_compile_args=['-fopenmp'],
 		# extra_link_args=['-fopenmp'],
